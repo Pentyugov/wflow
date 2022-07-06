@@ -35,9 +35,9 @@ spring:
       add-mappings: false
 
   mail:
-    host: mail.zolloz.site
+    host: mail.wflow-app.ru
     port: 587
-    username: service@zolloz.site
+    username: service@wflow.ru
     password: Fe8de1YnY1Q1y8In
     properties.mail.smtp:
       auth: true

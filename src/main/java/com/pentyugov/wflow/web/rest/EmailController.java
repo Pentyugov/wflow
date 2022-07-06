@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/api/service/mail/")
+@RequestMapping("/api/service/mail")
 public class EmailController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(EmailController.class);
