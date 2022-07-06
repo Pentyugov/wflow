@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "server",
+      "type": "java.lang.String",
+      "description": "Description for server."
+    },
+    {
+      "name": "source.service.email",
+      "type": "java.lang.String",
+      "description": "Path for source/service/email messages."
+    }
+  ] }

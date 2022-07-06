@@ -1,0 +1,36 @@
+version: '1'
+
+services:
+  wflow-app:
+    image: 'wflow-server:latest'
+    ports:
+      - 8080:8080
+    build:
+      context: .
+    container_name: wflow-server
+    depends_on:
+      - wflow-db
+      - wflow-cache
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://wflow-db:5432/wflow
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+
+  wflow-db:
+    ports:
+      - 5438:5432
+    image: postgres
+    container_name: wflow-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=wflow
+
+  wflow-cache:
+    image: "redis"
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL

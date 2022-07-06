@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - includeAll:
+      path: db/changelog/update/sql/
+      errorIfMissingOrEmpty: false
+  - includeAll:
+      path: db/changelog/update/yaml/
+      errorIfMissingOrEmpty: false

@@ -1,0 +1,407 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet author="system" id="db-init_10-create-tables">
+        <createTable tableName="workflow_department">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_department_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="code" type="VARCHAR(255)"/>
+            <column name="is_head" type="BOOLEAN"/>
+            <column name="level" type="INTEGER"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="parent_department_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="security_users">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="security_users_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="VARCHAR(255)"/>
+            <column name="is_active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_not_locked" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="join_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="last_login_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="last_login_date_display" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="lastname" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(3000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image_url" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="security_permission">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="security_permission_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+
+        <createTable tableName="security_role">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="security_role_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="security_screen_permissions">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="security_screen_permissions_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="screen" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="UUID"/>
+            <column name="can_create" type="BOOLEAN"/>
+            <column name="can_read" type="BOOLEAN"/>
+            <column name="can_update" type="BOOLEAN"/>
+            <column name="can_delete" type="BOOLEAN"/>
+        </createTable>
+
+        <createTable tableName="security_role_permission">
+            <column name="role_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="security_user_role">
+            <column name="user_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="security_user_role_pkey"/>
+            </column>
+            <column name="role_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="security_user_role_pkey"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="system_mail">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="system_mail_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="body" type="TEXT"/>
+            <column name="is_send" type="BOOLEAN"/>
+            <column name="receiver" type="VARCHAR(255)"/>
+            <column name="send_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="sender" type="VARCHAR(255)"/>
+            <column name="subject" type="VARCHAR(255)"/>
+        </createTable>
+
+        <createTable tableName="system_user_settings">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="system_user_settings_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="dark_theme" type="BOOLEAN"/>
+            <column name="enable_chat_notification_sound" type="BOOLEAN"/>
+            <column name="locale" type="VARCHAR(2)"/>
+            <column name="mini_sidebar" type="BOOLEAN"/>
+            <column name="theme_color" type="INTEGER"/>
+            <column name="user_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_card">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_card_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="comment" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="number" type="VARCHAR(255)"/>
+            <column name="state" type="VARCHAR(255)"/>
+            <column name="creator_id" type="UUID"/>
+            <column name="issue_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_chat_message">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_chat_message_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="chat_id" type="VARCHAR(255)"/>
+            <column name="content" type="VARCHAR(255)"/>
+            <column name="status" type="INTEGER"/>
+            <column name="recipient_id" type="UUID"/>
+            <column name="sender_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_chat_room">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_chat_room_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="chat_id" type="VARCHAR(255)"/>
+            <column name="recipient_id" type="UUID"/>
+            <column name="sender_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_employee">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_employee_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="dismissal_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="head" type="BOOLEAN"/>
+            <column name="hire_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="middle_name" type="VARCHAR(255)"/>
+            <column name="personnel_number" type="INTEGER"/>
+            <column name="phone_number" type="VARCHAR(255)"/>
+            <column name="salary" type="DECIMAL"/>
+            <column name="department_id" type="UUID"/>
+            <column name="position_id" type="UUID"/>
+            <column name="user_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_issue">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_issue_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="comment" type="TEXT"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="result" type="VARCHAR(255)"/>
+            <column name="card_id" type="UUID"/>
+            <column name="executor_id" type="UUID"/>
+            <column name="initiator_id" type="UUID"/>
+            <column name="user_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_note">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_note_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="category" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="user_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_notification">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_notification_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="message" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="read" type="BOOLEAN"/>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accessory_type" type="INTEGER"/>
+            <column name="receiver_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_position">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_position_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="code" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+
+        <createTable tableName="workflow_task">
+            <column name="execution_date_fact" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="execution_date_plan" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="priority" type="VARCHAR(255)"/>
+            <column name="started" type="BOOLEAN"/>
+            <column name="overdue" type="BOOLEAN"/>
+            <column name="card_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_task_pkey"/>
+            </column>
+            <column name="executor_id" type="UUID"/>
+            <column name="initiator_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="workflow_project">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_project_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="code" type="VARCHAR(255)"/>
+            <column name="status" type="INTEGER"/>
+            <column name="project_manager_id" type="UUID"/>
+            <column name="contractor_id" type="uuid"/>
+            <column name="conclusion_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="due_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="closing_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+
+        <createTable tableName="workflow_ticket">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_ticket_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="project_id" type="UUID"/>
+            <column name="creator_id" type="UUID"/>
+            <column name="assignee_id" type="UUID"/>
+            <column name="status" type="INTEGER"/>
+            <column name="execution_date_fact" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="execution_date_plan" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+
+        <createTable tableName="workflow_contractor">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_contractor_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="full_name" type="VARCHAR(255)"/>
+            <column name="okpo" type="VARCHAR(10)"/>
+            <column name="kpp" type="VARCHAR(9)"/>
+            <column name="inn" type="VARCHAR(12)"/>
+            <column name="postal_address" type="VARCHAR(300)"/>
+            <column name="legal_address" type="VARCHAR(255)"/>
+            <column name="fax" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="comment_" type="VARCHAR(1000)"/>
+            <column name="website" type="VARCHAR(255)"/>
+            <column name="non_resident" type="BOOLEAN"/>
+            <column name="supplier" type="BOOLEAN"/>
+            <column name="customer" type="BOOLEAN"/>
+            <column name="organization" type="BOOLEAN"/>
+            <column name="phone" type="VARCHAR(255)"/>
+        </createTable>
+
+        <createTable tableName="workflow_project_ticket">
+            <column name="project_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ticket_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="workflow_project_participant">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_project_participant_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="project_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="workflow_calendar_event">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_calendar_event_pkey"/>
+            </column>
+            <column name="create_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="version" type="INTEGER"/>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_id" type="UUID"/>
+            <column name="title" type="VARCHAR(50)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="start_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="color_primary" type="VARCHAR(255)"/>
+            <column name="color_secondary" type="VARCHAR(255)"/>
+            <column name="all_day" type="BOOLEAN"/>
+            <column name="type" type="INTEGER"/>
+            <column name="draggable" type="BOOLEAN"/>
+            <column name="resizable_before_start" type="BOOLEAN"/>
+            <column name="resizable_after_end" type="BOOLEAN"/>
+            <column name="actions" type="VARCHAR(255)"/>
+        </createTable>
+
+    </changeSet>
+</databaseChangeLog>

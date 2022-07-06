@@ -1,0 +1,15 @@
+
+
+
+how to push image to hub
+
+1. docker logout
+2. docker images -a : show all images
+3. docker tag <imagename> <username>/<repositoryname>:<imagename>
+3. docker tag :<imagename> - will be created new image
+4. docker push <reponame on step 3>:<tagname>
+5 if access denied - docker login - repeat step 4
+
+
+While resolving: Found:
+@angular/common@13.2.1 node_modules/@angular/common @angular/common@"~13.2.0" from the root project peer @angular/common@"^13.0.0 || ^14.0.0-0" from @angular/cdk@13.2.1 node_modules/@angular/cdk to accept an incorrect (and potentially br

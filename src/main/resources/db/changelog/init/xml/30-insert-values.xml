@@ -1,0 +1,733 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet author="system" id="db-init_30-insert-values">
+
+        <insert tableName="security_users" dbms="postgresql">
+            <column name="id" value="06abde37-e3ed-451e-84bf-3496a4359bf1"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="email" value="zolloz@internet.ru"/>
+            <column name="join_date" value="now()"/>
+            <column name="password" value="$2a$10$CePrYI./ZXUYbCCrK1VvO.FdD.04BmB.3a2h5ELMY4MGlH7abKLKy"/>
+            <column name="username" value="admin"/>
+            <column name="is_active" value="true"/>
+            <column name="is_not_locked" value="true"/>
+            <column name="image_url" value="https://ucarecdn.com/6f620a03-d50c-4659-bf0c-9468c06e9f52/"/>
+        </insert>
+
+        <insert tableName="security_users" dbms="postgresql">
+            <column name="id" value="adf21cc7-958e-4690-bb0a-78fe1571a0a8"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="email" value="apentyugov@zolloz.site"/>
+            <column name="join_date" value="now()"/>
+            <column name="password" value="$2a$12$eLrT5jH0fQqykBUGhpTdIuaJraskN38/FvwFVfyQgjk.6b2EIOMNW"/>
+            <column name="username" value="apentyugov"/>
+            <column name="firstname" value="Anton"/>
+            <column name="lastname" value="Pentyugov"/>
+            <column name="is_active" value="true"/>
+            <column name="is_not_locked" value="true"/>
+            <column name="image_url" value="https://ucarecdn.com/cb49e765-b5fc-4169-b154-b39a11322447/"/>
+        </insert>
+
+        <insert tableName="security_users" dbms="postgresql">
+            <column name="id" value="9ba5f0af-a500-4557-a4aa-86c86218f7ff"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="email" value="vkonstantinova@zolloz.site"/>
+            <column name="join_date" value="now()"/>
+            <column name="password" value="$2a$12$VGiEYYN86A/i6ylGmKPh6ukJNLi1K8B5AOTp2hTCH0qsyJTaBWnSm"/>
+            <column name="username" value="vkonstantinova"/>
+            <column name="firstname" value="Viktoria"/>
+            <column name="lastname" value="Konstantinova"/>
+            <column name="is_active" value="true"/>
+            <column name="is_not_locked" value="true"/>
+            <column name="image_url" value="https://ucarecdn.com/4e2c6bfa-07e5-4f2e-a6a6-cd4672a92607/"/>
+        </insert>
+
+        <!--    BEGIN INSERT INTO SECURITY_PERMISSION-->
+        <insert tableName="security_permission" dbms="postgresql">
+            <column name="id" value="31560d5c-2548-4a45-9454-29715c97949e"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="READ"/>
+        </insert>
+
+        <insert tableName="security_permission" dbms="postgresql">
+            <column name="id" value="2bdbe3f8-99fa-468a-97ac-84d6d5bf3c69"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="UPDATE"/>
+        </insert>
+
+        <insert tableName="security_permission" dbms="postgresql">
+            <column name="id" value="52b64a0e-c3dc-4853-b3cd-ff9983c1f0ca"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="CREATE"/>
+        </insert>
+
+        <insert tableName="security_permission" dbms="postgresql">
+            <column name="id" value="cce7abc6-4ff7-4a01-9be6-5a2c840d491a"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="DELETE"/>
+        </insert>
+
+        <insert tableName="security_permission" dbms="postgresql">
+            <column name="id" value="c58b360b-71db-4952-970d-a2d5ffe33de2"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="SEND_SYS_MAIL"/>
+        </insert>
+
+        <insert tableName="security_permission" dbms="postgresql">
+            <column name="id" value="88e028ff-4c21-42d1-aa45-4fdc1d0265d0"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="CREATE_PROJECT"/>
+        </insert>
+
+        <insert tableName="security_permission" dbms="postgresql">
+            <column name="id" value="edc35322-062f-406d-9bf3-c8fad5d76cfd"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="DELETE_PROJECT"/>
+        </insert>
+
+        <insert tableName="security_permission" dbms="postgresql">
+            <column name="id" value="82074b91-a579-45f9-8965-926ed3b1f849"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="EDIT_PROJECT"/>
+        </insert>
+        <!--    END INSERT INTO SECURITY_PERMISSION-->
+
+        <!--    BEGIN INSERT INTO SECURITY_ROLE-->
+        <insert tableName="security_role" dbms="postgresql">
+            <column name="id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="ROLE_ADMIN"/>
+            <column name="description" value="GodMode on"/>
+        </insert>
+
+        <insert tableName="security_role" dbms="postgresql">
+            <column name="id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="ROLE_USER"/>
+            <column name="description" value="Simple user role granted access only to read organization data"/>
+        </insert>
+
+        <insert tableName="security_role" dbms="postgresql">
+            <column name="id" value="417c1787-bfb6-47ed-9c35-54bed03b6a54"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="ROLE_SECRETARY"/>
+            <column name="description" value="Allows user to edit organization data"/>
+
+        </insert>
+
+        <insert tableName="security_role" dbms="postgresql">
+            <column name="id" value="14495f54-deff-435e-9f96-3d9ef9b8ed9e"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="ROLE_PROJECT_MANAGER"/>
+            <column name="description" value="Allows user to edit projects data"/>
+
+        </insert>
+
+        <insert tableName="security_role" dbms="postgresql">
+            <column name="id" value="f056b6c9-a956-48cb-87b7-c349dcd16584"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="ROLE_PROJECT_PARTICIPANT"/>
+            <column name="description" value="Allows user to view projects data"/>
+        </insert>
+
+        <insert tableName="security_role" dbms="postgresql">
+            <column name="id" value="7d7c9f6b-7ef9-4975-8c6f-4a1d5fb0011d"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="ROLE_TASK_INITIATOR"/>
+            <column name="description" value="Allows user to start tasks"/>
+        </insert>
+
+        <insert tableName="security_role" dbms="postgresql">
+            <column name="id" value="0b84b0bb-d35d-4886-9ade-08edb1193029"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="ROLE_TASK_EXECUTOR"/>
+            <column name="description" value="Allows user to be task executor"/>
+        </insert>
+        <!--    END INSERT INTO SECURITY_ROLE-->
+
+        <!--    BEGIN INSERT INTO SECURITY_ROLE_PERMISSION-->
+        <!--        BEGIN ADMIN PERMISSIONS-->
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="permission_id" value="31560d5c-2548-4a45-9454-29715c97949e"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="permission_id" value="52b64a0e-c3dc-4853-b3cd-ff9983c1f0ca"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="permission_id" value="cce7abc6-4ff7-4a01-9be6-5a2c840d491a"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="permission_id" value="2bdbe3f8-99fa-468a-97ac-84d6d5bf3c69"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="permission_id" value="c58b360b-71db-4952-970d-a2d5ffe33de2"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="permission_id" value="88e028ff-4c21-42d1-aa45-4fdc1d0265d0"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="permission_id" value="edc35322-062f-406d-9bf3-c8fad5d76cfd"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="permission_id" value="82074b91-a579-45f9-8965-926ed3b1f849"/>
+        </insert>
+        <!--       END ADMIN PERMISSIONS-->
+
+        <!--       BEGIN PROJECT MANAGER PERMISSIONS-->
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="14495f54-deff-435e-9f96-3d9ef9b8ed9e"/>
+            <column name="permission_id" value="88e028ff-4c21-42d1-aa45-4fdc1d0265d0"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="14495f54-deff-435e-9f96-3d9ef9b8ed9e"/>
+            <column name="permission_id" value="edc35322-062f-406d-9bf3-c8fad5d76cfd"/>
+        </insert>
+
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="14495f54-deff-435e-9f96-3d9ef9b8ed9e"/>
+            <column name="permission_id" value="82074b91-a579-45f9-8965-926ed3b1f849"/>
+        </insert>
+        <!--       END PROJECT MANAGER PERMISSIONS-->
+        <!--       BEGIN USER PERMISSIONS-->
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="permission_id" value="31560d5c-2548-4a45-9454-29715c97949e"/>
+        </insert>
+        <!--       END USER PERMISSIONS-->
+        <!--    END INSERT INTO SECURITY_ROLE_PERMISSION-->
+
+        <!--    BEGIN INSERT INTO SECURITY_USER_ROLE-->
+        <insert tableName="security_user_role" dbms="postgresql">
+            <column name="user_id" value="06abde37-e3ed-451e-84bf-3496a4359bf1"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+        </insert>
+
+        <insert tableName="security_user_role" dbms="postgresql">
+            <column name="user_id" value="adf21cc7-958e-4690-bb0a-78fe1571a0a8"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+        </insert>
+
+        <insert tableName="security_user_role" dbms="postgresql">
+            <column name="user_id" value="adf21cc7-958e-4690-bb0a-78fe1571a0a8"/>
+            <column name="role_id" value="14495f54-deff-435e-9f96-3d9ef9b8ed9e"/>
+        </insert>
+
+        <insert tableName="security_user_role" dbms="postgresql">
+            <column name="user_id" value="9ba5f0af-a500-4557-a4aa-86c86218f7ff"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+        </insert>
+
+        <!--    END INSERT INTO SECURITY_USER_ROLE-->
+        <insert tableName="workflow_contractor" dbms="postgresql">
+            <column name="id" value="8300580d-ce06-4ab8-a803-c911652372e7"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="First contractor"/>
+            <column name="full_name" value="First contractor Gmbh"/>
+            <column name="organization" value="true"/>
+            <column name="email" value="firstcontractor@example.com"/>
+            <column name="website" value="firstContractor.com"/>
+            <column name="customer" value="true"/>
+            <column name="non_resident" value="true"/>
+            <column name="inn" value="1022568491"/>
+            <column name="kpp" value="773301001"/>
+            <column name="okpo" value="0002870479"/>
+            <column name="fax" value="8-800-568-88-99"/>
+            <column name="postal_address" value="Cecelia Havens 456 White Finch St.North Augusta, SC 29860"/>
+            <column name="legal_address" value="ATTN: CEO David Kenner Kenner Group Inc.85 Bradford Lane Vincentown, NJ 08120"/>
+        </insert>
+
+        <insert tableName="workflow_project" dbms="postgresql">
+            <column name="id" value="246d77af-9874-458a-841a-c407e88e2969"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="Main project"/>
+            <column name="code" value="001"/>
+            <column name="status" value="10"/>
+            <column name="project_manager_id" value="adf21cc7-958e-4690-bb0a-78fe1571a0a8"/>
+            <column name="contractor_id" value="8300580d-ce06-4ab8-a803-c911652372e7"/>
+        </insert>
+
+        <insert tableName="workflow_project_participant">
+            <column name="id" value="4139a597-eae8-404f-89b3-3d2d14cac046"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="project_id" value="246d77af-9874-458a-841a-c407e88e2969"/>
+            <column name="user_id" value="adf21cc7-958e-4690-bb0a-78fe1571a0a8"/>
+        </insert>
+
+        <insert tableName="workflow_ticket" dbms="postgresql">
+            <column name="id" value="06fb5198-9398-4108-b071-b6e0e6cde736"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="title" value="Ticket of Main project"/>
+            <column name="status" value="10"/>
+            <column name="project_id" value="246d77af-9874-458a-841a-c407e88e2969"/>
+            <column name="creator_id" value="adf21cc7-958e-4690-bb0a-78fe1571a0a8"/>
+            <column name="assignee_id" value="9ba5f0af-a500-4557-a4aa-86c86218f7ff"/>
+        </insert>
+
+        <insert tableName="workflow_position" dbms="postgresql">
+            <column name="id" value="a7f09332-9ef9-41a0-924b-2b7692808e29"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="Main position"/>
+            <column name="code" value="001"/>
+        </insert>
+
+        <insert tableName="workflow_department">
+            <column name="id" value="528ae841-17a6-4d64-b26e-2938a7a057ee"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="Main department"/>
+            <column name="code" value="001"/>
+            <column name="is_head" value="true"/>
+            <column name="level" value="1"/>
+        </insert>
+
+        <insert tableName="workflow_department">
+            <column name="id" value="ba67d71d-5080-4a44-b0eb-bd09c22937a3"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="Second department"/>
+            <column name="code" value="002"/>
+            <column name="parent_department_id" value="528ae841-17a6-4d64-b26e-2938a7a057ee"/>
+            <column name="level" value="2"/>
+        </insert>
+
+        <insert tableName="workflow_employee" dbms="postgresql">
+            <column name="id" value="b718fb12-773d-4cac-8f41-965757081d51"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="first_name" value="Ivan"/>
+            <column name="last_name" value="Ivanov"/>
+            <column name="middle_name" value="Ivanovich"/>
+            <column name="email" value="ivanov@mail.com"/>
+            <column name="phone_number" value="+79639137660"/>
+            <column name="hire_date" value="now()"/>
+            <column name="position_id" value="a7f09332-9ef9-41a0-924b-2b7692808e29"/>
+            <column name="department_id" value="528ae841-17a6-4d64-b26e-2938a7a057ee"/>
+        </insert>
+
+        <insert tableName="workflow_notification" dbms="postgresql">
+            <column name="id" value="e798ccdc-a6d7-4a35-8f43-d4548402c57f"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="type" value="10"/>
+            <column name="accessory_type" value="10"/>
+            <column name="title" value="SYSTEM INFO"/>
+            <column name="message" value="Test success system message"/>
+            <column name="receiver_id" value="06abde37-e3ed-451e-84bf-3496a4359bf1"/>
+            <column name="read" value="false"/>
+        </insert>
+
+        <insert tableName="workflow_notification" dbms="postgresql">
+            <column name="id" value="f5c5d181-42aa-452a-9c02-3e664f34521d"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="type" value="20"/>
+            <column name="accessory_type" value="20"/>
+            <column name="title" value="CALENDAR INFO"/>
+            <column name="message" value="Test info calendar message"/>
+            <column name="receiver_id" value="06abde37-e3ed-451e-84bf-3496a4359bf1"/>
+            <column name="read" value="false"/>
+        </insert>
+
+        <insert tableName="workflow_notification" dbms="postgresql">
+            <column name="id" value="af04a406-57ff-4f40-a176-be465f654203"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="type" value="30"/>
+            <column name="accessory_type" value="30"/>
+            <column name="title" value="TODO INFO"/>
+            <column name="message" value="Test warning todo message"/>
+            <column name="receiver_id" value="06abde37-e3ed-451e-84bf-3496a4359bf1"/>
+            <column name="read" value="false"/>
+        </insert>
+
+        <insert tableName="workflow_notification" dbms="postgresql">
+            <column name="id" value="45d7a483-2456-4d35-a75d-ddcc0dcdd0bc"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="type" value="40"/>
+            <column name="accessory_type" value="40"/>
+            <column name="title" value="WORKFLOW INFO"/>
+            <column name="message" value="Test error workflow message"/>
+            <column name="receiver_id" value="06abde37-e3ed-451e-84bf-3496a4359bf1"/>
+            <column name="read" value="false"/>
+        </insert>
+
+        <!--        USER PERMISSIONS-->
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="cccc54af-1912-441b-9aac-e3c328a61923"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Department"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="d765eb8b-723d-426f-bf16-f60934d8240b"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Employee"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="861e4ac6-6480-43ba-a5e1-fb40ec027270"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Role"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="false"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="431623d4-f1c3-4fff-94fb-5c4a0c9c2a24"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Position"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="ca47b4c3-e8ce-4b43-9074-a515e30e498a"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Contractor"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="e6b065a1-3e6b-4ad0-9759-8fe08c528146"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$User"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="29732877-eaee-4d3b-befb-14cde53d6d97"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Projects"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="false"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="349dd72e-b6cf-4615-9c7a-b59b3e3ee995"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Tasks"/>
+            <column name="role_id" value="44dd325b-af71-4ae4-9811-580659214b1e"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="false"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+
+        <!--        ADMINS PERMISSIONS-->
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="0dda1d6d-4830-4fc7-b3d3-ddb47b7df5b3"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Department"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="dd907af0-841b-4da4-b29c-0aaa4eec6636"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Employee"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="de497a0c-e3e7-4718-a9d9-6a0f8f905fa8"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Role"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="fc70af05-4c8d-4506-bc47-d7d84fb3aa59"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Position"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="61c0e973-65f8-436f-8399-0253d436d49b"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Contractor"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="c3719427-024b-4bb0-8eea-94bd09362af4"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$User"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="bd652fd7-df40-41f0-ab8a-8b902b018f28"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Projects"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="4d27e337-beb1-41e6-930c-a5160beb6509"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Tasks"/>
+            <column name="role_id" value="658e1ba9-1b91-4d0d-b94f-e1d924e8ac13"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <!--       SECRETARY PERMISSIONS-->
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="fa6fb0ae-df2f-44cc-9d6a-427cbabd638e"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Department"/>
+            <column name="role_id" value="417c1787-bfb6-47ed-9c35-54bed03b6a54"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="56d365ee-b760-4b54-b891-03d14a361e4a"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Employee"/>
+            <column name="role_id" value="417c1787-bfb6-47ed-9c35-54bed03b6a54"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="b74c345f-5184-4b5b-a44c-6d1c8e849e66"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Role"/>
+            <column name="role_id" value="417c1787-bfb6-47ed-9c35-54bed03b6a54"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="1c3c1371-e0bc-421a-aa01-b33d75702240"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Position"/>
+            <column name="role_id" value="417c1787-bfb6-47ed-9c35-54bed03b6a54"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="6b8321a6-5014-4d56-a694-b95ecbf15bbc"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Contractor"/>
+            <column name="role_id" value="417c1787-bfb6-47ed-9c35-54bed03b6a54"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="d9fe88ff-a591-4305-8bbc-907037c61ac3"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$User"/>
+            <column name="role_id" value="417c1787-bfb6-47ed-9c35-54bed03b6a54"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="f596a139-5008-49b5-b1e3-3d427c5e1cf9"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Projects"/>
+            <column name="role_id" value="417c1787-bfb6-47ed-9c35-54bed03b6a54"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <!--       PROJECT MANAGER PERMISSIONS-->
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="c96cb27b-313c-49ce-ba0b-c70d7349951c"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Projects"/>
+            <column name="role_id" value="14495f54-deff-435e-9f96-3d9ef9b8ed9e"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <!--        PROJECT PARTICIPANT PERMISSIONS-->
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="5e026bcb-29ac-40e6-ba3d-c37691ece2ad"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Projects"/>
+            <column name="role_id" value="f056b6c9-a956-48cb-87b7-c349dcd16584"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="false"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+        <!--        TASK INITIATOR PERMISSIONS-->
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="95732795-06b8-4d66-b594-0c7eafd0db61"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Tasks"/>
+            <column name="role_id" value="7d7c9f6b-7ef9-4975-8c6f-4a1d5fb0011d"/>
+            <column name="can_create" value="true"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="true"/>
+        </insert>
+
+        <!--        TASK EXECUTOR PERMISSIONS-->
+        <insert tableName="security_screen_permissions">
+            <column name="id" value="de3ee678-a12e-46d8-b621-1f73a6e2b8df"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="screen" value="screen$Tasks"/>
+            <column name="role_id" value="0b84b0bb-d35d-4886-9ade-08edb1193029"/>
+            <column name="can_create" value="false"/>
+            <column name="can_read"   value="true"/>
+            <column name="can_update" value="true"/>
+            <column name="can_delete" value="false"/>
+        </insert>
+
+
+    </changeSet>
+</databaseChangeLog>
