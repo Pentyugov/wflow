@@ -6,9 +6,9 @@ server:
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/wflow}
-    password: ${SPRING_DATASOURCE_PASSWORD:admin}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    url:      ${WFLOW_DATASOURCE_URL:}
+    password: ${WFLOW_DATASOURCE_PASSWORD:}
+    username: ${WFLOW_DATASOURCE_USERNAME:}
     driver-class-name: org.postgresql.Driver
 
   liquibase:
@@ -35,10 +35,10 @@ spring:
       add-mappings: false
 
   mail:
-    host: mail.wflow-app.ru
     port: 587
-    username: service@wflow.ru
-    password: Fe8de1YnY1Q1y8In
+    host:     ${WFLOW_MAIL_HOST:}
+    username: ${WFLOW_MAIL_USERNAME:}
+    password: ${WFLOW_MAIL_PASSWORD:}
     properties.mail.smtp:
       auth: true
       starttls.enable: true
@@ -67,3 +67,4 @@ uploadcare:
 
 app:
   saveImageInDb: true
+  enable-redis: false

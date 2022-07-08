@@ -1,6 +1,8 @@
 package com.pentyugov.wflow;
 
 import com.pentyugov.wflow.application.configuration.constant.ApplicationConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -14,15 +16,21 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 @EnableScheduling
 @EnableWebMvc
 public class WflowApplication extends SpringBootServletInitializer {
 
+	private static Logger logger = LoggerFactory.getLogger(WflowApplication.class);
+
+	public static List<String> allowedOrigins;
+
 	public static void main(String[] args) {
 		SpringApplication.run(WflowApplication.class, args);
 		createUserFolder();
+		logger.info("ALLOWED ORIGINS: " + WflowApplication.allowedOrigins.toString());
 	}
 
 	@Override
@@ -35,15 +43,15 @@ public class WflowApplication extends SpringBootServletInitializer {
 		UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.setAllowCredentials(true);
-//		corsConfiguration.setAllowedOrigins(Collections.singletonList("https://zolloz-client.herokuapp.com"));
-		corsConfiguration.setAllowedOrigins(Arrays.asList("https://zolloz-client.herokuapp.com",
-				"https://zolloz-client.herokuapp.com/wss",
-				"http://zolloz-client.herokuapp.com",
-				"http://zolloz-client.herokuapp.com/ws",
+		corsConfiguration.setAllowedOrigins(Arrays.asList(
+				"http://wflow-app.ru",
+				"http://wflow-app.ru/ws",
+				"http://wflow-app.ru/wss",
 				"http://localhost:4200",
 				"http://localhost:4200/ws",
-				"http://localhost:4250",
-				"http://localhost:4250/ws"));
+				"http://localhost:4200/wss"
+		));
+
 		corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
 				"Accept", "Jwt-Token", "Authorization", "Origin, Accept", "X-Requested-With",
 				"Access-Control-Request-Method", "Access-Control-Request-Headers"));
@@ -51,6 +59,8 @@ public class WflowApplication extends SpringBootServletInitializer {
 				"Access-Control-Allow-Origin", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
 		corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+		WflowApplication.allowedOrigins = corsConfiguration.getAllowedOrigins();
 		return new CorsFilter(urlBasedCorsConfigurationSource);
 	}
 

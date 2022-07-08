@@ -3,6 +3,7 @@ package com.pentyugov.wflow.application.utils;
 import net.lingala.zip4j.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
@@ -16,18 +17,23 @@ import static com.pentyugov.wflow.application.configuration.constant.Application
 @Component
 public class InstallerUtils {
 
+    @Value("${app.enable-redis}")
+    private boolean enableRedis;
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallerUtils.class);
     private Process redisProcess;
 
     @PostConstruct
     public void startRedis() {
-        LOGGER.info("STARTING REDIS SERVER");
-        File redisExec = new File(REDIS_FOLDER + "/redis-server.exe");
-        if (!isRedisInstalled(redisExec)) {
-            installRedis();
-        } else {
-            startRedisServer();
+        if (enableRedis) {
+            LOGGER.info("STARTING REDIS SERVER");
+            File redisExec = new File(REDIS_FOLDER + "/redis-server.exe");
+            if (!isRedisInstalled(redisExec)) {
+                installRedis();
+            } else {
+                startRedisServer();
+            }
         }
+
 
     }
 

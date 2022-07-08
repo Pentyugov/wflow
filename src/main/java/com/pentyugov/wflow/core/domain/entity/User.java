@@ -225,6 +225,9 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     public String getFullName() {
-        return this.firstName + " " + this.getLastName();
+        if (this.firstName != null && this.lastName != null) {
+            return this.firstName + " " + this.lastName;
+        }
+        return this.username;
     }
 }

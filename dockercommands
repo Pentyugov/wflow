@@ -1,5 +1,6 @@
 
-
+remove all
+docker system prune -a
 
 how to push image to hub
 

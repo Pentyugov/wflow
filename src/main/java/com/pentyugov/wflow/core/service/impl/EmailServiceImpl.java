@@ -112,7 +112,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true);
-        helper.setFrom("service@zolloz.site");
+        helper.setFrom(sender);
         emailSender.send(message);
     }
 

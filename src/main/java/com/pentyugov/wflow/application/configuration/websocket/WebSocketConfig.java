@@ -19,10 +19,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:4200",
-                                                             "http://localhost:4250",
-                                                             "https://wflow-client.herokuapp.com",
-                                                             "http://wflow-client.herokuapp.com").withSockJS();
+        registry.addEndpoint("/ws")
+                .setAllowedOrigins("http://wflow-app.ru", "http://localhost:4200")
+                .withSockJS();
     }
 
 }
