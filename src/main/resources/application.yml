@@ -36,9 +36,10 @@ spring:
 
   mail:
     port: 587
-    host:     ${WFLOW_MAIL_HOST:}
-    username: ${WFLOW_MAIL_USERNAME:}
-    password: ${WFLOW_MAIL_PASSWORD:}
+    host:     ${WFLOW_MAIL_HOST:mail.carebis.ru}
+    username: ${WFLOW_MAIL_USERNAME:service@wflow.ru}
+    password: ${WFLOW_MAIL_PASSWORD:Fe8de1YnY1Q1y8In}
+
     properties.mail.smtp:
       auth: true
       starttls.enable: true
