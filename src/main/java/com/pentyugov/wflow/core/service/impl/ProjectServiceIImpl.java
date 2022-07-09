@@ -125,7 +125,8 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
         project.setCode(projectDto.getCode());
         project.setStatus(projectDto.getStatus());
         project.setClosingDate(projectDto.getClosingDate());
-        project.setDueDate(projectDto.getClosingDate());
+        project.setDueDate(projectDto.getDueDate());
+        project.setConclusionDate(projectDto.getConclusionDate());
         if (!ObjectUtils.isEmpty(projectDto.getProjectManager())) {
             project.setProjectManager(userService.getUserById(projectDto.getProjectManager().getId()));
         }
@@ -134,7 +135,7 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
                 .stream()
                 .map(userService::createUserFromDto)
                 .collect(Collectors.toList())));
-        project.setConclusionDate(projectDto.getConclusionDate());
+
         if (!ObjectUtils.isEmpty(projectDto.getContractor())) {
             project.setContractor(contractorService.getUserById(projectDto.getContractor().getId()));
         } else {
@@ -183,7 +184,7 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
         projectDto.setCode(project.getCode());
         projectDto.setStatus(project.getStatus());
         projectDto.setClosingDate(project.getClosingDate());
-        projectDto.setDueDate(project.getClosingDate());
+        projectDto.setDueDate(project.getDueDate());
         projectDto.setConclusionDate(project.getConclusionDate());
         projectDto.setParticipants(project
                   .getProjectParticipants()

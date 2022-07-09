@@ -1,4 +1,6 @@
 
+https://stackoverflow.com/questions/70946140/docker-desktop-wsl-ext4-vhdx-too-large
+
 remove all
 docker system prune -a
 
