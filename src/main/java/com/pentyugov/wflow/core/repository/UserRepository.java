@@ -39,7 +39,11 @@ public interface UserRepository extends BaseRepository<User> {
 
     @Transactional(readOnly = true)
     @Query("select u from security$User u join u.roles r where r.name LIKE CONCAT('%',:roleName,'%')")
-    List<User> finAllByRole(@Param("roleName")String roleName);
+    List<User> findAllByRole(@Param("roleName")String roleName);
+
+    @Transactional(readOnly = true)
+    @Query("select distinct u from security$User u inner join u.roles r where r.name IN (:roleNames)")
+    List<User> findAllInAnyRole(@Param("roleNames") List<String> roleName);
 
     @Transactional(readOnly = true)
     @Query("select u from security$User u join u.roles r join r.permissions p where p.name LIKE CONCAT('%',:permission,'%')")

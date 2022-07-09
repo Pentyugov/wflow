@@ -250,7 +250,16 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     @Override
     public List<User> getAllWithRole(String roleName) {
-        return userRepository.finAllByRole(roleName.toUpperCase());
+        return userRepository.findAllByRole(roleName.toUpperCase());
+    }
+
+    @Override
+    public List<User> getAllWithAnyRole(String roleNames) {
+        List<String> names = new ArrayList<>();
+        for (String s : roleNames.split(";")) {
+            names.add("ROLE_" + s.toUpperCase());
+        }
+        return userRepository.findAllInAnyRole(names);
     }
 
     @Override

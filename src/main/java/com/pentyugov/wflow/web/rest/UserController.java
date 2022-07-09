@@ -107,6 +107,15 @@ public class UserController extends AbstractController {
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
 
+    @GetMapping("/get-all-with-any-role")
+    public ResponseEntity<Object> getAllWithAnyRole(@RequestParam String roleNames) {
+        List<UserDto> userDtos = userService.getAllWithAnyRole(roleNames)
+                .stream()
+                .map(userService::createUserDtoFromUser)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    }
+
     @GetMapping("/get-all-with-permission/{permission}")
     public ResponseEntity<Object> getAllWithPermission(@PathVariable String permission) {
         List<UserDto> userDtos = userService.getAllWithPermission(permission)

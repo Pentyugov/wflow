@@ -46,6 +46,8 @@ public interface UserService {
 
     List<User> getAllWithRole(String roleName);
 
+    List<User> getAllWithAnyRole(String roleName);
+
     List<User> getAllWithPermission(String permission);
 
     List<User> getUsersWithEmployee();
