@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.thymeleaf.context.Context;
@@ -45,6 +46,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         this.sysMailRepository = sysMailRepository;
     }
 
+    @Async
     public void sendSimpleMessage(SysMail sysMail) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sysMail.getSender());
@@ -54,6 +56,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         emailSender.send(message);
     }
 
+    @Async
     public void sendMimeMessage(SysMail sysMail) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         message.setSubject(sysMail.getSubject());
@@ -77,6 +80,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         return sysMailRepository.save(sysMail);
     }
 
+    @Async
     public void  resendEmails() {
         List<SysMail> notSent = getNotSendEmails();
         if (!CollectionUtils.isEmpty(notSent)) {
@@ -105,7 +109,6 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         }
     }
 
-
     private void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -116,6 +119,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         emailSender.send(message);
     }
 
+    @Async
     public void sendRegisterSuccessMail(User user, String rawPassword) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipient", user.getFullName());
@@ -143,6 +147,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
 
     }
 
+    @Async
     public void sentResetPasswordMail(User user, String rawPassword) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipient", user.getFullName());
