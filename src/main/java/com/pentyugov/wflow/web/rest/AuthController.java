@@ -7,6 +7,7 @@ import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.*;
 import com.pentyugov.wflow.web.http.HttpResponse;
 import com.pentyugov.wflow.web.payload.request.LoginRequest;
+import com.pentyugov.wflow.web.payload.request.ResetPasswordRequest;
 import com.pentyugov.wflow.web.payload.request.SignUpRequest;
 import com.pentyugov.wflow.web.validator.ResponseErrorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,12 @@ public class AuthController extends AbstractController {
                                                        @RequestParam(value = "confirmPassword") String confirmPassword,
                                                        Principal principal) throws UserNotFoundException, ValidationException {
         userService.changePassword(email, password, confirmPassword, principal);
+        return response(HttpStatus.OK, "Password was successfully changed");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<HttpResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) throws UserNotFoundException {
+        userService.resetPassword(resetPasswordRequest.getEmail());
         return response(HttpStatus.OK, "Password was successfully changed");
     }
 
