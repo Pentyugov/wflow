@@ -33,4 +33,8 @@ public interface TaskRepository extends BaseRepository<Task> {
     @Query("select t from workflow$Task t where t.creator.id =?1 or t.executor.id = ?1 or t.initiator.id = ?1")
     List<Task> findAllForUser(UUID userId);
 
+    @Transactional(readOnly = true)
+    @Query("select t from workflow$Task t where t.executor.id = ?1 and t.started = TRUE")
+    List<Task> findActiveForExecutor(UUID userId);
+
 }

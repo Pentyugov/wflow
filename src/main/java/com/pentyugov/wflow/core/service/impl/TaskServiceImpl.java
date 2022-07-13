@@ -70,6 +70,11 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return taskRepository.getById(id);
     }
 
+    @Override
+    public List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException {
+        return taskRepository.findActiveForExecutor(userService.getUserByPrincipal(principal).getId());
+    }
+
     public String startTask(Task task, User currentUser) {
         task.setInitiator(currentUser);
         task = workflowService.startTaskProcess(task, currentUser);

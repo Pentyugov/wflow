@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/task")
+@RequestMapping("/api/tasks")
 public class TaskController extends ExceptionHandling {
 
     private final TaskService taskService;
@@ -28,30 +29,39 @@ public class TaskController extends ExceptionHandling {
         this.userService = userService;
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     public ResponseEntity<Object> getAll(Principal principal) throws UserNotFoundException {
         return new ResponseEntity<>(taskService.getAllTaskDto(principal), HttpStatus.OK);
     }
 
-    @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<Object> getById(@PathVariable String id) throws UserNotFoundException {
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getById(@PathVariable String id) {
         Task task = taskService.getTaskById(UUID.fromString(id));
         return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }
 
-    @PostMapping("/add-new-task")
+    @GetMapping("/get-active-for-executor")
+    public ResponseEntity<Object> getActive(Principal principal) throws UserNotFoundException {
+        List<TaskDto> result = taskService.getActiveForExecutor(principal)
+                .stream()
+                .map(taskService::createProxyFromTask)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping
     public ResponseEntity<Object> createNewTask(@RequestBody TaskDto taskDto, Principal principal) throws UserNotFoundException {
         Task task = taskService.createNewTask(taskDto, principal);
         return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }
 
-    @PutMapping("/update-task")
+    @PutMapping
     public ResponseEntity<Object> updateTask(@RequestBody TaskDto taskDto) throws UserNotFoundException {
         Task task = taskService.updateTask(taskDto);
         return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-task/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('DELETE')")
     public ResponseEntity<HttpResponse> deleteTask(@PathVariable String id) {
         taskService.deleteTask(UUID.fromString(id));

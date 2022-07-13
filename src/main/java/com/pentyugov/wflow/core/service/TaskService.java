@@ -26,6 +26,8 @@ public interface TaskService {
 
     Task getTaskById(UUID id);
 
+    List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException;
+
     String startTask(Task task, User currentUser);
 
     String cancelTask(Task task, User currentUser, String comment);
