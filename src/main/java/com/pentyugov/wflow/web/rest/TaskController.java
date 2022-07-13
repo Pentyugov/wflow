@@ -1,10 +1,8 @@
 package com.pentyugov.wflow.web.rest;
 
 import com.pentyugov.wflow.core.domain.entity.Task;
-import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.TaskDto;
 import com.pentyugov.wflow.core.service.TaskService;
-import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.ExceptionHandling;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
@@ -24,11 +22,9 @@ import java.util.stream.Collectors;
 public class TaskController extends ExceptionHandling {
 
     private final TaskService taskService;
-    private final UserService userService;
 
-    public TaskController(TaskService taskService, UserService userService) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
-        this.userService = userService;
     }
 
     @GetMapping
@@ -68,46 +64,6 @@ public class TaskController extends ExceptionHandling {
     public ResponseEntity<HttpResponse> deleteTask(@PathVariable String id) {
         taskService.deleteTask(UUID.fromString(id));
         String message = String.format("Task with id: %s was deleted", id);
-        return response(HttpStatus.OK, message);
-    }
-
-    @GetMapping("/start-task/{id}")
-    public ResponseEntity<HttpResponse> startTask(@PathVariable String id, Principal principal) throws UserNotFoundException {
-        Task task = taskService.getTaskById(UUID.fromString(id));
-        User currentUser = userService.getUserByPrincipal(principal);
-        String message = taskService.startTask(task, currentUser);
-        return response(HttpStatus.OK, message);
-    }
-
-    @PostMapping("/cancel-task/{id}")
-    public ResponseEntity<HttpResponse> cancelTask(@PathVariable String id, @RequestBody String comment, Principal principal) throws UserNotFoundException {
-        Task task = taskService.getTaskById(UUID.fromString(id));
-        User currentUser = userService.getUserByPrincipal(principal);
-        String message = taskService.cancelTask(task, currentUser, comment);
-        return response(HttpStatus.OK, message);
-    }
-
-    @PostMapping("/execute-task/{id}")
-    public ResponseEntity<HttpResponse> executeTask(@PathVariable String id, @RequestBody String comment, Principal principal) throws UserNotFoundException {
-        Task task = taskService.getTaskById(UUID.fromString(id));
-        User currentUser = userService.getUserByPrincipal(principal);
-        String message = taskService.executeTask(task, currentUser, comment);
-        return response(HttpStatus.OK, message);
-    }
-
-    @PostMapping("/rework-task/{id}")
-    public ResponseEntity<HttpResponse> reworkTask(@PathVariable String id, @RequestBody String comment, Principal principal) throws UserNotFoundException {
-        Task task = taskService.getTaskById(UUID.fromString(id));
-        User currentUser = userService.getUserByPrincipal(principal);
-        String message = taskService.reworkTask(task, currentUser, comment);
-        return response(HttpStatus.OK, message);
-    }
-
-    @PostMapping("/finish-task/{id}")
-    public ResponseEntity<HttpResponse> finishTask(@PathVariable String id, @RequestBody String comment, Principal principal) throws UserNotFoundException {
-        Task task = taskService.getTaskById(UUID.fromString(id));
-        User currentUser = userService.getUserByPrincipal(principal);
-        String message = taskService.finishTask(task, currentUser, comment);
         return response(HttpStatus.OK, message);
     }
 
