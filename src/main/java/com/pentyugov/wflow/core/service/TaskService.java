@@ -4,7 +4,9 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
+import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
@@ -27,6 +29,8 @@ public interface TaskService {
     Task getTaskById(UUID id);
 
     List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException;
+
+    String signalProc(TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException;
 
     String startTask(Task task, User currentUser);
 

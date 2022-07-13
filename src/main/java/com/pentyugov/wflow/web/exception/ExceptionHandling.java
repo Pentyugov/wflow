@@ -155,6 +155,12 @@ public class ExceptionHandling implements ErrorController {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<HttpResponse> taskNotFoundException(TaskNotFoundException exception) {
+        LOGGER.error(exception.getMessage());
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
     @ExceptionHandler(DepartmentNotFoundException.class)
     public ResponseEntity<HttpResponse> departmentNotFoundException(DepartmentNotFoundException exception) {
         LOGGER.error(exception.getMessage());

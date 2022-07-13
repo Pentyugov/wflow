@@ -5,7 +5,9 @@ import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
 import com.pentyugov.wflow.core.repository.TaskRepository;
 import com.pentyugov.wflow.core.service.*;
+import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -73,6 +75,25 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     @Override
     public List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException {
         return taskRepository.findActiveForExecutor(userService.getUserByPrincipal(principal).getId());
+    }
+
+    @Override
+    public String signalProc(TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException {
+        User currentUser = userService.getUserByPrincipal(principal);
+        UUID taskId = UUID.fromString(taskSignalProcRequest.getTaskId());
+        Task task = taskRepository.findById(taskId).orElseThrow(() ->
+                new TaskNotFoundException(getMessage(sourcePath, "exception.task.with.id.not.found", taskId)));
+        String action = taskSignalProcRequest.getAction().toUpperCase();
+
+        switch (action) {
+            case Task.ACTION_START   : return this.startTask(task, currentUser);
+            case Task.ACTION_FINISH  : return this.finishTask(task, currentUser, taskSignalProcRequest.getComment());
+            case Task.ACTION_EXECUTE : return this.executeTask(task, currentUser, taskSignalProcRequest.getComment());
+            case Task.ACTION_REWORK  : return this.reworkTask(task, currentUser, taskSignalProcRequest.getComment());
+            case Task.ACTION_CANCEL  : return this.cancelTask(task, currentUser, taskSignalProcRequest.getComment());
+        }
+
+        return null;
     }
 
     public String startTask(Task task, User currentUser) {

@@ -6,8 +6,10 @@ import com.pentyugov.wflow.core.dto.TaskDto;
 import com.pentyugov.wflow.core.service.TaskService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.ExceptionHandling;
+import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.http.HttpResponse;
+import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -150,6 +152,12 @@ public class TaskController extends ExceptionHandling {
                 result.add(taskService.createProxyFromTask(task)));
 
         return result;
+    }
+
+    @PostMapping("/signal-proc")
+    public ResponseEntity<HttpResponse> signalProcAction(@RequestBody TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException {
+        String message = taskService.signalProc(taskSignalProcRequest, principal);
+        return response(HttpStatus.OK, message);
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {

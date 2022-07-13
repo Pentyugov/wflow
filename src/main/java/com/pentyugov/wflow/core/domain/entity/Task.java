@@ -33,6 +33,17 @@ public class Task extends Card {
     @Transient
     public static final String STATE_REWORK = "TS$REWORK";
 
+    @Transient
+    public static final String ACTION_START = "START";
+    @Transient
+    public static final String ACTION_FINISH = "FINISH";
+    @Transient
+    public static final String ACTION_EXECUTE = "EXECUTE";
+    @Transient
+    public static final String ACTION_CANCEL = "CANCEL";
+    @Transient
+    public static final String ACTION_REWORK = "REWORK";
+
     @Column(name = "PRIORITY")
     private String priority;
 
