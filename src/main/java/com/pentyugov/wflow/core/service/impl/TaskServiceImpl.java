@@ -74,7 +74,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
     @Override
     public List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException {
-        return taskRepository.findActiveForExecutor(userService.getUserByPrincipal(principal).getId());
+        return taskRepository.findActiveForExecutor(userService.getUserByPrincipal(principal).getId(), Task.STATE_ASSIGNED);
     }
 
     @Override
