@@ -37,4 +37,8 @@ public interface TaskRepository extends BaseRepository<Task> {
     @Query("select t from workflow$Task t where t.executor.id = ?1 and t.started = TRUE and t.state = ?2")
     List<Task> findActiveForExecutor(UUID userId, String state);
 
+    @Transactional(readOnly = true)
+    @Query("select t from workflow$Task t where t.started = TRUE and t.executionDatePlan is not NULL")
+    List<Task> findActiveWithDueDate();
+
 }

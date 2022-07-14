@@ -282,14 +282,14 @@
             <column name="card_id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="workflow_task_pkey"/>
             </column>
+            <column name="project_id" type="UUID"/>
+            <column name="executor_id" type="UUID"/>
+            <column name="initiator_id" type="UUID"/>
             <column name="execution_date_fact" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="execution_date_plan" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="priority" type="VARCHAR(255)"/>
             <column name="started" type="BOOLEAN"/>
             <column name="overdue" type="BOOLEAN"/>
-
-            <column name="executor_id" type="UUID"/>
-            <column name="initiator_id" type="UUID"/>
         </createTable>
 
         <createTable tableName="workflow_project">

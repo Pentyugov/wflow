@@ -12,10 +12,12 @@ public class ScheduledService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ScheduledService.class);
 
-    @Autowired
+    private final TaskService taskService;
     private final EmailService emailService;
 
-    public ScheduledService(EmailService emailService) {
+    @Autowired
+    public ScheduledService(TaskService taskService, EmailService emailService) {
+        this.taskService = taskService;
         this.emailService = emailService;
     }
 
@@ -24,6 +26,13 @@ public class ScheduledService {
     public void checkNotSentMails() {
         LOGGER.info("Run \"checkNotSentMails\" method from \"ScheduledWorker\"");
         emailService.resendEmails();
+    }
+
+
+    @Scheduled(cron = "${job.cron.checkOverdue}")
+    public void checkOverdueTask() {
+        LOGGER.info("Run \"checkOverdueTask\" method from \"ScheduledWorker\"");
+        taskService.checkOverdueTasks();
     }
 
 

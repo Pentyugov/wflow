@@ -5,6 +5,7 @@ import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
 import com.pentyugov.wflow.core.repository.TaskRepository;
 import com.pentyugov.wflow.core.service.*;
+import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
@@ -35,18 +36,20 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     private final WorkflowService workflowService;
     private final IssueService issueService;
     private final CalendarEventService calendarEventService;
+    private final ProjectService projectService;
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService, WorkflowService workflowService, IssueService issueService, CalendarEventService calendarEventService) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService, WorkflowService workflowService, IssueService issueService, CalendarEventService calendarEventService, ProjectService projectService) {
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.notificationService = notificationService;
         this.workflowService = workflowService;
         this.issueService = issueService;
         this.calendarEventService = calendarEventService;
+        this.projectService = projectService;
     }
 
-    public Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException {
+    public Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
         Task task = createTaskFromProxy(taskDto);
         task.setState(Task.STATE_CREATED);
         User creator = userService.getUserByPrincipal(principal);
@@ -59,7 +62,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return taskRepository.save(task);
     }
 
-    public Task updateTask(TaskDto taskDto) throws UserNotFoundException {
+    public Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
         Task task = createTaskFromProxy(taskDto);
         return taskRepository.save(task);
     }
@@ -69,7 +72,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     public Task getTaskById(UUID id) {
-        return taskRepository.getById(id);
+        return taskRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -207,13 +210,34 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
 
-    public Task createTaskFromProxy(TaskDto taskDto) throws UserNotFoundException {
+    public Task createTaskFromProxy(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
         Task task;
         if (taskDto.getId() != null) {
             task = taskRepository.getById(taskDto.getId());
         } else {
             task = new Task();
         }
+
+        if (!ObjectUtils.isEmpty(taskDto.getProject())) {
+            task.setProject(projectService.getProjectById(taskDto.getProject().getId()));
+        } else {
+            task.setProject(null);
+        }
+
+        if (!ObjectUtils.isEmpty(taskDto.getCreator())) {
+            task.setCreator(userService.getUserById(taskDto.getCreator().getId()));
+        }
+
+        if (!ObjectUtils.isEmpty(taskDto.getExecutor())) {
+            task.setExecutor(userService.getUserById(taskDto.getExecutor().getId()));
+        } else {
+            task.setExecutor(null);
+        }
+
+        if (!ObjectUtils.isEmpty(taskDto.getInitiator())) {
+            task.setInitiator(userService.getUserById(taskDto.getInitiator().getId()));
+        }
+
         task.setPriority(taskDto.getPriority());
         task.setNumber(taskDto.getNumber());
         task.setDescription(taskDto.getDescription());
@@ -223,18 +247,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         task.setExecutionDatePlan(taskDto.getExecutionDatePlan());
         task.setExecutionDateFact(taskDto.getExecutionDateFact());
         task.setStarted(taskDto.getStarted());
-
-        if (!ObjectUtils.isEmpty(taskDto.getCreator())) {
-            task.setCreator(userService.getUserById(taskDto.getCreator().getId()));
-        }
-
-        if (!ObjectUtils.isEmpty(taskDto.getExecutor())) {
-            task.setExecutor(userService.getUserById(taskDto.getExecutor().getId()));
-        }
-
-        if (!ObjectUtils.isEmpty(taskDto.getInitiator())) {
-            task.setInitiator(userService.getUserById(taskDto.getInitiator().getId()));
-        }
 
         return task;
     }
@@ -262,18 +274,10 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     public TaskDto createProxyFromTask(Task task) {
         TaskDto taskDto = new TaskDto();
         taskDto.setId(task.getId());
-        taskDto.setPriority(task.getPriority());
-        taskDto.setNumber(task.getNumber());
-        taskDto.setOverdue(task.getOverdue());
-        taskDto.setDescription(task.getDescription());
-        taskDto.setComment(task.getComment());
-        taskDto.setState(task.getState());
-        taskDto.setExecutionDatePlan(task.getExecutionDatePlan());
-        taskDto.setExecutionDateFact(task.getExecutionDateFact());
-        taskDto.setStarted(task.getStarted());
 
-        long days = getDaysUntilDueDate(taskDto.getExecutionDatePlan());
-        taskDto.setDaysUntilDueDate(days);
+        if (!ObjectUtils.isEmpty(task.getProject())) {
+            taskDto.setProject(projectService.createProjectDto(task.getProject()));
+        }
 
         if (!ObjectUtils.isEmpty(task.getCreator())) {
             taskDto.setCreator(userService.createUserDtoFromUser(task.getCreator()));
@@ -287,7 +291,26 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
             taskDto.setInitiator(userService.createUserDtoFromUser(task.getInitiator()));
         }
 
+        taskDto.setPriority(task.getPriority());
+        taskDto.setNumber(task.getNumber());
+        taskDto.setOverdue(task.getOverdue());
+        taskDto.setDescription(task.getDescription());
+        taskDto.setComment(task.getComment());
+        taskDto.setState(task.getState());
+        taskDto.setExecutionDatePlan(task.getExecutionDatePlan());
+        taskDto.setExecutionDateFact(task.getExecutionDateFact());
+        taskDto.setStarted(task.getStarted());
+
+        long days = getDaysUntilDueDate(taskDto.getExecutionDatePlan());
+        taskDto.setDaysUntilDueDate(days);
+
         return taskDto;
+    }
+
+    @Override
+    public void checkOverdueTasks() {
+        List<Task> tasks = taskRepository.findActiveWithDueDate();
+        tasks.forEach(this::checkOverdue);
     }
 
     private long getDaysUntilDueDate(Date executionDatePlan) {
@@ -296,6 +319,14 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         LocalDateTime in = LocalDateTime.ofInstant(executionDatePlan.toInstant(), ZoneId.systemDefault());
         return Duration.between(LocalDateTime.now(), in).toDays();
 
+    }
+
+    private void checkOverdue(Task task) {
+        Date currentData = new Date();
+        if (task.getExecutionDatePlan().before(currentData)) {
+            task.setOverdue(true);
+            taskRepository.save(task);
+        }
     }
 
 }

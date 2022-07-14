@@ -60,6 +60,7 @@ source:
 job:
   cron:
     resendEmail: "0 0/5 * ? * *"
+    checkOverdue: "0 0/1 * ? * *"
 
 uploadcare:
   scheme: "Uploadcare.Simple"

@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class TaskDto extends BaseDto {
 
+    private ProjectDto project;
+
     private String priority;
 
     private long daysUntilDueDate;
@@ -29,6 +31,14 @@ public class TaskDto extends BaseDto {
     private UserDto executor;
 
     private UserDto initiator;
+
+    public ProjectDto getProject() {
+        return project;
+    }
+
+    public void setProject(ProjectDto project) {
+        this.project = project;
+    }
 
     public Boolean getOverdue() {
         return overdue;

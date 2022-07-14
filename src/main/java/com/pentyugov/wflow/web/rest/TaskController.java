@@ -4,6 +4,7 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.dto.TaskDto;
 import com.pentyugov.wflow.core.service.TaskService;
 import com.pentyugov.wflow.web.exception.ExceptionHandling;
+import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.http.HttpResponse;
@@ -57,13 +58,13 @@ public class TaskController extends ExceptionHandling {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createNewTask(@RequestBody TaskDto taskDto, Principal principal) throws UserNotFoundException {
+    public ResponseEntity<Object> createNewTask(@RequestBody TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
         Task task = taskService.createNewTask(taskDto, principal);
         return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Object> updateTask(@RequestBody TaskDto taskDto) throws UserNotFoundException {
+    public ResponseEntity<Object> updateTask(@RequestBody TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
         Task task = taskService.updateTask(taskDto);
         return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }

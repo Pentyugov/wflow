@@ -17,7 +17,7 @@
             <column name="username" value="admin"/>
             <column name="is_active" value="true"/>
             <column name="is_not_locked" value="true"/>
-            <column name="image_url" value="https://ucarecdn.com/6f620a03-d50c-4659-bf0c-9468c06e9f52/"/>
+            <column name="image_url" value="https://ucarecdn.com/4eb07e4a-108e-4d3a-b9fa-e2b9ac33eb23/avatar3.png"/>
         </insert>
 
         <insert tableName="security_users" dbms="postgresql">

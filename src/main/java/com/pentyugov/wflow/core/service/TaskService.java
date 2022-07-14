@@ -4,6 +4,7 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
+import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
@@ -18,11 +19,11 @@ public interface TaskService {
 
     String NAME = "wflow$TaskService";
 
-    Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException;
+    Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException;
 
     Task saveTask(Task task);
 
-    Task updateTask(TaskDto taskDto) throws UserNotFoundException;
+    Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
 
     void deleteTask(UUID id);
 
@@ -52,13 +53,15 @@ public interface TaskService {
 
     List<CardHistoryDto> getTaskHistory(Task task);
 
-    Task createTaskFromProxy(TaskDto taskDto) throws UserNotFoundException;
+    Task createTaskFromProxy(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
 
     List<Task> getAllTasks();
 
     List<TaskDto> getAllTaskDto(Principal principal) throws UserNotFoundException;
 
     TaskDto createProxyFromTask(Task task);
+
+    void checkOverdueTasks();
 
 
 

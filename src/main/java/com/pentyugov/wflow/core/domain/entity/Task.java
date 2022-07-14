@@ -44,6 +44,10 @@ public class Task extends Card {
     @Transient
     public static final String ACTION_REWORK = "REWORK";
 
+    @ManyToOne
+    @JoinColumn(name = "PROJECT_ID")
+    private Project project;
+
     @Column(name = "PRIORITY")
     private String priority;
 
@@ -66,6 +70,14 @@ public class Task extends Card {
     @ManyToOne
     @JoinColumn(name = "INITIATOR_ID")
     private User initiator;
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 
     public Boolean getOverdue() {
         return overdue;
