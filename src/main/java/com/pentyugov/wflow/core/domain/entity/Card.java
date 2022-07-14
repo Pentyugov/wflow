@@ -23,6 +23,10 @@ public class Card extends BaseEntity {
     private String state;
 
     @ManyToOne
+    @JoinColumn(name = "PARENT_CARD_ID")
+    private Card parentCard;
+
+    @ManyToOne
     @JoinColumn(name = "CREATOR_ID")
     private User creator;
 
@@ -60,6 +64,14 @@ public class Card extends BaseEntity {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public Card getParentCard() {
+        return parentCard;
+    }
+
+    public void setParentCard(Card parentCard) {
+        this.parentCard = parentCard;
     }
 
     public User getCreator() {

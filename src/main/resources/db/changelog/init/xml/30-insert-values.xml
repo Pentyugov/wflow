@@ -24,7 +24,7 @@
             <column name="id" value="adf21cc7-958e-4690-bb0a-78fe1571a0a8"/>
             <column name="create_date" value="now()"/>
             <column name="version" value="1"/>
-            <column name="email" value="apentyugov@zolloz.site"/>
+            <column name="email" value="apentyugov@wflow.ru"/>
             <column name="join_date" value="now()"/>
             <column name="password" value="$2a$12$eLrT5jH0fQqykBUGhpTdIuaJraskN38/FvwFVfyQgjk.6b2EIOMNW"/>
             <column name="username" value="apentyugov"/>
@@ -32,14 +32,14 @@
             <column name="lastname" value="Pentyugov"/>
             <column name="is_active" value="true"/>
             <column name="is_not_locked" value="true"/>
-            <column name="image_url" value="https://ucarecdn.com/cb49e765-b5fc-4169-b154-b39a11322447/"/>
+            <column name="image_url" value="https://ucarecdn.com/c20fbb12-4be9-45a8-8611-8e249b43b976/avatar6.png"/>
         </insert>
 
         <insert tableName="security_users" dbms="postgresql">
             <column name="id" value="9ba5f0af-a500-4557-a4aa-86c86218f7ff"/>
             <column name="create_date" value="now()"/>
             <column name="version" value="1"/>
-            <column name="email" value="vkonstantinova@zolloz.site"/>
+            <column name="email" value="vkonstantinova@wflow.ru"/>
             <column name="join_date" value="now()"/>
             <column name="password" value="$2a$12$VGiEYYN86A/i6ylGmKPh6ukJNLi1K8B5AOTp2hTCH0qsyJTaBWnSm"/>
             <column name="username" value="vkonstantinova"/>
@@ -47,7 +47,7 @@
             <column name="lastname" value="Konstantinova"/>
             <column name="is_active" value="true"/>
             <column name="is_not_locked" value="true"/>
-            <column name="image_url" value="https://ucarecdn.com/4e2c6bfa-07e5-4f2e-a6a6-cd4672a92607/"/>
+            <column name="image_url" value="https://ucarecdn.com/67c13407-f7e2-41a2-8879-366323cefbfa/avatar7.png"/>
         </insert>
 
         <!--    BEGIN INSERT INTO SECURITY_PERMISSION-->
@@ -276,10 +276,14 @@
             <column name="legal_address" value="ATTN: CEO David Kenner Kenner Group Inc.85 Bradford Lane Vincentown, NJ 08120"/>
         </insert>
 
-        <insert tableName="workflow_project" dbms="postgresql">
+        <insert tableName="workflow_card" dbms="postgresql">
             <column name="id" value="246d77af-9874-458a-841a-c407e88e2969"/>
             <column name="create_date" value="now()"/>
             <column name="version" value="1"/>
+        </insert>
+
+        <insert tableName="workflow_project" dbms="postgresql">
+            <column name="card_id" value="246d77af-9874-458a-841a-c407e88e2969"/>
             <column name="name" value="Main project"/>
             <column name="code" value="001"/>
             <column name="status" value="10"/>

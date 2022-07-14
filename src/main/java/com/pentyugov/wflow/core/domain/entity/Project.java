@@ -9,7 +9,8 @@ import java.util.List;
 @Entity(name = "workflow$project")
 @Table(name = "WORKFLOW_PROJECT")
 @Where(clause="DELETE_DATE is null")
-public class Project extends BaseEntity {
+@PrimaryKeyJoinColumn(name = "CARD_ID", referencedColumnName = "ID")
+public class Project extends Card {
 
     @Column(name = "NAME", nullable = false)
     private String name;
@@ -32,11 +33,6 @@ public class Project extends BaseEntity {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "PROJECT_MANAGER_ID")
     private User projectManager;
-
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinTable(name = "workflow_project_participant", joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
-//            inverseJoinColumns = @JoinColumn(name = "participant_id", referencedColumnName = "id"))
-//    private List<User> participants;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.PERSIST)
     private List<ProjectParticipant> projectParticipants;
@@ -92,15 +88,6 @@ public class Project extends BaseEntity {
     public void setStatus(Integer status) {
         this.status = status;
     }
-
-
-//    public List<User> getParticipants() {
-//        return participants;
-//    }
-//
-//    public void setParticipants(List<User> participants) {
-//        this.participants = participants;
-//    }
 
     public User getProjectManager() {
         return projectManager;
