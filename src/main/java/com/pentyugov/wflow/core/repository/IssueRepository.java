@@ -29,6 +29,10 @@ public interface IssueRepository extends BaseRepository<Issue> {
     List<Card> findCardByExecutorId(UUID executorId, List<String> results);
 
     @Transactional(readOnly = true)
+    @Query("select distinct i.card from workflow$Issue i where i.executor.id = ?1 and i.result = ?2")
+    List<Card> findCardByExecutorIdAndResult(UUID executorId, String result);
+
+    @Transactional(readOnly = true)
     @Query("select distinct i.card from workflow$Issue i where i.executor.id = ?1 or i.initiator.id = ?1")
     List<Card> findCardsForUser(UUID userId);
 }

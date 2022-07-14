@@ -24,6 +24,8 @@ public interface IssueService {
 
     List<Card> getAllCardsForUser(User user);
 
+    List<Card> findCardByExecutorIdAndResult(User user, String result);
+
     Issue createIssue(Card card, User currentUser, User initiator, User executor);
 
     List<Issue> getAllIssuesByCard(Card card);

@@ -47,6 +47,15 @@ public class TaskController extends ExceptionHandling {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/get-productivity-data")
+    public ResponseEntity<Object> getProductivityData(Principal principal) throws UserNotFoundException {
+        List<TaskDto> result = taskService.getProductivityData(principal)
+                .stream()
+                .map(taskService::createProxyFromTask)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<Object> createNewTask(@RequestBody TaskDto taskDto, Principal principal) throws UserNotFoundException {
         Task task = taskService.createNewTask(taskDto, principal);

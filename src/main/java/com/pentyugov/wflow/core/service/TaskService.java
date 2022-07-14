@@ -30,6 +30,8 @@ public interface TaskService {
 
     List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException;
 
+    List<Task> getProductivityData(Principal principal) throws UserNotFoundException;
+
     String signalProc(TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException;
 
     String startTask(Task task, User currentUser);

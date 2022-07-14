@@ -52,6 +52,11 @@ public class IssueServiceImpl extends AbstractService implements IssueService {
         return issueRepository.findCardsForUser(user.getId());
     }
 
+    @Override
+    public List<Card> findCardByExecutorIdAndResult(User user, String result) {
+        return issueRepository.findCardByExecutorIdAndResult(user.getId(), result);
+    }
+
     public Issue createIssue(Card card, User currentUser, User initiator, User executor) {
         Issue issue = new Issue();
         issue.setCard(card);

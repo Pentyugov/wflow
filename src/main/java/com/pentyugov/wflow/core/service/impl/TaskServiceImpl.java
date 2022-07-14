@@ -78,6 +78,18 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
+    public List<Task> getProductivityData(Principal principal) throws UserNotFoundException {
+        User user = userService.getUserByPrincipal(principal);
+        List<Task> result = new ArrayList<>();
+        issueService.findCardByExecutorIdAndResult(user, Task.STATE_ASSIGNED).forEach(card -> {
+            if (card instanceof Task) {
+                result.add((Task) card);
+            }
+        });
+        return result;
+    }
+
+    @Override
     public String signalProc(TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException {
         User currentUser = userService.getUserByPrincipal(principal);
         UUID taskId = UUID.fromString(taskSignalProcRequest.getTaskId());
