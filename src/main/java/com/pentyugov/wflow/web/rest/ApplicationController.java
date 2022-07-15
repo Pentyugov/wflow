@@ -1,5 +1,6 @@
 package com.pentyugov.wflow.web.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pentyugov.wflow.core.domain.entity.UserSettings;
 import com.pentyugov.wflow.core.dto.UserSettingsDto;
 import com.pentyugov.wflow.core.service.UserService;
@@ -30,7 +31,13 @@ public class ApplicationController extends AbstractController {
     }
 
     @PostMapping("/user-settings/save-user-settings")
-    public ResponseEntity<Object> saveUserSettings(@RequestBody UserSettingsDto userSettingsDto, Principal principal) throws UserNotFoundException {
+    public ResponseEntity<Object> saveUserSettings(@RequestBody UserSettingsDto userSettingsDto, Principal principal) throws UserNotFoundException, JsonProcessingException {
+        UserSettings userSettings = userSettingsService.saveUserSettings(userSettingsDto, principal);
+        return new ResponseEntity<>(userSettingsService.createProxyFromUserSettings(userSettings), HttpStatus.OK);
+    }
+
+    @PostMapping("/user-settings/change-widget-settings")
+    public ResponseEntity<Object> changeWidgetSettings(@RequestBody UserSettingsDto userSettingsDto, Principal principal) throws UserNotFoundException, JsonProcessingException {
         UserSettings userSettings = userSettingsService.saveUserSettings(userSettingsDto, principal);
         return new ResponseEntity<>(userSettingsService.createProxyFromUserSettings(userSettings), HttpStatus.OK);
     }

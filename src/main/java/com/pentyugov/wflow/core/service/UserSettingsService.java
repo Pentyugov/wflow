@@ -1,5 +1,6 @@
 package com.pentyugov.wflow.core.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.domain.entity.UserSettings;
 import com.pentyugov.wflow.core.dto.UserSettingsDto;

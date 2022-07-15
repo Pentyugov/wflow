@@ -49,9 +49,14 @@ public class WflowApplication extends SpringBootServletInitializer {
 				"http://wflow-app.ru",
 				"http://wflow-app.ru/ws",
 				"http://wflow-app.ru/wss",
+
 				"http://localhost:4200",
 				"http://localhost:4200/ws",
-				"http://localhost:4200/wss"
+				"http://localhost:4200/wss",
+
+				"http://localhost:4250",
+				"http://localhost:4250/ws",
+				"http://localhost:4250/wss"
 		));
 
 		corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",

@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://wflow-app.ru", "http://localhost:4200")
+                .setAllowedOrigins("http://wflow-app.ru", "http://localhost:4200", "http://localhost:42050")
                 .withSockJS();
     }
 

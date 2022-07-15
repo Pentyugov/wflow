@@ -143,6 +143,7 @@
             <column name="mini_sidebar" type="BOOLEAN"/>
             <column name="theme_color" type="INTEGER"/>
             <column name="user_id" type="UUID"/>
+            <column name="widget_settings" type="VARCHAR(1000)"/>
         </createTable>
 
         <createTable tableName="workflow_card">

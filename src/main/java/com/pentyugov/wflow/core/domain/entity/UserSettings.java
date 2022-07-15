@@ -33,6 +33,9 @@ public class UserSettings extends BaseEntity {
     @Column(name = "ENABLE_CHAT_NOTIFICATION_SOUND")
     private Boolean enableChatNotificationSound;
 
+    @Column(name = "WIDGET_SETTINGS", length = 1000)
+    private String widgetSettings;
+
     public String getLocale() {
         return locale;
     }
@@ -79,5 +82,13 @@ public class UserSettings extends BaseEntity {
 
     public void setEnableChatNotificationSound(Boolean enableChatNotificationSound) {
         this.enableChatNotificationSound = enableChatNotificationSound;
+    }
+
+    public String getWidgetSettings() {
+        return widgetSettings;
+    }
+
+    public void setWidgetSettings(String widgetSettings) {
+        this.widgetSettings = widgetSettings;
     }
 }

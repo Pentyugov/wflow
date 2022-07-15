@@ -1,5 +1,7 @@
 package com.pentyugov.wflow.core.dto;
 
+import java.util.List;
+
 public class UserSettingsDto extends BaseDto {
 
     private String locale;
@@ -11,6 +13,8 @@ public class UserSettingsDto extends BaseDto {
     private Integer themeColor;
 
     private Boolean darkTheme;
+
+    private List<WidgetSettingsDto> widgetSettings;
 
 
     public String getLocale() {
@@ -51,5 +55,13 @@ public class UserSettingsDto extends BaseDto {
 
     public void setMiniSidebar(Boolean miniSidebar) {
         this.miniSidebar = miniSidebar;
+    }
+
+    public List<WidgetSettingsDto> getWidgetSettings() {
+        return widgetSettings;
+    }
+
+    public void setWidgetSettings(List<WidgetSettingsDto> widgetSettings) {
+        this.widgetSettings = widgetSettings;
     }
 }
