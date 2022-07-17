@@ -9,12 +9,18 @@ import javax.persistence.*;
 @Where(clause="DELETE_DATE is null")
 public class Note extends BaseEntity {
 
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", columnDefinition="TEXT")
     private String description;
+
     @Column(name = "CATEGORY")
     private String category;
+
     @Column(name = "TITLE")
     private String title;
+
+    @Column(name = "COLOR")
+    private String color;
+
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private User user;
@@ -41,6 +47,14 @@ public class Note extends BaseEntity {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public User getUser() {

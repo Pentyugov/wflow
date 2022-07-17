@@ -8,7 +8,10 @@ import com.pentyugov.wflow.core.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,11 +37,15 @@ public class NoteServiceImpl extends AbstractService implements NoteService {
     }
 
     public Note updateNote(NoteDto noteDto) {
-        Note note = noteRepository.getById(noteDto.getId());
-        note.setCategory(noteDto.getCategory());
-        note.setDescription(noteDto.getDescription());
-        note.setTitle(noteDto.getTitle());
-        return noteRepository.save(note);
+        Note note = noteRepository.findById(noteDto.getId()).orElseThrow(null);
+        if (note != null) {
+            note.setCategory(noteDto.getCategory());
+            note.setDescription(noteDto.getDescription());
+            note.setTitle(noteDto.getTitle());
+            note.setColor(noteDto.getColor());
+            return noteRepository.save(note);
+        }
+        return null;
     }
 
     public void deleteNote(UUID id) {
@@ -51,6 +58,8 @@ public class NoteServiceImpl extends AbstractService implements NoteService {
         noteDto.setCategory(note.getCategory());
         noteDto.setTitle(note.getTitle());
         noteDto.setDescription(note.getDescription());
+        noteDto.setColor(note.getColor());
+        noteDto.setDate(Date.from(note.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()));
         return noteDto;
     }
 
@@ -60,6 +69,7 @@ public class NoteServiceImpl extends AbstractService implements NoteService {
         note.setCategory(noteDto.getCategory());
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
+        note.setColor(noteDto.getColor());
         note.setUser(user);
         return note;
     }

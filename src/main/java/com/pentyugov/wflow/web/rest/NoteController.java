@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/note")
+@RequestMapping("/api/notes")
 public class NoteController extends AbstractController {
 
     private final NoteService noteService;
@@ -27,31 +27,36 @@ public class NoteController extends AbstractController {
         this.userService = userService;
     }
 
-    @GetMapping("/get-all-for-current-user")
+    @GetMapping
     public ResponseEntity<Object> getNotesByUser(Principal principal) throws UserNotFoundException {
         User user = userService.getCurrentUser(principal);
         List<NoteDto> notes = noteService.getNotesByUser(user.getId());
         return new ResponseEntity<>(notes, HttpStatus.OK);
     }
 
-    @PostMapping("/add-new-note")
-    public ResponseEntity<NoteDto> addNewNote(@RequestBody NoteDto newNote, Principal principal) throws UserNotFoundException {
+    @PostMapping
+    public ResponseEntity<HttpResponse> addNewNote(@RequestBody NoteDto newNote, Principal principal) throws UserNotFoundException {
         User user = userService.getCurrentUser(principal);
         Note note = noteService.createNewNote(newNote, user);
-        return new ResponseEntity<>(noteService.createNoteDtoFromNote(note), HttpStatus.OK);
+        if (note != null) {
+            return response(HttpStatus.CREATED, HttpStatus.CREATED.getReasonPhrase());
+        }
+        return response(HttpStatus.NOT_MODIFIED, HttpStatus.NOT_MODIFIED.getReasonPhrase());
     }
 
-    @PutMapping("/update-note")
-    public ResponseEntity<NoteDto> updateNote(@RequestBody NoteDto noteDto) {
+    @PutMapping
+    public ResponseEntity<HttpResponse> updateNote(@RequestBody NoteDto noteDto) {
         Note note = noteService.updateNote(noteDto);
-        return new ResponseEntity<>(noteService.createNoteDtoFromNote(note), HttpStatus.OK);
+        if (note != null) {
+            return response(HttpStatus.OK, HttpStatus.OK.getReasonPhrase());
+        }
+        return response(HttpStatus.NO_CONTENT, HttpStatus.NO_CONTENT.getReasonPhrase());
     }
 
-    @DeleteMapping("/delete-note/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> deleteNote(@PathVariable String id) {
         noteService.deleteNote(UUID.fromString(id));
-        String message = String.format("Note with id: %s was deleted", id);
-        return response(HttpStatus.OK, message);
+        return response(HttpStatus.OK, HttpStatus.OK.getReasonPhrase());
     }
 
 }

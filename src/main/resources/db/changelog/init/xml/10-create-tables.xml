@@ -239,9 +239,10 @@
             <column name="delete_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="update_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="version" type="INTEGER"/>
-            <column name="category" type="VARCHAR(255)"/>
-            <column name="description" type="VARCHAR(255)"/>
             <column name="title" type="VARCHAR(255)"/>
+            <column name="description" type="TEXT"/>
+            <column name="category" type="VARCHAR(255)"/>
+            <column name="color" type="VARCHAR(255)"/>
             <column name="user_id" type="UUID"/>
         </createTable>
 

@@ -1,12 +1,34 @@
 package com.pentyugov.wflow.core.dto;
 
+import java.util.Date;
+
 public class NoteDto extends BaseDto {
+
+    private String title;
 
     private String description;
 
     private String category;
 
-    private String title;
+    private Date date;
+
+    private String color;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
 
     public String getDescription() {
         return description;
