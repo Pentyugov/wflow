@@ -292,7 +292,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         user.setEmail(userDto.getEmail());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
-        user.setNotLocked(userDto.isNotLocked());
+        user.setNotLocked(userDto.isNonLocked());
         user.setActive(userDto.isActive());
         user.setJoinDate(LocalDateTime.now());
 
@@ -324,7 +324,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         userDto.setLastName(lastName);
         userDto.setRoles(roles);
         userDto.setActive(Boolean.parseBoolean(isActive));
-        userDto.setNotLocked(Boolean.parseBoolean(isNonLocked));
+        userDto.setNonLocked(Boolean.parseBoolean(isNonLocked));
         return userDto;
     }
 
@@ -335,7 +335,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         userDto.setEmail(user.getEmail());
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
-        userDto.setNotLocked(user.isNotLocked());
+        userDto.setNonLocked(user.isNotLocked());
         userDto.setActive(user.isActive());
         userDto.setJoinDate(user.getJoinDate());
         userDto.setLastLoginDate(user.getLastLoginDate());
@@ -354,7 +354,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         currentUser.setEmail(userDto.getEmail());
         currentUser.setFirstName(userDto.getFirstName());
         currentUser.setLastName(userDto.getLastName());
-        currentUser.setNotLocked(userDto.isNotLocked());
+        currentUser.setNotLocked(userDto.isNonLocked());
         currentUser.setActive(userDto.isActive());
 
         Set<Role> roles = new HashSet<>();

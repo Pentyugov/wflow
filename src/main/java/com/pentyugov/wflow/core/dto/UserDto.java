@@ -26,9 +26,9 @@ public class UserDto extends BaseDto {
 
     private List<RoleDto> roles = new ArrayList<>();
 
-    private boolean isNotLocked;
+    private boolean nonLocked;
 
-    private boolean isActive;
+    private boolean active;
 
     private String profileImage;
 
@@ -73,22 +73,20 @@ public class UserDto extends BaseDto {
         this.lastName = lastName;
     }
 
-
-
-    public boolean isNotLocked() {
-        return isNotLocked;
+    public boolean isNonLocked() {
+        return nonLocked;
     }
 
-    public void setNotLocked(boolean notLocked) {
-        isNotLocked = notLocked;
+    public void setNonLocked(boolean nonLocked) {
+        this.nonLocked = nonLocked;
     }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        this.active = active;
     }
 
     public String getProfileImage() {
