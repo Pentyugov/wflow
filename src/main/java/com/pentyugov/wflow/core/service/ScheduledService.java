@@ -24,14 +24,12 @@ public class ScheduledService {
 
     @Scheduled(cron = "${job.cron.resendEmail}")
     public void checkNotSentMails() {
-        LOGGER.info("Run \"checkNotSentMails\" method from \"ScheduledWorker\"");
         emailService.resendEmails();
     }
 
 
     @Scheduled(cron = "${job.cron.checkOverdue}")
     public void checkOverdueTask() {
-        LOGGER.info("Run \"checkOverdueTask\" method from \"ScheduledWorker\"");
         taskService.checkOverdueTasks();
     }
 
