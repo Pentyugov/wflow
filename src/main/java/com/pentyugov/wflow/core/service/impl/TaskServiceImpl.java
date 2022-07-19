@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.security.Principal;
@@ -26,6 +27,8 @@ import java.util.stream.Collectors;
 
 @Service(TaskService.NAME)
 public class TaskServiceImpl extends AbstractService implements TaskService {
+
+    private static final String TASK_PREFIX = "TS-";
 
     @Value("${source.service.notification}")
     private String sourcePath;
@@ -308,6 +311,41 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
+    public String getNextTaskNumber() {
+        List<String> numbers = taskRepository.findAll().stream().map(Task::getNumber).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(numbers)) {
+            List<Integer> result = new ArrayList<>();
+
+            numbers.forEach(nextNumber -> {
+                if (nextNumber.startsWith(TASK_PREFIX)) {
+                   nextNumber = nextNumber.replace(TASK_PREFIX, "");
+                   if (Character.isDigit(nextNumber.charAt(0))) {
+                       StringBuilder num = new StringBuilder();
+
+                       for (int i = 0; i < nextNumber.length(); i++) {
+                           if (Character.isDigit(nextNumber.charAt(i))) {
+                               num.append(nextNumber.charAt(i));
+                           } else {
+                               break;
+                           }
+                       }
+                       Integer number = parseNumber(num.toString());
+                       if (number != null)
+                           result.add(number);
+                   }
+                }
+            });
+
+            if (!CollectionUtils.isEmpty(result)) {
+                Collections.sort(result);
+                return TASK_PREFIX + (result.get(result.size() - 1) + 1);
+            }
+        }
+
+        return TASK_PREFIX + 1;
+    }
+
+    @Override
     public void checkOverdueTasks() {
         List<Task> tasks = taskRepository.findActiveWithDueDate();
         tasks.forEach(this::checkOverdue);
@@ -327,6 +365,18 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
             task.setOverdue(true);
             taskRepository.save(task);
         }
+    }
+
+    private Integer parseNumber(String nextNumber) {
+        int number;
+        nextNumber = nextNumber.replaceAll("[^0-9]", "");
+        try {
+            number = Integer.parseInt(nextNumber);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+
+        return number;
     }
 
 }

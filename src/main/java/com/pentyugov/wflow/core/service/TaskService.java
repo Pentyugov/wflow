@@ -61,6 +61,8 @@ public interface TaskService {
 
     TaskDto createProxyFromTask(Task task);
 
+    String getNextTaskNumber();
+
     void checkOverdueTasks();
 
 
