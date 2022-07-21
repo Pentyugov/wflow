@@ -1,5 +1,8 @@
 databaseChangeLog:
   - includeAll:
+      path: db/changelog/update/xml/
+      errorIfMissingOrEmpty: false
+  - includeAll:
       path: db/changelog/update/sql/
       errorIfMissingOrEmpty: false
   - includeAll:

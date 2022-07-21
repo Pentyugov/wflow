@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="apentyugov" id="db-update_21072022-1800-changeset-alter-table-tasks-add-column-state">
+
+        <addColumn tableName="workflow_task">
+            <column name="kanban_state" type="VARCHAR(255)"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="workflow_task" columnName="kanban_state"/>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>
