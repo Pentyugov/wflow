@@ -34,6 +34,15 @@ public class Task extends Card {
     public static final String STATE_REWORK = "TS$REWORK";
 
     @Transient
+    public static final String KANBAN_STATE_NEW = "KB$NEW";
+    @Transient
+    public static final String KANBAN_STATE_IN_PROGRESS = "KB$IN_PROGRESS";
+    @Transient
+    public static final String KANBAN_STATE_ON_HOLD = "KB$ON_HOLD";
+    @Transient
+    public static final String KANBAN_STATE_COMPLETED = "KB$COMPLETED";
+
+    @Transient
     public static final String ACTION_START = "START";
     @Transient
     public static final String ACTION_FINISH = "FINISH";
@@ -62,6 +71,9 @@ public class Task extends Card {
 
     @Column(name = "EXECUTION_DATE_FACT")
     private Date executionDateFact;
+
+    @Column(name = "KANBAN_STATE")
+    private String kanbanState;
 
     @ManyToOne
     @JoinColumn(name = "EXECUTOR_ID")
@@ -109,6 +121,14 @@ public class Task extends Card {
 
     public void setExecutionDateFact(Date executionDateFact) {
         this.executionDateFact = executionDateFact;
+    }
+
+    public String getKanbanState() {
+        return kanbanState;
+    }
+
+    public void setKanbanState(String kanbanState) {
+        this.kanbanState = kanbanState;
     }
 
     public User getExecutor() {

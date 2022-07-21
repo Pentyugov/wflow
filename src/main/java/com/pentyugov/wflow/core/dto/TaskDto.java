@@ -18,6 +18,8 @@ public class TaskDto extends BaseDto {
 
     private String state;
 
+    private String kanbanState;
+
     private Date executionDatePlan;
 
     private Date executionDateFact;
@@ -86,6 +88,14 @@ public class TaskDto extends BaseDto {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getKanbanState() {
+        return kanbanState;
+    }
+
+    public void setKanbanState(String kanbanState) {
+        this.kanbanState = kanbanState;
     }
 
     public Date getExecutionDatePlan() {

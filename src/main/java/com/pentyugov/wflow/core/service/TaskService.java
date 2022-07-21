@@ -7,6 +7,7 @@ import com.pentyugov.wflow.core.dto.TaskDto;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.data.domain.Page;
 
@@ -62,6 +63,8 @@ public interface TaskService {
     TaskDto createProxyFromTask(Task task);
 
     String getNextTaskNumber();
+
+    void changeKanbanState(KanbanRequest kanbanRequest) throws TaskNotFoundException;
 
     void checkOverdueTasks();
 

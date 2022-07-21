@@ -8,6 +8,7 @@ import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.http.HttpResponse;
+import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -124,6 +125,12 @@ public class TaskController extends ExceptionHandling {
     public ResponseEntity<HttpResponse> signalProcAction(@RequestBody TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException {
         String message = taskService.signalProc(taskSignalProcRequest, principal);
         return response(HttpStatus.OK, message);
+    }
+
+    @PostMapping("/kanban")
+    public ResponseEntity<HttpResponse> changeKanbanState(@RequestBody KanbanRequest kanbanRequest) throws TaskNotFoundException {
+        taskService.changeKanbanState(kanbanRequest);
+        return response(HttpStatus.OK, HttpStatus.OK.getReasonPhrase());
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {

@@ -8,6 +8,7 @@ import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,7 +81,8 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
     @Override
     public List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException {
-        return taskRepository.findActiveForExecutor(userService.getUserByPrincipal(principal).getId(), Task.STATE_ASSIGNED);
+        return taskRepository.findActiveForExecutor(userService.getUserByPrincipal(principal).getId(),
+                Arrays.asList(Task.STATE_ASSIGNED, Task.STATE_REWORK));
     }
 
     @Override
@@ -116,6 +118,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
     public String startTask(Task task, User currentUser) {
         task.setInitiator(currentUser);
+        task.setKanbanState(Task.KANBAN_STATE_NEW);
         task = workflowService.startTaskProcess(task, currentUser);
         taskRepository.save(task);
         calendarEventService.addCalendarEventForCard(task);
@@ -132,6 +135,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     public String cancelTask(Task task, User currentUser, String comment) {
         task = workflowService.cancelTaskProcess(task, currentUser, comment);
         taskRepository.save(task);
+        calendarEventService.deleteCalendarEventByCard(task);
         User executor = task.getExecutor();
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.canceled.to.executor", task.getNumber(), currentUser.getUsername());
@@ -144,6 +148,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
     public String executeTask(Task task, User currentUser, String comment) {
         task = workflowService.executeTask(task, currentUser, comment);
+        task.setKanbanState(Task.KANBAN_STATE_COMPLETED);
         taskRepository.save(task);
         calendarEventService.deleteCalendarEventByCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
@@ -157,7 +162,9 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
     public String reworkTask(Task task, User currentUser, String comment) {
         task = workflowService.reworkTask(task, currentUser, comment);
+        task.setKanbanState(Task.KANBAN_STATE_NEW);
         taskRepository.save(task);
+        calendarEventService.addCalendarEventForCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.rework.to.executor", task.getNumber(), currentUser.getUsername());
         Notification notification = notificationService.createNotification(title, message, Notification.DANGER, Notification.WORKFLOW, task.getExecutor());
@@ -247,6 +254,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         task.setDescription(taskDto.getDescription());
         task.setComment(taskDto.getComment());
         task.setState(taskDto.getState());
+        task.setKanbanState(taskDto.getKanbanState());
         task.setOverdue(taskDto.getOverdue());
         task.setExecutionDatePlan(taskDto.getExecutionDatePlan());
         task.setExecutionDateFact(taskDto.getExecutionDateFact());
@@ -301,6 +309,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         taskDto.setDescription(task.getDescription());
         taskDto.setComment(task.getComment());
         taskDto.setState(task.getState());
+        taskDto.setKanbanState(task.getKanbanState());
         taskDto.setExecutionDatePlan(task.getExecutionDatePlan());
         taskDto.setExecutionDateFact(task.getExecutionDateFact());
         taskDto.setStarted(task.getStarted());
@@ -344,6 +353,15 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         }
 
         return TASK_PREFIX + 1;
+    }
+
+    @Override
+    public void changeKanbanState(KanbanRequest kanbanRequest) throws TaskNotFoundException {
+        Task task = getTaskById(UUID.fromString(kanbanRequest.getTaskId()));
+        if (task != null) {
+            task.setKanbanState(kanbanRequest.getState());
+            taskRepository.save(task);
+        }
     }
 
     @Override
