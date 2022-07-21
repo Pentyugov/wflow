@@ -27,5 +27,7 @@ public interface CalendarEventService {
 
     CalendarEventDto createDtoFromEvent(CalendarEvent calendarEvent);
 
+    void deleteCalendarEventByCard(Card card);
+
     void deleteCalendarEvent(UUID id);
 }

@@ -9,6 +9,7 @@ import com.pentyugov.wflow.core.service.CalendarEventService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.security.Principal;
 import java.util.List;
@@ -49,6 +50,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         calendarEvent.setTitle(card.getNumber());
         calendarEvent.setDescription(card.getDescription());
         calendarEvent.setUser(card.getIssue().getExecutor());
+        calendarEvent.setCard(card);
         if (card instanceof Task) {
             Task task = (Task) card;
             calendarEvent.setType(CalendarEvent.TYPE_TASK);
@@ -116,6 +118,14 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         calendarEventDto.setColor(new CalendarEventDto.Color(calendarEvent.getColorPrimary(), calendarEvent.getColorSecondary()));
         calendarEventDto.setResizable(new CalendarEventDto.Resizable(calendarEvent.getResizableBeforeStart(), calendarEvent.getResizableAfterEnd()));
         return calendarEventDto;
+    }
+
+    @Override
+    public void deleteCalendarEventByCard(Card card) {
+        List<CalendarEvent> events = calendarEventRepository.findAllByCardId(card.getId());
+        if (!CollectionUtils.isEmpty(events)) {
+            calendarEventRepository.deleteAll(events);
+        }
     }
 
     @Override

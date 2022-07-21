@@ -145,6 +145,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     public String executeTask(Task task, User currentUser, String comment) {
         task = workflowService.executeTask(task, currentUser, comment);
         taskRepository.save(task);
+        calendarEventService.deleteCalendarEventByCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.executed.to.initiator", task.getNumber(), currentUser.getUsername());
         Notification notification = notificationService.createNotification(title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getInitiator());
