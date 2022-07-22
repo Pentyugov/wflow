@@ -8,6 +8,7 @@ import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
+import com.pentyugov.wflow.web.payload.request.TaskFiltersRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.data.domain.Page;
 
@@ -33,6 +34,8 @@ public interface TaskService {
     List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException;
 
     List<Task> getProductivityData(Principal principal) throws UserNotFoundException;
+
+    List<Task> getTasksWithFilters(Principal principal, TaskFiltersRequest taskFiltersRequest) throws UserNotFoundException;
 
     String signalProc(TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException;
 

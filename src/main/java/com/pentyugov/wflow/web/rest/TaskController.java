@@ -9,6 +9,7 @@ import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.http.HttpResponse;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
+import com.pentyugov.wflow.web.payload.request.TaskFiltersRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +72,6 @@ public class TaskController extends ExceptionHandling {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('DELETE')")
     public ResponseEntity<HttpResponse> deleteTask(@PathVariable String id) {
         taskService.deleteTask(UUID.fromString(id));
         String message = String.format("Task with id: %s was deleted", id);
@@ -131,6 +131,17 @@ public class TaskController extends ExceptionHandling {
     public ResponseEntity<HttpResponse> changeKanbanState(@RequestBody KanbanRequest kanbanRequest) throws TaskNotFoundException {
         taskService.changeKanbanState(kanbanRequest);
         return response(HttpStatus.OK, HttpStatus.OK.getReasonPhrase());
+    }
+
+    @PostMapping("/filter")
+    public ResponseEntity<Object> applyTaskFilters(@RequestBody TaskFiltersRequest taskFiltersRequest, Principal principal) throws UserNotFoundException {
+        List<TaskDto> result = taskService
+                .getTasksWithFilters(principal, taskFiltersRequest)
+                .stream()
+                .map(taskService::createProxyFromTask)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {

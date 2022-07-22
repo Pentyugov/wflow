@@ -9,16 +9,23 @@ import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
+import com.pentyugov.wflow.web.payload.request.TaskFiltersRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.lang.reflect.Field;
 import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -34,6 +41,9 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     @Value("${source.service.notification}")
     private String sourcePath;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final TaskRepository taskRepository;
     private final UserService userService;
     private final NotificationService notificationService;
@@ -41,6 +51,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     private final IssueService issueService;
     private final CalendarEventService calendarEventService;
     private final ProjectService projectService;
+
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService, WorkflowService workflowService, IssueService issueService, CalendarEventService calendarEventService, ProjectService projectService) {
@@ -95,6 +106,43 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
             }
         });
         return result;
+    }
+
+    @Override
+    public List<Task> getTasksWithFilters(Principal principal, TaskFiltersRequest taskFiltersRequest) throws UserNotFoundException {
+        List<UUID> availableTasksIds;
+        if (!CollectionUtils.isEmpty(taskFiltersRequest.getIds())) {
+            availableTasksIds = taskFiltersRequest.getIds();
+        } else {
+            availableTasksIds = getAllTasks(principal)
+                    .stream()
+                    .map(Task::getId).collect(Collectors.toList());
+        }
+
+        return getTasksWithFilters(taskFiltersRequest, availableTasksIds);
+    }
+
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public List<Task> getTasksWithFilters(TaskFiltersRequest taskFiltersRequest, List<UUID> availableTasksIds) {
+        String queryString = buildQueryString(taskFiltersRequest);
+        Query query = entityManager.createQuery(queryString);
+        query.setParameter("ids", availableTasksIds);
+
+        for (TaskFiltersRequest.TaskFilter taskFilter : taskFiltersRequest.getTaskFilters()) {
+            if (queryString.contains(":" + taskFilter.getProperty())) {
+                if (queryString.contains(taskFilter.getProperty() + ".id")) {
+                    query.setParameter(taskFilter.getProperty(), UUID.fromString(taskFilter.getCondition()));
+                } else {
+                    query.setParameter(taskFilter.getProperty(), taskFilter.getCondition());
+                }
+
+            }
+        }
+
+
+        List<Task> resultList = query.getResultList();
+        return resultList;
     }
 
     @Override
@@ -267,6 +315,15 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return taskRepository.findAll();
     }
 
+    private List<Task> getAllTasks(Principal principal) throws UserNotFoundException {
+        User currentUser = userService.getUserByPrincipal(principal);
+        if (userService.isUserAdmin(currentUser)) {
+            return this.getAllTasks();
+        } else {
+            return taskRepository.findAllForUser(currentUser.getId());
+        }
+    }
+
     @Override
     public List<TaskDto> getAllTaskDto(Principal principal) throws UserNotFoundException {
         User currentUser = userService.getUserByPrincipal(principal);
@@ -396,6 +453,49 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         }
 
         return number;
+    }
+
+    private String buildQueryString(TaskFiltersRequest taskFiltersRequest) {
+        StringBuilder builder = new StringBuilder("FROM workflow$Task t WHERE t.id in :ids ");
+        for (TaskFiltersRequest.TaskFilter taskFilter : taskFiltersRequest.getTaskFilters()) {
+            if (StringUtils.isNotBlank(taskFilter.getProperty()) && StringUtils.isNotBlank(taskFilter.getCondition())) {
+
+                Field field = getProperty(Task.class, taskFilter.getProperty());
+                if (field != null) {
+                    boolean assignableFrom = BaseEntity.class.isAssignableFrom(field.getType());
+                    if (assignableFrom) {
+                        builder
+                                .append("and t.")
+                                .append(taskFilter.getProperty())
+                                .append(".id = :")
+                                .append(taskFilter.getProperty())
+                                .append(" ");
+                    } else {
+                        builder
+                                .append("and t.")
+                                .append(taskFilter.getProperty())
+                                .append(" = :")
+                                .append(taskFilter.getProperty())
+                                .append(" ");
+                    }
+                }
+            }
+        }
+
+        return builder.toString();
+    }
+
+    private Field getProperty(Class<?> clazz, String property) {
+        Field field = null;
+        try {
+            field = clazz.getDeclaredField(property);
+        } catch (NoSuchFieldException ignored) {
+            if (clazz.getSuperclass() != null) {
+                field = getProperty(clazz.getSuperclass(), property);
+            }
+        }
+
+        return field;
     }
 
 }
