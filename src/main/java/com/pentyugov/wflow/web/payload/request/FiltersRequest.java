@@ -3,9 +3,9 @@ package com.pentyugov.wflow.web.payload.request;
 import java.util.List;
 import java.util.UUID;
 
-public class TaskFiltersRequest {
+public class FiltersRequest {
     private List<UUID> ids;
-    private List<TaskFilter> taskFilters;
+    private List<Filter> filters;
 
     public List<UUID> getIds() {
         return ids;
@@ -15,15 +15,15 @@ public class TaskFiltersRequest {
         this.ids = ids;
     }
 
-    public List<TaskFilter> getTaskFilters() {
-        return taskFilters;
+    public List<Filter> getFilters() {
+        return filters;
     }
 
-    public void setTaskFilters(List<TaskFilter> taskFilters) {
-        this.taskFilters = taskFilters;
+    public void setFilters(List<Filter> filters) {
+        this.filters = filters;
     }
 
-    public static class TaskFilter {
+    public static class Filter {
         private String property;
         private String condition;
 

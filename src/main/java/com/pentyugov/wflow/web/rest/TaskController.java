@@ -9,11 +9,10 @@ import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.http.HttpResponse;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
-import com.pentyugov.wflow.web.payload.request.TaskFiltersRequest;
+import com.pentyugov.wflow.web.payload.request.FiltersRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -134,9 +133,9 @@ public class TaskController extends ExceptionHandling {
     }
 
     @PostMapping("/filter")
-    public ResponseEntity<Object> applyTaskFilters(@RequestBody TaskFiltersRequest taskFiltersRequest, Principal principal) throws UserNotFoundException {
+    public ResponseEntity<Object> applyTaskFilters(@RequestBody FiltersRequest filtersRequest, Principal principal) throws UserNotFoundException {
         List<TaskDto> result = taskService
-                .getTasksWithFilters(principal, taskFiltersRequest)
+                .getTasksWithFilters(principal, filtersRequest)
                 .stream()
                 .map(taskService::createProxyFromTask)
                 .collect(Collectors.toList());

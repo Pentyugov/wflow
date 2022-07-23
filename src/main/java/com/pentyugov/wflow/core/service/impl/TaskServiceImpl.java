@@ -8,10 +8,9 @@ import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import com.pentyugov.wflow.web.payload.request.FiltersRequest;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
-import com.pentyugov.wflow.web.payload.request.TaskFiltersRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -25,7 +24,6 @@ import org.springframework.util.ObjectUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.lang.reflect.Field;
 import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -51,10 +49,11 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     private final IssueService issueService;
     private final CalendarEventService calendarEventService;
     private final ProjectService projectService;
+    private final FilterService filterService;
 
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService, WorkflowService workflowService, IssueService issueService, CalendarEventService calendarEventService, ProjectService projectService) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService, WorkflowService workflowService, IssueService issueService, CalendarEventService calendarEventService, ProjectService projectService, FilterService filterService) {
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.notificationService = notificationService;
@@ -62,6 +61,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         this.issueService = issueService;
         this.calendarEventService = calendarEventService;
         this.projectService = projectService;
+        this.filterService = filterService;
     }
 
     public Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
@@ -109,32 +109,41 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public List<Task> getTasksWithFilters(Principal principal, TaskFiltersRequest taskFiltersRequest) throws UserNotFoundException {
+    public List<Task> getTasksWithFilters(Principal principal, FiltersRequest filtersRequest) throws UserNotFoundException {
         List<UUID> availableTasksIds;
-        if (!CollectionUtils.isEmpty(taskFiltersRequest.getIds())) {
-            availableTasksIds = taskFiltersRequest.getIds();
+        if (!CollectionUtils.isEmpty(filtersRequest.getIds())) {
+            availableTasksIds = filtersRequest.getIds();
         } else {
             availableTasksIds = getAllTasks(principal)
                     .stream()
                     .map(Task::getId).collect(Collectors.toList());
         }
 
-        return getTasksWithFilters(taskFiltersRequest, availableTasksIds);
+        return getTasksWithFilters(filtersRequest, availableTasksIds);
     }
 
     @Transactional
     @SuppressWarnings("unchecked")
-    public List<Task> getTasksWithFilters(TaskFiltersRequest taskFiltersRequest, List<UUID> availableTasksIds) {
-        String queryString = buildQueryString(taskFiltersRequest);
+    public List<Task> getTasksWithFilters(FiltersRequest filtersRequest, List<UUID> availableTasksIds) {
+        String queryString = filterService.buildQueryString(Task.class, filtersRequest);
         Query query = entityManager.createQuery(queryString);
         query.setParameter("ids", availableTasksIds);
 
-        for (TaskFiltersRequest.TaskFilter taskFilter : taskFiltersRequest.getTaskFilters()) {
-            if (queryString.contains(":" + taskFilter.getProperty())) {
-                if (queryString.contains(taskFilter.getProperty() + ".id")) {
-                    query.setParameter(taskFilter.getProperty(), UUID.fromString(taskFilter.getCondition()));
+        for (FiltersRequest.Filter filter : filtersRequest.getFilters()) {
+
+            List<String> conditions = Arrays.asList(filter.getCondition().split(";"));
+
+            if (queryString.contains(":" + filter.getProperty())) {
+                if (queryString.contains(filter.getProperty() + ".id")) {
+                    query.setParameter(
+                            filter.getProperty(),
+                            conditions
+                                    .stream()
+                                    .map(UUID::fromString)
+                                    .collect(Collectors.toList())
+                    );
                 } else {
-                    query.setParameter(taskFilter.getProperty(), taskFilter.getCondition());
+                    query.setParameter(filter.getProperty(), conditions);
                 }
 
             }
@@ -455,47 +464,5 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return number;
     }
 
-    private String buildQueryString(TaskFiltersRequest taskFiltersRequest) {
-        StringBuilder builder = new StringBuilder("FROM workflow$Task t WHERE t.id in :ids ");
-        for (TaskFiltersRequest.TaskFilter taskFilter : taskFiltersRequest.getTaskFilters()) {
-            if (StringUtils.isNotBlank(taskFilter.getProperty()) && StringUtils.isNotBlank(taskFilter.getCondition())) {
-
-                Field field = getProperty(Task.class, taskFilter.getProperty());
-                if (field != null) {
-                    boolean assignableFrom = BaseEntity.class.isAssignableFrom(field.getType());
-                    if (assignableFrom) {
-                        builder
-                                .append("and t.")
-                                .append(taskFilter.getProperty())
-                                .append(".id = :")
-                                .append(taskFilter.getProperty())
-                                .append(" ");
-                    } else {
-                        builder
-                                .append("and t.")
-                                .append(taskFilter.getProperty())
-                                .append(" = :")
-                                .append(taskFilter.getProperty())
-                                .append(" ");
-                    }
-                }
-            }
-        }
-
-        return builder.toString();
-    }
-
-    private Field getProperty(Class<?> clazz, String property) {
-        Field field = null;
-        try {
-            field = clazz.getDeclaredField(property);
-        } catch (NoSuchFieldException ignored) {
-            if (clazz.getSuperclass() != null) {
-                field = getProperty(clazz.getSuperclass(), property);
-            }
-        }
-
-        return field;
-    }
 
 }

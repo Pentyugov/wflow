@@ -19,6 +19,8 @@ public class Task extends Card {
     public static final String PRIORITY_HIGH = "PRIORITY$HIGH";
 
     @Transient
+    public static final String STATE_ACTIVE = "TS$ACTIVE";
+    @Transient
     public static final String STATE_CREATED = "TS$CREATED";
     @Transient
     public static final String STATE_ASSIGNED = "TS$ASSIGNED";
