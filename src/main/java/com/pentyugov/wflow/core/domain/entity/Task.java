@@ -77,6 +77,9 @@ public class Task extends Card {
     @Column(name = "KANBAN_STATE")
     private String kanbanState;
 
+    @Column(name = "KANBAN_ORDER")
+    private Integer kanbanOrder;
+
     @ManyToOne
     @JoinColumn(name = "EXECUTOR_ID")
     private User executor;
@@ -131,6 +134,14 @@ public class Task extends Card {
 
     public void setKanbanState(String kanbanState) {
         this.kanbanState = kanbanState;
+    }
+
+    public Integer getKanbanOrder() {
+        return kanbanOrder;
+    }
+
+    public void setKanbanOrder(Integer kanbanOrder) {
+        this.kanbanOrder = kanbanOrder;
     }
 
     public User getExecutor() {

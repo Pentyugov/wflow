@@ -2,11 +2,10 @@ package com.pentyugov.wflow.core.service.impl;
 
 
 import com.pentyugov.wflow.core.domain.entity.BaseEntity;
-import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.service.FilterService;
 import com.pentyugov.wflow.web.payload.request.FiltersRequest;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.Entity;
 import java.lang.reflect.Field;
@@ -27,7 +26,7 @@ public class FilterServiceImpl implements FilterService {
                     .append(" e WHERE e.id in :ids ");
 
             for (FiltersRequest.Filter filter : filterRequest.getFilters()) {
-                if (StringUtils.isNotBlank(filter.getProperty()) && StringUtils.isNotBlank(filter.getCondition())) {
+                if (StringUtils.hasText(filter.getProperty()) && StringUtils.hasText((filter.getCondition()))) {
 
                     Field field = getProperty(clazz, filter.getProperty());
                     if (field != null) {

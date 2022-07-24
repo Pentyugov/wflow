@@ -67,7 +67,7 @@ public interface TaskService {
 
     String getNextTaskNumber();
 
-    void changeKanbanState(KanbanRequest kanbanRequest) throws TaskNotFoundException;
+    void changeKanbanState(KanbanRequest[] kanbanRequest) throws TaskNotFoundException;
 
     void checkOverdueTasks();
 

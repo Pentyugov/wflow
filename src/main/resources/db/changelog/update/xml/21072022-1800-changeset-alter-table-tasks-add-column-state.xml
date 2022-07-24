@@ -17,4 +17,16 @@
 
     </changeSet>
 
+    <changeSet author="apentyugov" id="db-update_24072022-1800-changeset-alter-table-tasks-add-column-order">
+
+        <addColumn tableName="workflow_task">
+            <column name="kanban_order" type="INTEGER"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="workflow_task" columnName="kanban_order"/>
+        </rollback>
+
+    </changeSet>
+
 </databaseChangeLog>

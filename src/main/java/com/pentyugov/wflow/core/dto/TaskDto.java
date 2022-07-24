@@ -20,6 +20,8 @@ public class TaskDto extends BaseDto {
 
     private String kanbanState;
 
+    private Integer kanbanOrder;
+
     private Date executionDatePlan;
 
     private Date executionDateFact;
@@ -96,6 +98,14 @@ public class TaskDto extends BaseDto {
 
     public void setKanbanState(String kanbanState) {
         this.kanbanState = kanbanState;
+    }
+
+    public Integer getKanbanOrder() {
+        return kanbanOrder;
+    }
+
+    public void setKanbanOrder(Integer kanbanOrder) {
+        this.kanbanOrder = kanbanOrder;
     }
 
     public Date getExecutionDatePlan() {

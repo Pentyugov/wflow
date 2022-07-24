@@ -127,7 +127,7 @@ public class TaskController extends ExceptionHandling {
     }
 
     @PostMapping("/kanban")
-    public ResponseEntity<HttpResponse> changeKanbanState(@RequestBody KanbanRequest kanbanRequest) throws TaskNotFoundException {
+    public ResponseEntity<HttpResponse> changeKanbanState(@RequestBody KanbanRequest[] kanbanRequest) throws TaskNotFoundException {
         taskService.changeKanbanState(kanbanRequest);
         return response(HttpStatus.OK, HttpStatus.OK.getReasonPhrase());
     }

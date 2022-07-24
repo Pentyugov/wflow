@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -130,28 +131,25 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         query.setParameter("ids", availableTasksIds);
 
         for (FiltersRequest.Filter filter : filtersRequest.getFilters()) {
+            if (StringUtils.hasText(filter.getProperty()) && StringUtils.hasText((filter.getCondition()))) {
+                List<String> conditions = Arrays.asList(filter.getCondition().split(";"));
 
-            List<String> conditions = Arrays.asList(filter.getCondition().split(";"));
-
-            if (queryString.contains(":" + filter.getProperty())) {
-                if (queryString.contains(filter.getProperty() + ".id")) {
-                    query.setParameter(
-                            filter.getProperty(),
-                            conditions
-                                    .stream()
-                                    .map(UUID::fromString)
-                                    .collect(Collectors.toList())
-                    );
-                } else {
-                    query.setParameter(filter.getProperty(), conditions);
+                if (queryString.contains(":" + filter.getProperty())) {
+                    if (queryString.contains(filter.getProperty() + ".id")) {
+                        query.setParameter(
+                                filter.getProperty(),
+                                conditions
+                                        .stream()
+                                        .map(UUID::fromString)
+                                        .collect(Collectors.toList())
+                        );
+                    } else {
+                        query.setParameter(filter.getProperty(), conditions);
+                    }
                 }
-
             }
         }
-
-
-        List<Task> resultList = query.getResultList();
-        return resultList;
+        return (List<Task>) query.getResultList();
     }
 
     @Override
@@ -312,6 +310,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         task.setComment(taskDto.getComment());
         task.setState(taskDto.getState());
         task.setKanbanState(taskDto.getKanbanState());
+        task.setKanbanOrder(taskDto.getKanbanOrder());
         task.setOverdue(taskDto.getOverdue());
         task.setExecutionDatePlan(taskDto.getExecutionDatePlan());
         task.setExecutionDateFact(taskDto.getExecutionDateFact());
@@ -376,6 +375,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         taskDto.setComment(task.getComment());
         taskDto.setState(task.getState());
         taskDto.setKanbanState(task.getKanbanState());
+        taskDto.setKanbanOrder(task.getKanbanOrder());
         taskDto.setExecutionDatePlan(task.getExecutionDatePlan());
         taskDto.setExecutionDateFact(task.getExecutionDateFact());
         taskDto.setStarted(task.getStarted());
@@ -422,12 +422,16 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public void changeKanbanState(KanbanRequest kanbanRequest) throws TaskNotFoundException {
-        Task task = getTaskById(UUID.fromString(kanbanRequest.getTaskId()));
-        if (task != null) {
-            task.setKanbanState(kanbanRequest.getState());
-            taskRepository.save(task);
+    public void changeKanbanState(KanbanRequest[] kanbanRequest) throws TaskNotFoundException {
+        for (KanbanRequest request : kanbanRequest) {
+            Task task = getTaskById(UUID.fromString(request.getTaskId()));
+            if (task != null) {
+                task.setKanbanState(request.getState());
+                task.setKanbanOrder(request.getOrder());
+                taskRepository.save(task);
+            }
         }
+
     }
 
     @Override
