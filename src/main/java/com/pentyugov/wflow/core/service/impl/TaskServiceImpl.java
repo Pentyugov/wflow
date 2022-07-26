@@ -83,12 +83,16 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return taskRepository.save(task);
     }
 
-    public void deleteTask(UUID id) {
+    public void deleteTask(UUID id, Principal principal) throws TaskNotFoundException, UserNotFoundException {
+        Task toDelete = getTaskById(id);
+        calendarEventService.deleteCalendarEventByCard(toDelete);
+        cancelTask(toDelete, userService.getUserByPrincipal(principal), "Deleted");
         taskRepository.delete(id);
     }
 
-    public Task getTaskById(UUID id) {
-        return taskRepository.findById(id).orElse(null);
+    public Task getTaskById(UUID id) throws TaskNotFoundException {
+        return taskRepository.findById(id).orElseThrow(() ->
+                new TaskNotFoundException(getMessage(sourcePath, "exception.task.with.id.not.found", id)));
     }
 
     @Override

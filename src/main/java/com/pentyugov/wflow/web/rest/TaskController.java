@@ -35,7 +35,7 @@ public class TaskController extends ExceptionHandling {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable String id) {
+    public ResponseEntity<Object> getById(@PathVariable String id) throws TaskNotFoundException {
         Task task = taskService.getTaskById(UUID.fromString(id));
         return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }
@@ -71,14 +71,14 @@ public class TaskController extends ExceptionHandling {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpResponse> deleteTask(@PathVariable String id) {
-        taskService.deleteTask(UUID.fromString(id));
+    public ResponseEntity<HttpResponse> deleteTask(@PathVariable String id, Principal principal) throws TaskNotFoundException, UserNotFoundException {
+        taskService.deleteTask(UUID.fromString(id), principal);
         String message = String.format("Task with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
     }
 
     @GetMapping("/get-history/{id}")
-    public ResponseEntity<Object> getTaskHistory(@PathVariable String id) {
+    public ResponseEntity<Object> getTaskHistory(@PathVariable String id) throws TaskNotFoundException {
         Task task = taskService.getTaskById(UUID.fromString(id));
         return new ResponseEntity<>(taskService.getTaskHistory(task), HttpStatus.OK);
     }

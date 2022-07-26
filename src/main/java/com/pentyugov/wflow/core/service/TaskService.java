@@ -27,9 +27,9 @@ public interface TaskService {
 
     Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
 
-    void deleteTask(UUID id);
+    void deleteTask(UUID id, Principal principal) throws TaskNotFoundException, UserNotFoundException;
 
-    Task getTaskById(UUID id);
+    Task getTaskById(UUID id) throws TaskNotFoundException;
 
     List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException;
 
