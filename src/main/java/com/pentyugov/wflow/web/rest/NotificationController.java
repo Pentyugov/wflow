@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/notification")
+@RequestMapping("/api/notifications")
 public class NotificationController extends ExceptionHandling {
 
     private final NotificationService notificationService;
@@ -29,15 +29,8 @@ public class NotificationController extends ExceptionHandling {
         this.userService = userService;
     }
 
-    @PostMapping("/add-new-notification")
-    public ResponseEntity<Object> createNotification(@RequestBody NotificationDto notificationDto) throws UserNotFoundException {
-        Notification notification = notificationService.createNewNotification(notificationDto);
-        return new ResponseEntity<>(notificationService.createNotificationDtoFromNotification(notification), HttpStatus.OK);
-
-    }
-
-    @GetMapping("/get-all")
-    public ResponseEntity<Object> getAllNotificationsFor(Principal principal) throws UserNotFoundException {
+    @GetMapping
+    public ResponseEntity<Object> getAll(Principal principal) throws UserNotFoundException {
         List<NotificationDto> notificationList = notificationService.getNotificationsForCurrentUser(principal)
                 .stream()
                 .map(notificationService::createNotificationDtoFromNotification)
@@ -47,8 +40,15 @@ public class NotificationController extends ExceptionHandling {
 
     }
 
-    @GetMapping("/get-notification-page")
-    public List<NotificationDto> getNotificationPage(@RequestParam Optional<Integer> page,
+    @PostMapping
+    public ResponseEntity<Object> add(@RequestBody NotificationDto notificationDto) throws UserNotFoundException {
+        Notification notification = notificationService.createNewNotification(notificationDto);
+        return new ResponseEntity<>(notificationService.createNotificationDtoFromNotification(notification), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/page")
+    public List<NotificationDto> getPage(@RequestParam Optional<Integer> page,
                                                      @RequestParam Optional<String> sortBy) {
         List<NotificationDto> result = new ArrayList<>();
         notificationService.getNotificationPage(page, sortBy).getContent().forEach(notification -> {
@@ -58,19 +58,8 @@ public class NotificationController extends ExceptionHandling {
         return result;
     }
 
-    @GetMapping("/get-notification-page-for-receiver")
-    public List<NotificationDto> getNotificationPageForReceiver(@RequestParam Optional<Integer> page,
-                                                                @RequestParam Optional<String> sortBy,
-                                                                Principal principal) throws UserNotFoundException {
-        List<NotificationDto> result = new ArrayList<>();
-        notificationService.getNotificationPageForCurrentUser(page, sortBy, principal).getContent().forEach(notification ->
-                result.add(notificationService.createNotificationDtoFromNotification(notification)));
-
-        return result;
-    }
-
-    @DeleteMapping("/delete-notification/{id}")
-    public ResponseEntity<HttpResponse> deleteNotification(@PathVariable String id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
         notificationService.deleteNotification(UUID.fromString(id));
         String message = String.format("Notification with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
