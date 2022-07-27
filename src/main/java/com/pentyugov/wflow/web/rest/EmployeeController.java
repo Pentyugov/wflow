@@ -28,7 +28,7 @@ public class EmployeeController extends AbstractController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllEmployees() {
+    public ResponseEntity<Object> getAll() {
         List<EmployeeDto> employees = new ArrayList<>();
         employeeService.getAllEmployees().forEach(employee ->
                 employees.add(employeeService.createEmployeeDtoFromEmployee(employee)));
@@ -36,14 +36,14 @@ public class EmployeeController extends AbstractController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getEmployeeById(@PathVariable String id, Principal principal)
+    public ResponseEntity<Object> getById(@PathVariable String id, Principal principal)
             throws EmployeeNotFoundException, UserNotFoundException {
         Employee employee = employeeService.getEmployeeById(UUID.fromString(id), principal);
         return new ResponseEntity<>(employeeService.createEmployeeDtoFromEmployee(employee), HttpStatus.OK);
     }
 
     @GetMapping("/department/{id}")
-    public ResponseEntity<Object> getEmployeesByDepartments(@PathVariable String id) {
+    public ResponseEntity<Object> getByDepartments(@PathVariable String id) {
         List<EmployeeDto> employees = new ArrayList<>();
         employeeService.getEmployeesByDepartment(UUID.fromString(id)).forEach(employee ->
                 employees.add(employeeService.createEmployeeDtoFromEmployee(employee)));
@@ -51,7 +51,7 @@ public class EmployeeController extends AbstractController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addNewEmployee(@RequestBody EmployeeDto employeeDto, Principal principal)
+    public ResponseEntity<Object> add(@RequestBody EmployeeDto employeeDto, Principal principal)
             throws UserNotFoundException, EmployeeExistException, PositionNotFoundException, ValidationException,
             DepartmentNotFoundException {
 
@@ -60,7 +60,7 @@ public class EmployeeController extends AbstractController {
     }
 
     @PutMapping
-    public ResponseEntity<Object> updateEmployee(@RequestBody EmployeeDto employeeDto, Principal principal)
+    public ResponseEntity<Object> update(@RequestBody EmployeeDto employeeDto, Principal principal)
             throws UserNotFoundException, EmployeeExistException, DepartmentNotFoundException,
             PositionNotFoundException, ValidationException {
 
@@ -69,7 +69,7 @@ public class EmployeeController extends AbstractController {
     }
 
     @PutMapping("/all")
-    public ResponseEntity<Object> updateAllEmployees(@RequestBody List<EmployeeDto> employees)
+    public ResponseEntity<Object> updateAll(@RequestBody List<EmployeeDto> employees)
             throws PositionNotFoundException,
             UserNotFoundException, DepartmentNotFoundException {
 
@@ -78,7 +78,7 @@ public class EmployeeController extends AbstractController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpResponse> deleteEmployee(@PathVariable String id) {
+    public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
         employeeService.deleteEmployee(UUID.fromString(id));
         String message = String.format("Employee with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
