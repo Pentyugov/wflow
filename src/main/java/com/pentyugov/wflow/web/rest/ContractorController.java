@@ -1,7 +1,10 @@
 package com.pentyugov.wflow.web.rest;
 
+import com.pentyugov.wflow.core.domain.entity.Department;
 import com.pentyugov.wflow.core.dto.ContractorDto;
 import com.pentyugov.wflow.core.service.ContractorService;
+import com.pentyugov.wflow.web.exception.ContractorNotFoundException;
+import com.pentyugov.wflow.web.exception.DepartmentNotFoundException;
 import com.pentyugov.wflow.web.exception.ValidationException;
 import com.pentyugov.wflow.web.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,12 @@ public class ContractorController extends AbstractController {
                 .map(contractorService::createContractorDto)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(contractorDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getById(@PathVariable String id) throws ContractorNotFoundException {
+        ContractorDto contractorDto = contractorService.createContractorDto(contractorService.getContractorById(UUID.fromString(id)));
+        return new ResponseEntity<>(contractorDto, HttpStatus.OK);
     }
 
     @PostMapping

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.pentyugov.wflow.core.domain.entity.Role.*;
 import static com.pentyugov.wflow.core.domain.entity.Role.PROJECT_MANAGER;
 
 @Service(ProjectService.NAME)
@@ -99,7 +98,7 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
         project.setConclusionDate(projectDto.getConclusionDate());
         project.setClosingDate(projectDto.getClosingDate());
         if (projectDto.getContractor() != null) {
-            project.setContractor(contractorService.getUserById(projectDto.getContractor().getId()));
+            project.setContractor(contractorService.getContractorById(projectDto.getContractor().getId()));
         }
         project.setProjectManager(userService.getUserById(projectDto.getProjectManager().getId()));
         project.setProjectParticipants(updateProjectParticipants(
@@ -111,7 +110,7 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
             project.setProjectManager(userService.getUserById(projectDto.getProjectManager().getId()));
         }
         if (!ObjectUtils.isEmpty(projectDto.getContractor())) {
-            project.setContractor(contractorService.getUserById(projectDto.getContractor().getId()));
+            project.setContractor(contractorService.getContractorById(projectDto.getContractor().getId()));
         }
 
         return projectRepository.save(project);
@@ -137,7 +136,7 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
                 .collect(Collectors.toList())));
 
         if (!ObjectUtils.isEmpty(projectDto.getContractor())) {
-            project.setContractor(contractorService.getUserById(projectDto.getContractor().getId()));
+            project.setContractor(contractorService.getContractorById(projectDto.getContractor().getId()));
         } else {
             project.setContractor(null);
         }

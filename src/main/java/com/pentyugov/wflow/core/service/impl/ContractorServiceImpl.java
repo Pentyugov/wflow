@@ -57,7 +57,7 @@ public class ContractorServiceImpl extends AbstractService implements Contractor
     }
 
     @Override
-    public Contractor getUserById(UUID id) throws ContractorNotFoundException {
+    public Contractor getContractorById(UUID id) throws ContractorNotFoundException {
         return contractorRepository.findById(id).orElseThrow(() -> new ContractorNotFoundException(getMessage("exception.contractor.with.id.not.found", id)));
     }
 

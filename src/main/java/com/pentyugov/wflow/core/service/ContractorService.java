@@ -20,7 +20,7 @@ public interface ContractorService {
 
     ContractorDto updateContractor(ContractorDto contractorDto) throws ValidationException;
 
-    Contractor getUserById(UUID id) throws ContractorNotFoundException;
+    Contractor getContractorById(UUID id) throws ContractorNotFoundException;
 
     void deleteContractor(UUID id);
 }
