@@ -22,30 +22,30 @@ public class CalendarController extends AbstractController {
         this.calendarEventService = calendarEventService;
     }
 
-    @GetMapping("/get-all-for-current-user")
+    @GetMapping
     public ResponseEntity<Object> getAllForCurrentUser(Principal principal) throws UserNotFoundException {
         return new ResponseEntity<>(calendarEventService.getAllForCurrentUser(principal), HttpStatus.OK);
     }
 
-    @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<Object> getAllForCurrentUser(@PathVariable String id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getById(@PathVariable String id) {
         return new ResponseEntity<>(calendarEventService.getCalendarEventById(UUID.fromString(id)), HttpStatus.OK);
     }
 
-    @PostMapping("/add-event")
-    public ResponseEntity<Object> addCalendarEvent(@RequestBody CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
+    @PostMapping
+    public ResponseEntity<Object> add(@RequestBody CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
         CalendarEventDto result = calendarEventService.addCalendarEvent(calendarEventDto, principal);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping("/update-event")
-    public ResponseEntity<Object> updateCalendarEvent(@RequestBody CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
+    @PutMapping
+    public ResponseEntity<Object> update(@RequestBody CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
         CalendarEventDto result = calendarEventService.updateCalendarEvent(calendarEventDto, principal);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-event/{id}")
-    public ResponseEntity<HttpResponse> deleteProject(@PathVariable String id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
         calendarEventService.deleteCalendarEvent(UUID.fromString(id));
         String message = String.format("Calendar with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
