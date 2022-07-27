@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/role")
+@RequestMapping("/api/roles")
 public class RoleController extends AbstractController {
 
     private final RoleService roleService;
@@ -24,7 +24,7 @@ public class RoleController extends AbstractController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/get-all-roles")
+    @GetMapping
     public ResponseEntity<Object> getAllPositions() {
         List<RoleDto> roles = new ArrayList<>();
         roleService.getAllRoles().forEach(role ->
@@ -32,20 +32,20 @@ public class RoleController extends AbstractController {
         return new ResponseEntity<>(roles, HttpStatus.OK);
     }
 
-    @PostMapping("/add-new-role")
+    @PostMapping
     public ResponseEntity<Object> addNewRole(@RequestBody RoleDto roleDto) {
         Role role = roleService.createNewRole(roleDto);
         return new ResponseEntity<>(roleService.createProxyFromRole(role), HttpStatus.OK);
     }
 
-    @PutMapping("/update-role")
+    @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> updateRole(@RequestBody RoleDto roleDto) {
         Role role = roleService.updateRole(roleDto);
         return new ResponseEntity<>(roleService.createProxyFromRole(role), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-role/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('DELETE')")
     public ResponseEntity<HttpResponse> deleteRole(@PathVariable String id) throws ValidationException {
         Role role = roleService.getRoleById(UUID.fromString(id));
