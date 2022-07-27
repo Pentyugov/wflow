@@ -40,7 +40,7 @@ public class TaskController extends ExceptionHandling {
         return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }
 
-    @GetMapping("/get-active-for-executor")
+    @GetMapping("/active")
     public ResponseEntity<Object> getActive(Principal principal) throws UserNotFoundException {
         List<TaskDto> result = taskService.getActiveForExecutor(principal)
                 .stream()
@@ -49,7 +49,7 @@ public class TaskController extends ExceptionHandling {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/get-productivity-data")
+    @GetMapping("/productivity-data")
     public ResponseEntity<Object> getProductivityData(Principal principal) throws UserNotFoundException {
         List<TaskDto> result = taskService.getProductivityData(principal)
                 .stream()
@@ -58,66 +58,29 @@ public class TaskController extends ExceptionHandling {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Object> createNewTask(@RequestBody TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
-        Task task = taskService.createNewTask(taskDto, principal);
-        return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
-    }
-
-    @PutMapping
-    public ResponseEntity<Object> updateTask(@RequestBody TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
-        Task task = taskService.updateTask(taskDto);
-        return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpResponse> deleteTask(@PathVariable String id, Principal principal) throws TaskNotFoundException, UserNotFoundException {
-        taskService.deleteTask(UUID.fromString(id), principal);
-        String message = String.format("Task with id: %s was deleted", id);
-        return response(HttpStatus.OK, message);
-    }
-
-    @GetMapping("/get-history/{id}")
+    @GetMapping("/{id}/history")
     public ResponseEntity<Object> getTaskHistory(@PathVariable String id) throws TaskNotFoundException {
         Task task = taskService.getTaskById(UUID.fromString(id));
         return new ResponseEntity<>(taskService.getTaskHistory(task), HttpStatus.OK);
     }
 
-    @GetMapping("/get-all-tasks")
-    public ResponseEntity<Object> getAllTasks() {
-        List<TaskDto> result = new ArrayList<>();
-        taskService.getAllTasks().forEach(task -> result.add(taskService.createProxyFromTask(task)));
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<Object> create(@RequestBody TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
+        Task task = taskService.createNewTask(taskDto, principal);
+        return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }
 
-    @GetMapping("/get-tasks-current-user-executor-by-priority/{priority}")
-    public ResponseEntity<Object> getTasksWhereCurrentUserExecutor(@PathVariable int priority, Principal principal) throws UserNotFoundException {
-        List<TaskDto> result = new ArrayList<>();
-        taskService.getTasksWhereCurrentUserExecutor(priority, principal).forEach(task ->
-                result.add(taskService.createProxyFromTask(task)));
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    @PutMapping
+    public ResponseEntity<Object> update(@RequestBody TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
+        Task task = taskService.updateTask(taskDto);
+        return new ResponseEntity<>(taskService.createProxyFromTask(task), HttpStatus.OK);
     }
 
-    @GetMapping("/get-tasks-with-priority/{priority}")
-    public ResponseEntity<Object> getPriorityTaskForUser(@PathVariable int priority, Principal principal) throws UserNotFoundException {
-        List<TaskDto> result = new ArrayList<>();
-        taskService.getPriorityTasksForUser(priority, principal).forEach(task ->
-                result.add(taskService.createProxyFromTask(task)));
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping("/get-task-page-for-current-user")
-    public List<TaskDto> getTaskPageForCurrentUser(@RequestParam Optional<Integer> page,
-                                                   @RequestParam Optional<String> sortBy,
-                                                   Principal principal) throws UserNotFoundException {
-        List<TaskDto> result = new ArrayList<>();
-        taskService.getPageForCurrentUser(page, sortBy, principal).getContent().forEach(task ->
-                result.add(taskService.createProxyFromTask(task)));
-
-        return result;
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpResponse> delete(@PathVariable String id, Principal principal) throws TaskNotFoundException, UserNotFoundException {
+        taskService.deleteTask(UUID.fromString(id), principal);
+        String message = String.format("Task with id: %s was deleted", id);
+        return response(HttpStatus.OK, message);
     }
 
     @PostMapping("/signal-proc")
