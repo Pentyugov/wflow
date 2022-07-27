@@ -12,7 +12,7 @@ import java.security.Principal;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/calendar")
+@RequestMapping("/api/calendar-events")
 public class CalendarController extends AbstractController {
 
 

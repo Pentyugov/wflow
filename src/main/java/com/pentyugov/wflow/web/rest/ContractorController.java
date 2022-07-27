@@ -25,7 +25,7 @@ public class ContractorController extends AbstractController {
         this.contractorService = contractorService;
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     public ResponseEntity<Object> getAll() {
         List<ContractorDto> contractorDtos = contractorService.getAllContractors()
                 .stream()
@@ -34,20 +34,20 @@ public class ContractorController extends AbstractController {
         return new ResponseEntity<>(contractorDtos, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Object> addNewContractor(@RequestBody ContractorDto contractorDto) throws ValidationException {
+    @PostMapping
+    public ResponseEntity<Object> add(@RequestBody ContractorDto contractorDto) throws ValidationException {
         ContractorDto contractor = contractorService.addNewContractor(contractorDto);
         return new ResponseEntity<>(contractor, HttpStatus.OK);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<Object> updateContractor(@RequestBody ContractorDto contractorDto) throws ValidationException {
+    @PutMapping
+    public ResponseEntity<Object> updater(@RequestBody ContractorDto contractorDto) throws ValidationException {
         ContractorDto contractor = contractorService.updateContractor(contractorDto);
         return new ResponseEntity<>(contractor, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<HttpResponse> deleteDepartment(@PathVariable String id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
         contractorService.deleteContractor(UUID.fromString(id));
         String message = String.format("Contractor with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
