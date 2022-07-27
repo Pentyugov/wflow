@@ -31,41 +31,41 @@ public class ProjectController  extends ExceptionHandling {
         this.projectService = projectService;
     }
 
-    @GetMapping("/get-all-projects")
+    @GetMapping
     public ResponseEntity<Object> getAllProjects() {
         List<ProjectDto> projects =
             projectService.getAllProjects().stream().map(projectService::createProjectDto).collect(Collectors.toList());
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 
-    @GetMapping("/get-available")
+    @GetMapping("/available")
     public ResponseEntity<Object> getAvailableProjects(Principal principal) throws UserNotFoundException {
         List<ProjectDto> projects = projectService.getAvailable(principal);
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 
-    @GetMapping("/get-by-id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable String id) throws ProjectNotFoundException {
         return new ResponseEntity<>(projectService.getProjectDtoById(UUID.fromString(id)), HttpStatus.OK);
     }
 
-    @PostMapping("/add-project")
+    @PostMapping
     public ResponseEntity<Object> addProject(@RequestBody ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException {
         Project project = projectService.createNewProject(projectDto);
         return new ResponseEntity<>(projectService.createProjectDto(project), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-project/{id}")
+    @PutMapping
+    public ResponseEntity<Object> updateProject(@RequestBody ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException {
+        Project project = projectService.updateProject(projectDto);
+        return new ResponseEntity<>(projectService.createProjectDto(project), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> deleteProject(@PathVariable String id) {
         projectService.deleteProject(UUID.fromString(id));
         String message = String.format("Project with id: %s was deleted", id);
         return response(message);
-    }
-
-    @PutMapping("/update-project")
-    public ResponseEntity<Object> updateProject(@RequestBody ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException {
-        Project project = projectService.updateProject(projectDto);
-        return new ResponseEntity<>(projectService.createProjectDto(project), HttpStatus.OK);
     }
 
     private ResponseEntity<HttpResponse> response(String message) {
