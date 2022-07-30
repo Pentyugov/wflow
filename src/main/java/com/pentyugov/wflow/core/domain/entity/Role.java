@@ -1,10 +1,16 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Collection;
 
 @Entity(name = "sec$Role")
 @Table(name = "SECURITY_ROLE")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Role extends BaseEntity {
 
     public static final String ADMIN = "ROLE_ADMIN";
@@ -23,40 +29,14 @@ public class Role extends BaseEntity {
     private String description;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "security_role_permission", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+    @JoinTable(name = "security_role_permission",
+            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
     private Collection<Permission> permissions;
-
-    public Collection<Permission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(Collection<Permission> permissions) {
-        this.permissions = permissions;
-    }
-
-    public Role() {
-
-    }
 
     public Role(String name) {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }
 

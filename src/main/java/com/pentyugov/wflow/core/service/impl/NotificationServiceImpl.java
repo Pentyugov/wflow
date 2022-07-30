@@ -1,5 +1,6 @@
 package com.pentyugov.wflow.core.service.impl;
 
+import com.pentyugov.wflow.core.domain.entity.Card;
 import com.pentyugov.wflow.core.domain.entity.Notification;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.NotificationDto;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.pentyugov.wflow.application.configuration.constant.ApplicationConstants.Websocket.*;
 import static com.pentyugov.wflow.application.configuration.constant.ApplicationConstants.Websocket.NOTIFICATION_DESTINATION;
 
 @Service(NotificationService.NAME)
@@ -92,6 +92,7 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
         notificationDto.setAccessoryType(notification.getAccessoryType());
         notificationDto.setRead(notification.getRead());
         notificationDto.setReceiverId(notification.getReceiver().getId());
+        notificationDto.setCardId(notification.getCard() != null ? notification.getCard().getId() : null);
         notificationDto.setCreateDate(Date.from(notification.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()));
         return notificationDto;
     }
@@ -108,15 +109,23 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
         notificationRepository.save(notification);
     }
 
-    public Notification createNotification(String title, String message, int type, int accessoryType, User receiver) {
+    public Notification createNotification(String title, String message, int type, int accessoryType, User receiver, Card card) {
         Notification notification = new Notification();
         notification.setTitle(title);
         notification.setMessage(message);
         notification.setType(type);
         notification.setAccessoryType(accessoryType);
         notification.setReceiver(receiver);
+        notification.setCard(card);
         notification.setRead(false);
         return notification;
+    }
+
+    @Override
+    public void createAndSendNotification(User user, String title, String message, int type, int accessoryType, Card card) {
+        Notification notification = createNotification(title, message, type, accessoryType, user, card);
+        saveNotification(notification);
+        sendNotificationWithWs(createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.pentyugov.wflow.core.service;
 
+import com.pentyugov.wflow.core.domain.entity.Card;
 import com.pentyugov.wflow.core.domain.entity.Notification;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.NotificationDto;
@@ -37,6 +38,8 @@ public interface NotificationService {
 
     void saveNotification(Notification notification);
 
-    Notification createNotification(String title, String message, int type, int accessoryType, User receiver);
+    Notification createNotification(String title, String message, int type, int accessoryType, User receiver, Card card);
+
+    void createAndSendNotification(User user, String title, String message, int type, int accessoryType, Card card);
 
 }

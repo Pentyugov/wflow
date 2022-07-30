@@ -39,6 +39,10 @@ public class Notification extends BaseEntity {
     @JoinColumn(name = "RECEIVER_ID")
     private User receiver;
 
+    @ManyToOne
+    @JoinColumn(name = "CARD_ID")
+    private Card card;
+
     public int getAccessoryType() {
         return accessoryType;
     }
@@ -77,6 +81,14 @@ public class Notification extends BaseEntity {
 
     public void setReceiver(User receiver) {
         this.receiver = receiver;
+    }
+
+    public Card getCard() {
+        return card;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
     }
 
     public Boolean getRead() {

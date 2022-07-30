@@ -29,4 +29,24 @@
 
     </changeSet>
 
+    <changeSet author="apentyugov" id="db-update_28072022-2035-changeset-alter-table-notifications-add-column-card">
+
+        <addColumn tableName="workflow_notification">
+            <column name="card_id" type="UUID"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="workflow_notification"
+                                 baseColumnNames="card_id"
+                                 constraintName="fkc3f84e0b-ea58-4725-865b-0de82b324aad"
+                                 referencedTableName="workflow_card"
+                                 referencedColumnNames="id"/>
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="workflow_notification"
+                                      constraintName="kc3f84e0b-ea58-4725-865b-0de82b324aad"/>
+            <dropColumn tableName="workflow_notification" columnName="card_id"/>
+        </rollback>
+
+    </changeSet>
+
 </databaseChangeLog>

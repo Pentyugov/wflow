@@ -1,5 +1,8 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -9,6 +12,9 @@ import java.util.Date;
 @Table(name = "WORKFLOW_TASK")
 @Where(clause="DELETE_DATE is null")
 @PrimaryKeyJoinColumn(name = "CARD_ID", referencedColumnName = "ID")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Task extends Card {
 
     @Transient
@@ -88,83 +94,4 @@ public class Task extends Card {
     @JoinColumn(name = "INITIATOR_ID")
     private User initiator;
 
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public Boolean getOverdue() {
-        return overdue;
-    }
-
-    public void setOverdue(Boolean overdue) {
-        this.overdue = overdue;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public Date getExecutionDatePlan() {
-        return executionDatePlan;
-    }
-
-    public void setExecutionDatePlan(Date executionDatePlan) {
-        this.executionDatePlan = executionDatePlan;
-    }
-
-    public Date getExecutionDateFact() {
-        return executionDateFact;
-    }
-
-    public void setExecutionDateFact(Date executionDateFact) {
-        this.executionDateFact = executionDateFact;
-    }
-
-    public String getKanbanState() {
-        return kanbanState;
-    }
-
-    public void setKanbanState(String kanbanState) {
-        this.kanbanState = kanbanState;
-    }
-
-    public Integer getKanbanOrder() {
-        return kanbanOrder;
-    }
-
-    public void setKanbanOrder(Integer kanbanOrder) {
-        this.kanbanOrder = kanbanOrder;
-    }
-
-    public User getExecutor() {
-        return executor;
-    }
-
-    public void setExecutor(User executor) {
-        this.executor = executor;
-    }
-
-    public User getInitiator() {
-        return initiator;
-    }
-
-    public void setInitiator(User initiator) {
-        this.initiator = initiator;
-    }
-
-    public Boolean getStarted() {
-        return started;
-    }
-
-    public void setStarted(Boolean started) {
-        this.started = started;
-    }
 }

@@ -11,6 +11,7 @@ import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.request.FiltersRequest;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -184,7 +185,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         User executor = task.getExecutor();
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.assigned.to.executor", task.getNumber());
-        Notification notification = notificationService.createNotification(title, message, Notification.INFO, Notification.WORKFLOW, executor);
+        Notification notification = notificationService.createNotification(title, message, Notification.INFO, Notification.WORKFLOW, executor, task);
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -198,7 +199,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         User executor = task.getExecutor();
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.canceled.to.executor", task.getNumber(), currentUser.getUsername());
-        Notification notification = notificationService.createNotification(title, message, Notification.WARNING, Notification.WORKFLOW, executor);
+        Notification notification = notificationService.createNotification(title, message, Notification.WARNING, Notification.WORKFLOW, executor, task);
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -212,7 +213,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         calendarEventService.deleteCalendarEventByCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.executed.to.initiator", task.getNumber(), currentUser.getUsername());
-        Notification notification = notificationService.createNotification(title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getInitiator());
+        Notification notification = notificationService.createNotification(title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getInitiator(), task);
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -226,7 +227,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         calendarEventService.addCalendarEventForCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.rework.to.executor", task.getNumber(), currentUser.getUsername());
-        Notification notification = notificationService.createNotification(title, message, Notification.DANGER, Notification.WORKFLOW, task.getExecutor());
+        Notification notification = notificationService.createNotification(title, message, Notification.DANGER, Notification.WORKFLOW, task.getExecutor(), task);
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -239,7 +240,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         taskRepository.save(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.finish.to.executor", task.getNumber(), currentUser.getUsername());
-        Notification notification = notificationService.createNotification(title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getExecutor());
+        Notification notification = notificationService.createNotification(title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getExecutor(), task);
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -455,8 +456,13 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     private void checkOverdue(Task task) {
         Date currentData = new Date();
         if (task.getExecutionDatePlan().before(currentData)) {
-            task.setOverdue(true);
-            taskRepository.save(task);
+            if (BooleanUtils.isNotTrue(task.getOverdue())) {
+                task.setOverdue(true);
+                String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
+                String message = getMessage(sourcePath, "notification.task.overdue", task.getNumber());
+                notificationService.createAndSendNotification(task.getExecutor(), title, message, Notification.DANGER, Notification.WORKFLOW, task);
+                taskRepository.save(task);
+            }
         }
     }
 
