@@ -20,6 +20,7 @@ public class ApplicationConstants {
                 "/api/user/image/**",
                 "/api/auth/**",
                 "/test/**",
+                "/api/v1/telegram/**",
                 "/ws/**"};
 //        public static final String [] PUBLIC_URLS = {"**"};
     }
@@ -80,7 +81,12 @@ public class ApplicationConstants {
             String SCREEN_ACTION_EDIT = "Edit";
             String SCREEN_ACTION_DELETE = "Delete";
         }
+    }
 
+    public interface TelBot {
+        String API_URL = "http://localhost:8090/api/v1";
+        String TASK_CONTROLLER = API_URL + "/tasks";
+        String POST_OVERDUE_TASKS_ENDPOINT = TASK_CONTROLLER + "/overdue";
     }
 
 

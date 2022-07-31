@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="apentyugov" id="db-update_31072022-0952-changeset-alter-table-users-add-tel-columns">
+
+        <addColumn tableName="security_users">
+            <column name="tel_user_id" type="NUMBER"/>
+        </addColumn>
+
+        <addColumn tableName="security_users">
+            <column name="tel_chat_id" type="NUMBER"/>
+        </addColumn>
+
+        <addColumn tableName="security_users">
+            <column name="tel_logged" type="BOOLEAN"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="security_users" columnName="tel_user_id"/>
+            <dropColumn tableName="security_users" columnName="tel_chat_id"/>
+            <dropColumn tableName="security_users" columnName="tel_logged"/>
+        </rollback>
+
+    </changeSet>
+
+
+
+</databaseChangeLog>

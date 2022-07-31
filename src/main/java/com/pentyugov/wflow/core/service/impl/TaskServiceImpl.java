@@ -52,10 +52,13 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     private final CalendarEventService calendarEventService;
     private final ProjectService projectService;
     private final FilterService filterService;
+    private final TelegramService telegramService;
 
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService, WorkflowService workflowService, IssueService issueService, CalendarEventService calendarEventService, ProjectService projectService, FilterService filterService) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService,
+                           WorkflowService workflowService, IssueService issueService, CalendarEventService calendarEventService,
+                           ProjectService projectService, FilterService filterService, TelegramService telegramService) {
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.notificationService = notificationService;
@@ -64,6 +67,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         this.calendarEventService = calendarEventService;
         this.projectService = projectService;
         this.filterService = filterService;
+        this.telegramService = telegramService;
     }
 
     public Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
@@ -460,7 +464,11 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
                 task.setOverdue(true);
                 String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
                 String message = getMessage(sourcePath, "notification.task.overdue", task.getNumber());
-                notificationService.createAndSendNotification(task.getExecutor(), title, message, Notification.DANGER, Notification.WORKFLOW, task);
+                User executor = task.getExecutor();
+                notificationService.createAndSendNotification(executor, title, message, Notification.DANGER, Notification.WORKFLOW, task);
+                if (executor.getTelLogged() && executor.getTelUserId() != null && executor.getTelChatId() != null) {
+                    telegramService.sendOverdueTaskMessage(executor, task);
+                }
                 taskRepository.save(task);
             }
         }

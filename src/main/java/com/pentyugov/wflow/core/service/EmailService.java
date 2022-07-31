@@ -24,5 +24,7 @@ public interface EmailService {
 
     void sentResetPasswordMail(User user, String rawPassword);
 
+    void sentTelegramVerificationCodeMail(User user, String code);
+
 
 }

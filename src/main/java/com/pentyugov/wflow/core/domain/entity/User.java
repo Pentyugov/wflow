@@ -87,11 +87,20 @@ public class User extends BaseEntity implements UserDetails {
     @Transient
     private Collection<? extends GrantedAuthority> authorities;
 
-    @Column(name="IS_ACTIVE", nullable = false)
+    @Column(name = "IS_ACTIVE", nullable = false)
     private boolean isActive;
 
-    @Column(name="IS_NOT_LOCKED", nullable = false)
+    @Column(name = "IS_NOT_LOCKED", nullable = false)
     private boolean isNotLocked;
+
+    @Column(name = "TEL_USER_ID")
+    private Long telUserId;
+
+    @Column(name = "TEL_CHAT_ID")
+    private Long telChatId;
+
+    @Column(name = "TEL_LOGGED")
+    private Boolean telLogged = Boolean.FALSE;
 
     public boolean isActive() {
         return isActive;
@@ -217,6 +226,30 @@ public class User extends BaseEntity implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Long getTelUserId() {
+        return telUserId;
+    }
+
+    public void setTelUserId(Long telUserId) {
+        this.telUserId = telUserId;
+    }
+
+    public Long getTelChatId() {
+        return telChatId;
+    }
+
+    public void setTelChatId(Long telChatId) {
+        this.telChatId = telChatId;
+    }
+
+    public Boolean getTelLogged() {
+        return telLogged;
+    }
+
+    public void setTelLogged(Boolean telLogged) {
+        this.telLogged = telLogged;
     }
 
     @PrePersist

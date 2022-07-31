@@ -173,6 +173,11 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     }
 
+    @Override
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
+
     public void deleteUser(UUID id) {
         userRepository.delete(id);
     }
@@ -264,7 +269,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     @Override
     public List<User> getAllWithPermission(String permission) {
-        return userRepository.finAllByPermission(permission.toUpperCase());
+        return userRepository.findAllByPermission(permission.toUpperCase());
     }
 
     public List<User> getUsersWithEmployee() {
@@ -480,5 +485,16 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     public void removeUserByUsername(String username) {
         userRepository.removeUserByUsername(username);
+    }
+
+    @Override
+    public List<User> findAllLoggedInTelegram() {
+        return userRepository.findAllLoggedInTelegram();
+    }
+
+    @Override
+    public User getUserByTelUserId(Long telUserId) throws UserNotFoundException {
+        return userRepository.findUserByTelUserId(telUserId).orElseThrow(() ->
+                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.id.not.found", telUserId)));
     }
 }

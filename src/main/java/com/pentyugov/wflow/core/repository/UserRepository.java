@@ -47,7 +47,15 @@ public interface UserRepository extends BaseRepository<User> {
 
     @Transactional(readOnly = true)
     @Query("select u from security$User u join u.roles r join r.permissions p where p.name LIKE CONCAT('%',:permission,'%')")
-    List<User> finAllByPermission(@Param("permission")String permission);
+    List<User> findAllByPermission(@Param("permission")String permission);
+
+    @Transactional(readOnly = true)
+    @Query("select u from security$User u where u.telChatId is not null and u.telUserId is not null and u.telLogged = TRUE")
+    List<User> findAllLoggedInTelegram();
+
+    @Transactional(readOnly = true)
+    @Query("select u from security$User u where u.telUserId = ?1")
+    Optional<User> findUserByTelUserId(Long telUserId);
 
     @Query("update #{#entityName} e set e.deleteDate = current_timestamp where e.id = ?1")
     @Transactional

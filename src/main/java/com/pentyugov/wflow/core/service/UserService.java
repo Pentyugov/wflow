@@ -26,6 +26,8 @@ public interface UserService {
 
     User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException, EmailIsEmptyException;
 
+    User updateUser(User user);
+
     void deleteUser(UUID id);
 
     void resetPassword(String email) throws UserNotFoundException;
@@ -73,4 +75,8 @@ public interface UserService {
     User deleteUserProfileImage(UUID id);
 
     void removeUserByUsername(String username);
+
+    List<User> findAllLoggedInTelegram();
+
+    User getUserByTelUserId(Long telUserId) throws UserNotFoundException;
 }

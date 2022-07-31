@@ -173,6 +173,32 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         saveSysMail(sysMail);
     }
 
+    @Async
+    public void sentTelegramVerificationCodeMail(User user, String code) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("recipient", user.getFullName());
+        templateModel.put("code", code);
+
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(templateModel);
+
+        String subject = messageService.getMessage(messagesPath, "resetPswSubject");
+        String htmlBody = templateEngine.process("verification-code.html", thymeleafContext);
+
+        SysMail sysMail = createSysMail(sender, user.getEmail(), subject, htmlBody);
+
+        try {
+            LOGGER.info("Sending mail with telegram verification code to {}", user.getEmail());
+            sendHtmlMessage(user.getEmail(), subject, htmlBody);
+            sysMail.setSendTime(LocalDateTime.now());
+            sysMail.setIsSend(true);
+        } catch (MessagingException exception) {
+            LOGGER.error(exception.getMessage());
+        }
+
+        saveSysMail(sysMail);
+    }
+
     private List<SysMail> getNotSendEmails() {
         return sysMailRepository.getNotSent();
     }
