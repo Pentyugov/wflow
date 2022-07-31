@@ -86,7 +86,8 @@ public class ApplicationConstants {
     public interface TelBot {
         String API_URL = "http://localhost:8090/api/v1";
         String TASK_CONTROLLER = API_URL + "/tasks";
-        String POST_OVERDUE_TASKS_ENDPOINT = TASK_CONTROLLER + "/overdue";
+        String TASKS_SEND_MESSAGE_ENDPOINT = TASK_CONTROLLER + "/send";
+
     }
 
 

@@ -193,6 +193,10 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
+
+        if (executor.getTelLogged() && executor.getTelUserId() != null && executor.getTelChatId() != null) {
+            telegramService.sendAssignedTaskMessage(executor, task);
+        }
         return getMessage(sourcePath, "notification.task.assigned.message", task.getNumber(), executor.getUsername());
     }
 

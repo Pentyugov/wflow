@@ -19,5 +19,7 @@ public interface TelegramService {
 
     boolean verifyCode(TelegramVerifyCodeRequest request) throws UserNotFoundException;
 
+    void sendAssignedTaskMessage(User user, Task task);
+
     void sendOverdueTaskMessage(User user, Task task);
 }

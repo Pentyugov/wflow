@@ -11,10 +11,10 @@ import com.pentyugov.wflow.core.service.TelegramService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.request.TelegramLoginUserRequest;
-import com.pentyugov.wflow.web.payload.request.TelegramOverdueTasksRequest;
+import com.pentyugov.wflow.web.payload.request.TelegramTaskSendMessageRequest;
 import com.pentyugov.wflow.web.payload.request.TelegramVerifyCodeRequest;
 import com.pentyugov.wflow.web.payload.response.TelegramLoginUserResponse;
-import com.pentyugov.wflow.web.payload.response.TelegramOverdueTasksResponse;
+import com.pentyugov.wflow.web.payload.response.TelegramTaskSendMessageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -90,8 +90,19 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     @Override
+    public void sendAssignedTaskMessage(User user, Task task) {
+        sendTaskMessage(user, task, TelegramTaskSendMessageRequest.TYPE_ASSIGNED);
+    }
+
+
+    @Override
     public void sendOverdueTaskMessage(User user, Task task) {
-        TelegramOverdueTasksRequest request = new TelegramOverdueTasksRequest();
+        sendTaskMessage(user, task, TelegramTaskSendMessageRequest.TYPE_OVERDUE);
+    }
+
+    private void sendTaskMessage(User user, Task task, Integer type) {
+        TelegramTaskSendMessageRequest request = new TelegramTaskSendMessageRequest();
+        request.setType(type);
         request.setTelUserId(user.getTelUserId());
         request.setTelChatId(user.getTelChatId());
         request.setTask(createTelegramTaskDto(task));
@@ -99,23 +110,24 @@ public class TelegramServiceImpl implements TelegramService {
         RestTemplate template = new RestTemplate();
 
         try {
-            template.postForObject(ApplicationConstants.TelBot.POST_OVERDUE_TASKS_ENDPOINT, request, TelegramOverdueTasksResponse.class);
+            template.postForObject(ApplicationConstants.TelBot.TASKS_SEND_MESSAGE_ENDPOINT, request, TelegramTaskSendMessageResponse.class);
         } catch (HttpClientErrorException e) {
             logger.error(e.getMessage());
         }
     }
 
-    public TelegramTaskDto createTelegramTaskDto(Task task) {
+    private TelegramTaskDto createTelegramTaskDto(Task task) {
         TelegramTaskDto taskDto = new TelegramTaskDto();
         taskDto.setNumber(task.getNumber());
         taskDto.setDescription(task.getDescription());
         taskDto.setDueDate(task.getExecutionDatePlan());
         taskDto.setPriority(task.getPriority());
+        taskDto.setComment(task.getComment());
         taskDto.setProject(task.getProject() != null ? task.getProject().getName() : null);
         return taskDto;
     }
 
-    public TelegramUserDto createTelegramUserDto(User user) {
+    private TelegramUserDto createTelegramUserDto(User user) {
         TelegramUserDto telegramUserDto = new TelegramUserDto();
         telegramUserDto.setUserId(user.getId());
         telegramUserDto.setTelUserId(user.getTelUserId());
