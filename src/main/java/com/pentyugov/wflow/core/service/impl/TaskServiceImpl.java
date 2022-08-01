@@ -3,6 +3,7 @@ package com.pentyugov.wflow.core.service.impl;
 import com.pentyugov.wflow.core.domain.entity.*;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
+import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import com.pentyugov.wflow.core.repository.TaskRepository;
 import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
@@ -71,7 +72,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     public Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
-        Task task = createTaskFromProxy(taskDto);
+        Task task = createTaskFromDto(taskDto);
         task.setState(Task.STATE_CREATED);
         User creator = userService.getUserByPrincipal(principal);
         task.setCreator(creator);
@@ -84,7 +85,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     public Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
-        Task task = createTaskFromProxy(taskDto);
+        Task task = createTaskFromDto(taskDto);
         return taskRepository.save(task);
     }
 
@@ -289,7 +290,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
 
-    public Task createTaskFromProxy(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
+    public Task createTaskFromDto(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
         Task task;
         if (taskDto.getId() != null) {
             task = taskRepository.getById(taskDto.getId());
@@ -351,17 +352,17 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         if (userService.isUserAdmin(currentUser)) {
             return taskRepository.findAll()
                     .stream()
-                    .map(this::createProxyFromTask)
+                    .map(this::createDto)
                     .collect(Collectors.toList());
         }
 
         return taskRepository.findAllForUser(currentUser.getId())
                 .stream()
-                .map(this::createProxyFromTask)
+                .map(this::createDto)
                 .collect(Collectors.toList());
     }
 
-    public TaskDto createProxyFromTask(Task task) {
+    public TaskDto createDto(Task task) {
         TaskDto taskDto = new TaskDto();
         taskDto.setId(task.getId());
 
@@ -396,6 +397,18 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         long days = getDaysUntilDueDate(taskDto.getExecutionDatePlan());
         taskDto.setDaysUntilDueDate(days);
 
+        return taskDto;
+    }
+
+    @Override
+    public TelegramTaskDto createTelegramDto(Task task) {
+        TelegramTaskDto taskDto = new TelegramTaskDto();
+        taskDto.setNumber(task.getNumber());
+        taskDto.setDescription(task.getDescription());
+        taskDto.setDueDate(task.getExecutionDatePlan());
+        taskDto.setPriority(task.getPriority());
+        taskDto.setComment(task.getComment());
+        taskDto.setProject(task.getProject() != null ? task.getProject().getName() : null);
         return taskDto;
     }
 

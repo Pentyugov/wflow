@@ -4,6 +4,7 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
+import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
@@ -57,13 +58,15 @@ public interface TaskService {
 
     List<CardHistoryDto> getTaskHistory(Task task);
 
-    Task createTaskFromProxy(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
+    Task createTaskFromDto(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
 
     List<Task> getAllTasks();
 
     List<TaskDto> getAllTaskDto(Principal principal) throws UserNotFoundException;
 
-    TaskDto createProxyFromTask(Task task);
+    TaskDto createDto(Task task);
+
+    TelegramTaskDto createTelegramDto(Task task);
 
     String getNextTaskNumber();
 

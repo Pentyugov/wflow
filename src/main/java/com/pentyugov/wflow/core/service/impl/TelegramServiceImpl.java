@@ -7,6 +7,7 @@ import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import com.pentyugov.wflow.core.dto.TelegramUserDto;
 import com.pentyugov.wflow.core.service.EmailService;
+import com.pentyugov.wflow.core.service.TaskService;
 import com.pentyugov.wflow.core.service.TelegramService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
