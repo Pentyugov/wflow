@@ -5,8 +5,6 @@ import com.pentyugov.wflow.core.dto.RoleDto;
 import com.pentyugov.wflow.core.dto.UserDto;
 import com.pentyugov.wflow.web.exception.*;
 import com.pentyugov.wflow.web.payload.request.SignUpRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 
 import java.security.Principal;
 import java.util.List;
@@ -18,15 +16,13 @@ public interface UserService {
 
     User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException;
 
-    User addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException;
+    void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException;
 
-    User updateLastLoginDate(User user);
-
-    User updateUser(UserDto userDto, String profileImageUrl) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException, EmailIsEmptyException;
+    void updateLastLoginDate(User user);
 
     User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException, EmailIsEmptyException;
 
-    User updateUser(User user);
+    void updateUser(User user);
 
     void deleteUser(UUID id);
 
@@ -50,13 +46,9 @@ public interface UserService {
 
     List<User> getAllWithAnyRole(String roleName);
 
-    List<User> getAllWithPermission(String permission);
-
     List<User> getUsersWithEmployee();
 
     List<User> getUsersWithoutEmployee();
-
-    Page<User> getPageOfUsers(int page, int size, Sort.Direction direction, String sortBy);
 
     User createUserFromDto(UserDto userDto);
 
@@ -73,8 +65,6 @@ public interface UserService {
     boolean isUserInRole(User user, String roleName);
 
     User deleteUserProfileImage(UUID id);
-
-    void removeUserByUsername(String username);
 
     List<User> findAllLoggedInTelegram();
 

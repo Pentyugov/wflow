@@ -1,9 +1,15 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity(name = "workflow$ChatMessage")
 @Table(name = "WORKFLOW_CHAT_MESSAGE")
 @Where(clause="DELETE_DATE is null")
@@ -30,44 +36,4 @@ public class ChatMessage extends BaseEntity {
     @JoinColumn(name = "RECIPIENT_ID")
     private User recipient;
 
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public User getSender() {
-        return sender;
-    }
-
-    public void setSender(User sender) {
-        this.sender = sender;
-    }
-
-    public User getRecipient() {
-        return recipient;
-    }
-
-    public void setRecipient(User recipient) {
-        this.recipient = recipient;
-    }
-
-    public String getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(String chatId) {
-        this.chatId = chatId;
-    }
 }

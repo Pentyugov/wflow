@@ -15,8 +15,6 @@ public interface PositionService {
 
     List<Position> getAllPositions();
 
-    Position getByName(String name) throws PositionNotFoundException;
-
     Position createNewPosition(PositionDto positionDto) throws PositionExistException;
 
     Position updatePosition(PositionDto positionDto) throws PositionExistException;
@@ -26,8 +24,6 @@ public interface PositionService {
     Position getById(UUID id) throws PositionNotFoundException;
 
     PositionDto createPositionDtoFromPosition(Position position);
-
-    Position createPositionFromPositionDto(PositionDto positionDto);
 
     void deletePosition(UUID id);
 

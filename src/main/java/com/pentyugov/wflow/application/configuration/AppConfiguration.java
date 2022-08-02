@@ -1,4 +1,4 @@
-package com.pentyugov.wflow.application;
+package com.pentyugov.wflow.application.configuration;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;

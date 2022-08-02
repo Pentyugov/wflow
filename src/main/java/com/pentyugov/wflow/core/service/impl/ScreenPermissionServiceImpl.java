@@ -7,8 +7,8 @@ import com.pentyugov.wflow.core.repository.ScreenPermissionRepository;
 import com.pentyugov.wflow.core.service.ScreenPermissionService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -17,18 +17,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service(ScreenPermissionService.NAME)
+@RequiredArgsConstructor
 public class ScreenPermissionServiceImpl implements ScreenPermissionService {
 
     private final UserService userService;
     private final ScreenPermissionRepository screenPermissionRepository;
     private final ModelMapper modelMapper;
-
-    @Autowired
-    public ScreenPermissionServiceImpl(UserService userService, ScreenPermissionRepository screenPermissionRepository, ModelMapper modelMapper) {
-        this.userService = userService;
-        this.screenPermissionRepository = screenPermissionRepository;
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public List<ScreenPermissionDto> loadScreenPermissionForCurrentUser(Principal principal) throws UserNotFoundException {

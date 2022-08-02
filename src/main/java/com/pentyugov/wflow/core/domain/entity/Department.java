@@ -1,9 +1,15 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity(name = "workflow$Department")
 @Table(name = "WORKFLOW_DEPARTMENT")
 @Where(clause="DELETE_DATE is null")
@@ -25,43 +31,4 @@ public class Department extends BaseEntity {
     @JoinColumn(name = "PARENT_DEPARTMENT_ID")
     private Department parentDepartment;
 
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Department getParentDepartment() {
-        return parentDepartment;
-    }
-
-    public void setParentDepartment(Department parentDepartment) {
-        this.parentDepartment = parentDepartment;
-    }
-
-    public Boolean getHead() {
-        return head;
-    }
-
-    public void setHead(Boolean head) {
-        this.head = head;
-    }
 }

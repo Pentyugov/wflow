@@ -56,7 +56,7 @@ public class ProjectController  extends ExceptionHandling {
     }
 
     @PutMapping
-    public ResponseEntity<Object> updateProject(@RequestBody ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException {
+    public ResponseEntity<Object> updateProject(@RequestBody ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException {
         Project project = projectService.updateProject(projectDto);
         return new ResponseEntity<>(projectService.createProjectDto(project), HttpStatus.OK);
     }

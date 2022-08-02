@@ -8,7 +8,6 @@ import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,7 @@ public class ChatController extends AbstractController {
     }
 
     @MessageMapping("/chat")
-    public void processMessage(@Payload ChatMessageDto chatMessageDto, SimpMessageHeaderAccessor accessor) throws UserNotFoundException {
+    public void processMessage(@Payload ChatMessageDto chatMessageDto) throws UserNotFoundException {
         ChatMessage chatMessage = chatMessageService.createChatMessageFromProxy(chatMessageDto);
 
         Optional<String> chatId = chatRoomService

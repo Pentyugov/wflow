@@ -1,9 +1,17 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "security$UserSettings")
 @Table(name = "SYSTEM_USER_SETTINGS")
 @Where(clause="DELETE_DATE is null")
@@ -12,7 +20,6 @@ public class UserSettings extends BaseEntity {
     public static final Integer THEME_BLUE = 10;
     public static final Integer THEME_RED = 20;
     public static final Integer THEME_GREEN = 30;
-
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
@@ -36,59 +43,4 @@ public class UserSettings extends BaseEntity {
     @Column(name = "WIDGET_SETTINGS", length = 1000)
     private String widgetSettings;
 
-    public String getLocale() {
-        return locale;
-    }
-
-    public void setLocale(String locale) {
-        this.locale = locale;
-    }
-
-    public Boolean getMiniSidebar() {
-        return miniSidebar;
-    }
-
-    public void setMiniSidebar(Boolean miniSidebar) {
-        this.miniSidebar = miniSidebar;
-    }
-
-    public Boolean getDarkTheme() {
-        return darkTheme;
-    }
-
-    public void setDarkTheme(Boolean darkTheme) {
-        this.darkTheme = darkTheme;
-    }
-
-    public Integer getThemeColor() {
-        return themeColor;
-    }
-
-    public void setThemeColor(Integer themeColor) {
-        this.themeColor = themeColor;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Boolean getEnableChatNotificationSound() {
-        return enableChatNotificationSound;
-    }
-
-    public void setEnableChatNotificationSound(Boolean enableChatNotificationSound) {
-        this.enableChatNotificationSound = enableChatNotificationSound;
-    }
-
-    public String getWidgetSettings() {
-        return widgetSettings;
-    }
-
-    public void setWidgetSettings(String widgetSettings) {
-        this.widgetSettings = widgetSettings;
-    }
 }

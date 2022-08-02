@@ -4,18 +4,15 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
-import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
-import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.FiltersRequest;
+import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
-import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface TaskService {
@@ -23,8 +20,6 @@ public interface TaskService {
     String NAME = "wflow$TaskService";
 
     Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException;
-
-    Task saveTask(Task task);
 
     Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
 
@@ -50,12 +45,6 @@ public interface TaskService {
 
     String finishTask(Task task, User currentUser, String comment);
 
-    List<Task> getPriorityTasksForUser(int priority, Principal principal) throws UserNotFoundException;
-
-    List<Task> getTasksWhereCurrentUserExecutor(int priority, Principal principal) throws UserNotFoundException;
-
-    Page<Task> getPageForCurrentUser(Optional<Integer> page, Optional<String> sortBy, Principal principal) throws UserNotFoundException;
-
     List<CardHistoryDto> getTaskHistory(Task task);
 
     Task createTaskFromDto(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
@@ -66,14 +55,10 @@ public interface TaskService {
 
     TaskDto createDto(Task task);
 
-    TelegramTaskDto createTelegramDto(Task task);
-
     String getNextTaskNumber();
 
     void changeKanbanState(KanbanRequest[] kanbanRequest) throws TaskNotFoundException;
 
     void checkOverdueTasks();
-
-
 
 }

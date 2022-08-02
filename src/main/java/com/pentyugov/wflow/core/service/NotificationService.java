@@ -22,8 +22,6 @@ public interface NotificationService {
 
     List<Notification> getNotificationsForCurrentUser(Principal principal) throws UserNotFoundException;
 
-    Page<Notification> getNotificationPageForCurrentUser(Optional<Integer> page, Optional<String> sortBy, Principal principal) throws UserNotFoundException;
-
     List<Notification> getNotificationsByReceiverId(UUID receiverId);
 
     Notification createNewNotification(NotificationDto notificationDto) throws UserNotFoundException;

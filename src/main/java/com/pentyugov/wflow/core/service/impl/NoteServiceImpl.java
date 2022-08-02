@@ -5,6 +5,7 @@ import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.NoteDto;
 import com.pentyugov.wflow.core.repository.NoteRepository;
 import com.pentyugov.wflow.core.service.NoteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +17,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Service(NoteService.NAME)
+@RequiredArgsConstructor
 public class NoteServiceImpl extends AbstractService implements NoteService {
 
     private final NoteRepository noteRepository;
-
-    @Autowired
-    public NoteServiceImpl(NoteRepository noteRepository) {
-        this.noteRepository = noteRepository;
-    }
 
     public List<NoteDto> getNotesByUser(UUID userId) {
         List<NoteDto> result = new ArrayList<>();

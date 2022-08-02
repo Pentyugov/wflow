@@ -24,9 +24,6 @@ public interface TaskRepository extends BaseRepository<Task> {
     List<Task> findAllByPriorityWhereUserExecutor(int priority, UUID userId, List<Card> cards);
 
     @Transactional(readOnly = true)
-    Page<Task> findAllByExecutorIdOrInitiatorIdOrCreatorId(Pageable pageable, UUID var1, UUID var2, UUID var3);
-
-    @Transactional(readOnly = true)
     Page<Task> findByIdInOrInitiatorId(Collection<UUID> id, UUID initiatorId, Pageable pageable);
 
     @Transactional(readOnly = true)

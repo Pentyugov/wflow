@@ -5,20 +5,16 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.service.IssueService;
 import com.pentyugov.wflow.core.service.WorkflowService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 @Service(WorkflowService.NAME)
+@RequiredArgsConstructor
 public class WorkflowServiceImpl implements WorkflowService {
 
     private final IssueService issueService;
-
-    @Autowired
-    public WorkflowServiceImpl(IssueService issueService) {
-        this.issueService = issueService;
-    }
 
     public Task startTaskProcess(Task task, User currentUser) {
         Issue issue = issueService.createIssue(task, currentUser, task.getInitiator(), task.getExecutor());

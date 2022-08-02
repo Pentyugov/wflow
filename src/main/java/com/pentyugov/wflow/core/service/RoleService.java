@@ -28,7 +28,5 @@ public interface RoleService {
 
     Role getRoleById(UUID id);
 
-    List<Role> getRolesByName(List<String> names);
-
     boolean deleteRole(Role role);
 }

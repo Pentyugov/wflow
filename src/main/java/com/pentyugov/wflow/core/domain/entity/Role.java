@@ -5,12 +5,12 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Collection;
 
-@Entity(name = "sec$Role")
-@Table(name = "SECURITY_ROLE")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity(name = "sec$Role")
+@Table(name = "SECURITY_ROLE")
 public class Role extends BaseEntity {
 
     public static final String ADMIN = "ROLE_ADMIN";

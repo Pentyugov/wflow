@@ -1,21 +1,17 @@
 package com.pentyugov.wflow.web.payload.response;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class NumeratorResponse {
 
-    public NumeratorResponse() {
-
-    }
-
-    public NumeratorResponse(String number) {
-        this.number = number;
-    }
     private String number;
 
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
 }

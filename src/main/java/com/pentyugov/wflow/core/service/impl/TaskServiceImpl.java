@@ -1,9 +1,11 @@
 package com.pentyugov.wflow.core.service.impl;
 
-import com.pentyugov.wflow.core.domain.entity.*;
+import com.pentyugov.wflow.core.domain.entity.Issue;
+import com.pentyugov.wflow.core.domain.entity.Notification;
+import com.pentyugov.wflow.core.domain.entity.Task;
+import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
-import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import com.pentyugov.wflow.core.repository.TaskRepository;
 import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
@@ -15,9 +17,6 @@ import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -77,10 +76,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         User creator = userService.getUserByPrincipal(principal);
         task.setCreator(creator);
         task.setInitiator(creator);
-        return taskRepository.save(task);
-    }
-
-    public Task saveTask(Task task) {
         return taskRepository.save(task);
     }
 
@@ -171,11 +166,16 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         String action = taskSignalProcRequest.getAction().toUpperCase();
 
         switch (action) {
-            case Task.ACTION_START   : return this.startTask(task, currentUser);
-            case Task.ACTION_FINISH  : return this.finishTask(task, currentUser, taskSignalProcRequest.getComment());
-            case Task.ACTION_EXECUTE : return this.executeTask(task, currentUser, taskSignalProcRequest.getComment());
-            case Task.ACTION_REWORK  : return this.reworkTask(task, currentUser, taskSignalProcRequest.getComment());
-            case Task.ACTION_CANCEL  : return this.cancelTask(task, currentUser, taskSignalProcRequest.getComment());
+            case Task.ACTION_START:
+                return this.startTask(task, currentUser);
+            case Task.ACTION_FINISH:
+                return this.finishTask(task, currentUser, taskSignalProcRequest.getComment());
+            case Task.ACTION_EXECUTE:
+                return this.executeTask(task, currentUser, taskSignalProcRequest.getComment());
+            case Task.ACTION_REWORK:
+                return this.reworkTask(task, currentUser, taskSignalProcRequest.getComment());
+            case Task.ACTION_CANCEL:
+                return this.cancelTask(task, currentUser, taskSignalProcRequest.getComment());
         }
 
         return null;
@@ -257,31 +257,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.finish.message", task.getNumber());
     }
 
-    public List<Task> getPriorityTasksForUser(int priority, Principal principal) throws UserNotFoundException {
-        return taskRepository.findAllByPriorityForUser(priority, userService.getUserByPrincipal(principal).getId());
-    }
-
-    public List<Task> getTasksWhereCurrentUserExecutor(int priority, Principal principal) throws UserNotFoundException {
-        List<Card> cards = issueService.getCardsByExecutor(userService.getUserByPrincipal(principal));
-        return taskRepository.findAllByPriorityWhereUserExecutor(priority, userService.getUserByPrincipal(principal).getId(), cards);
-    }
-
-    public Page<Task> getPageForCurrentUser(Optional<Integer> page, Optional<String> sortBy, Principal principal) throws UserNotFoundException {
-        User currentUser = userService.getUserByPrincipal(principal);
-        List<? extends Card> cards;
-        if (userService.isUserAdmin(currentUser)) {
-            cards = taskRepository.findAll();
-        } else {
-            cards = issueService.getAllCardsForUser(currentUser);
-        }
-
-        List<UUID> ids = cards.stream().map(Card::getId).collect(Collectors.toList());
-        return taskRepository.findByIdInOrInitiatorId(ids, currentUser.getId(), PageRequest.of(
-                page.orElse(0),
-                10,
-                Sort.Direction.DESC, sortBy.orElse("createDate")));
-    }
-
     public List<CardHistoryDto> getTaskHistory(Task task) {
         List<Issue> issues = issueService.getAllIssuesByCard(task);
         List<CardHistoryDto> result = new ArrayList<>();
@@ -291,12 +266,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
 
     public Task createTaskFromDto(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
-        Task task;
-        if (taskDto.getId() != null) {
-            task = taskRepository.getById(taskDto.getId());
-        } else {
-            task = new Task();
-        }
+        Task task = taskRepository.findById(taskDto.getId()).orElse(new Task());
 
         if (!ObjectUtils.isEmpty(taskDto.getProject())) {
             task.setProject(projectService.getProjectById(taskDto.getProject().getId()));
@@ -401,18 +371,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public TelegramTaskDto createTelegramDto(Task task) {
-        TelegramTaskDto taskDto = new TelegramTaskDto();
-        taskDto.setNumber(task.getNumber());
-        taskDto.setDescription(task.getDescription());
-        taskDto.setDueDate(task.getExecutionDatePlan());
-        taskDto.setPriority(task.getPriority());
-        taskDto.setComment(task.getComment());
-        taskDto.setProject(task.getProject() != null ? task.getProject().getName() : null);
-        return taskDto;
-    }
-
-    @Override
     public String getNextTaskNumber() {
         List<String> numbers = taskRepository.findAll().stream().map(Task::getNumber).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(numbers)) {
@@ -420,21 +378,21 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
             numbers.forEach(nextNumber -> {
                 if (nextNumber.startsWith(TASK_PREFIX)) {
-                   nextNumber = nextNumber.replace(TASK_PREFIX, "");
-                   if (Character.isDigit(nextNumber.charAt(0))) {
-                       StringBuilder num = new StringBuilder();
+                    nextNumber = nextNumber.replace(TASK_PREFIX, "");
+                    if (Character.isDigit(nextNumber.charAt(0))) {
+                        StringBuilder num = new StringBuilder();
 
-                       for (int i = 0; i < nextNumber.length(); i++) {
-                           if (Character.isDigit(nextNumber.charAt(i))) {
-                               num.append(nextNumber.charAt(i));
-                           } else {
-                               break;
-                           }
-                       }
-                       Integer number = parseNumber(num.toString());
-                       if (number != null)
-                           result.add(number);
-                   }
+                        for (int i = 0; i < nextNumber.length(); i++) {
+                            if (Character.isDigit(nextNumber.charAt(i))) {
+                                num.append(nextNumber.charAt(i));
+                            } else {
+                                break;
+                            }
+                        }
+                        Integer number = parseNumber(num.toString());
+                        if (number != null)
+                            result.add(number);
+                    }
                 }
             });
 
@@ -483,7 +441,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
                 String message = getMessage(sourcePath, "notification.task.overdue", task.getNumber());
                 User executor = task.getExecutor();
                 notificationService.createAndSendNotification(executor, title, message, Notification.DANGER, Notification.WORKFLOW, task);
-                if (executor.getTelLogged() && executor.getTelUserId() != null && executor.getTelChatId() != null) {
+                if (BooleanUtils.isTrue(executor.getTelLogged()) && executor.getTelUserId() != null && executor.getTelChatId() != null) {
                     telegramService.sendOverdueTaskMessage(executor, task);
                 }
                 taskRepository.save(task);

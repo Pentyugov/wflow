@@ -49,7 +49,7 @@ public class NotificationController extends ExceptionHandling {
 
     @GetMapping("/page")
     public List<NotificationDto> getPage(@RequestParam Optional<Integer> page,
-                                                     @RequestParam Optional<String> sortBy) {
+                                         @RequestParam Optional<String> sortBy) {
         List<NotificationDto> result = new ArrayList<>();
         notificationService.getNotificationPage(page, sortBy).getContent().forEach(notification -> {
             result.add(notificationService.createNotificationDtoFromNotification(notification));

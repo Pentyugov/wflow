@@ -12,11 +12,9 @@ import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.ContractorNotFoundException;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -30,6 +28,7 @@ import java.util.stream.Collectors;
 import static com.pentyugov.wflow.core.domain.entity.Role.PROJECT_MANAGER;
 
 @Service(ProjectService.NAME)
+@RequiredArgsConstructor
 public class ProjectServiceIImpl extends AbstractService implements ProjectService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceIImpl.class);
@@ -38,22 +37,6 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
     private final ProjectParticipantRepository projectParticipantRepository;
     private final UserService userService;
     private final ContractorService contractorService;
-    private final ModelMapper modelMapper;
-
-    @Autowired
-    public ProjectServiceIImpl(ProjectRepository projectRepository, ProjectParticipantRepository projectParticipantRepository, UserService userService, ContractorService contractorService, ModelMapper modelMapper) {
-        this.projectRepository = projectRepository;
-        this.projectParticipantRepository = projectParticipantRepository;
-        this.userService = userService;
-        this.contractorService = contractorService;
-        this.modelMapper = modelMapper;
-
-        TypeMap<ProjectDto, Project> propertyMapper = this.modelMapper.createTypeMap(ProjectDto.class, Project.class);
-        propertyMapper.addMappings(mapper -> {
-            mapper.skip(Project::setProjectManager);
-            mapper.skip(Project::setContractor);
-        });
-    }
 
     @Override
     public List<Project> getAllProjects() {
@@ -118,8 +101,10 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
 
     @Override
     @Transactional
-    public Project updateProject(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException {
-        Project project = projectRepository.getById(projectDto.getId());
+    public Project updateProject(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException {
+        Project project = projectRepository.findById(projectDto.getId()).orElseThrow(
+                () -> new ProjectNotFoundException(getMessage("exception.user.with.id.not.found", projectDto.getId().toString()))
+        );
         project.setName(projectDto.getName());
         project.setCode(projectDto.getCode());
         project.setStatus(projectDto.getStatus());
@@ -131,9 +116,9 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
         }
         project.setProjectParticipants(updateProjectParticipants(
                 project, projectDto.getParticipants()
-                .stream()
-                .map(userService::createUserFromDto)
-                .collect(Collectors.toList())));
+                        .stream()
+                        .map(userService::createUserFromDto)
+                        .collect(Collectors.toList())));
 
         if (!ObjectUtils.isEmpty(projectDto.getContractor())) {
             project.setContractor(contractorService.getContractorById(projectDto.getContractor().getId()));
@@ -186,10 +171,10 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
         projectDto.setDueDate(project.getDueDate());
         projectDto.setConclusionDate(project.getConclusionDate());
         projectDto.setParticipants(project
-                  .getProjectParticipants()
-                  .stream()
-                  .map(projectParticipant -> userService.createUserDtoFromUser(projectParticipant.getUser()))
-                  .collect(Collectors.toList()));
+                .getProjectParticipants()
+                .stream()
+                .map(projectParticipant -> userService.createUserDtoFromUser(projectParticipant.getUser()))
+                .collect(Collectors.toList()));
         projectDto.setProjectManager(userService.createUserDtoFromUser(project.getProjectManager()));
 
         if (project.getContractor() != null) {

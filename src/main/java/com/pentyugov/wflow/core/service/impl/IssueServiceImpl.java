@@ -8,6 +8,7 @@ import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.repository.IssueRepository;
 import com.pentyugov.wflow.core.service.IssueService;
 import com.pentyugov.wflow.core.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -16,34 +17,18 @@ import java.util.Date;
 import java.util.List;
 
 @Service(IssueService.NAME)
+@RequiredArgsConstructor
 public class IssueServiceImpl extends AbstractService implements IssueService {
 
     private final IssueRepository issueRepository;
     private final UserService userService;
 
-    public IssueServiceImpl(IssueRepository issueRepository, UserService userService) {
-        this.issueRepository = issueRepository;
-        this.userService = userService;
-    }
-
+    @Override
     public Issue saveIssue(Issue issue) {
         return issueRepository.save(issue);
     }
 
-
-    public List<Issue> getIssuesByInitiator(User initiator) {
-        return issueRepository.findAllByInitiatorId(initiator.getId());
-    }
-
-    public List<Issue> getIssuesByExecutor(User executor) {
-        return issueRepository.findAllByExecutorId(executor.getId());
-    }
-
-
-    public List<Card> getCardsByInitiator(User initiator) {
-        return issueRepository.findCardByInitiatorId(initiator.getId());
-    }
-
+    @Override
     public List<Card> getCardsByExecutor(User executor) {
         return issueRepository.findCardByExecutorId(executor.getId(), Arrays.asList(Task.STATE_ASSIGNED, Task.STATE_REWORK));
     }
@@ -57,6 +42,7 @@ public class IssueServiceImpl extends AbstractService implements IssueService {
         return issueRepository.findCardByExecutorIdAndResult(user.getId(), result);
     }
 
+    @Override
     public Issue createIssue(Card card, User currentUser, User initiator, User executor) {
         Issue issue = new Issue();
         issue.setCard(card);
@@ -66,10 +52,12 @@ public class IssueServiceImpl extends AbstractService implements IssueService {
         return issue;
     }
 
+    @Override
     public List<Issue> getAllIssuesByCard(Card card) {
         return issueRepository.findAllByCardId(card.getId());
     }
 
+    @Override
     public CardHistoryDto createCardHistoryDto(Issue issue) {
         CardHistoryDto cardHistoryDto = new CardHistoryDto();
         cardHistoryDto.setId(issue.getId());

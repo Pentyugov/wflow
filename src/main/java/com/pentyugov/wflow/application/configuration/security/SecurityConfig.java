@@ -4,6 +4,7 @@ import com.pentyugov.wflow.application.configuration.constant.ApplicationConstan
 import com.pentyugov.wflow.application.configuration.security.jwt.JWTAuthenticationEntryPoint;
 import com.pentyugov.wflow.application.configuration.security.jwt.JWTAuthorizationFilter;
 import com.pentyugov.wflow.core.service.impl.WflowUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +21,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    @Autowired
-    private WflowUserDetailsService userDetailsService;
+
+    private final JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final WflowUserDetailsService userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -36,8 +37,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/test/**").permitAll()
-                .antMatchers("/v3/**").permitAll()
                 .antMatchers(ApplicationConstants.Security.PUBLIC_URLS).permitAll()
                 .anyRequest().authenticated()
                 .and()

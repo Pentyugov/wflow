@@ -25,7 +25,7 @@ public interface ProjectService {
 
     ProjectDto createProjectDto(Project project);
 
-    Project updateProject(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException;
+    Project updateProject(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException;
 
     void deleteProject(UUID id);
 

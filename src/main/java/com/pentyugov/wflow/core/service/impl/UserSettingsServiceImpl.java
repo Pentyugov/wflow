@@ -12,7 +12,7 @@ import com.pentyugov.wflow.core.repository.UserSettingsRepository;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.core.service.UserSettingsService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -21,16 +21,11 @@ import java.util.List;
 import java.util.Locale;
 
 @Service(UserSettingsService.NAME)
+@RequiredArgsConstructor
 public class UserSettingsServiceImpl extends AbstractService implements UserSettingsService {
 
     private final UserSettingsRepository userSettingsRepository;
     private final UserService userService;
-
-    @Autowired
-    public UserSettingsServiceImpl(UserSettingsRepository userSettingsRepository, UserService userService) {
-        this.userSettingsRepository = userSettingsRepository;
-        this.userService = userService;
-    }
 
     public UserSettings getUserSettings(User user) {
         UserSettings userSettings = userSettingsRepository.findUserSettingsForUser(user.getId()).orElse(null);

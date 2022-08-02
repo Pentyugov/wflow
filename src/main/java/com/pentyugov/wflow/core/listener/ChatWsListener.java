@@ -28,7 +28,6 @@ public class ChatWsListener {
             String sessionId = (String) event.getMessage().getHeaders().get("simpSessionId");
             userWsSessionService.addUserSessionToCache(sessionId, userId);
         }
-
     }
 
     @EventListener

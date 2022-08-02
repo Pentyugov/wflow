@@ -9,7 +9,7 @@ import com.pentyugov.wflow.core.repository.PermissionRepository;
 import com.pentyugov.wflow.core.repository.RoleRepository;
 import com.pentyugov.wflow.core.repository.UserRepository;
 import com.pentyugov.wflow.core.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -19,18 +19,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service(RoleService.NAME)
+@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final UserRepository userRepository;
-
-    @Autowired
-    public RoleServiceImpl(RoleRepository roleRepository, PermissionRepository permissionRepository, UserRepository userRepository1) {
-        this.roleRepository = roleRepository;
-        this.permissionRepository = permissionRepository;
-        this.userRepository = userRepository1;
-    }
 
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
@@ -97,10 +91,6 @@ public class RoleServiceImpl implements RoleService {
 
     public Role getRoleById(UUID id) {
         return roleRepository.findById(id).orElse(null);
-    }
-
-    public List<Role> getRolesByName(List<String> names) {
-        return roleRepository.findRolesByNames(names);
     }
 
     public boolean deleteRole(Role role) {

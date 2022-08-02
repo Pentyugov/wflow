@@ -6,6 +6,7 @@ import com.pentyugov.wflow.core.repository.ChatRoomRepository;
 import com.pentyugov.wflow.core.service.ChatRoomService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +15,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service(ChatRoomService.NAME)
+@RequiredArgsConstructor
 public class ChatRoomServiceImpl extends AbstractService implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final UserService userService;
-
-    @Autowired
-    public ChatRoomServiceImpl(ChatRoomRepository chatRoomRepository, UserService userService) {
-        this.chatRoomRepository = chatRoomRepository;
-        this.userService = userService;
-    }
 
     public Optional<String> getChatId(UUID senderId, UUID recipientId, boolean createIfNotExist) throws UserNotFoundException {
         User sender = userService.getUserById(senderId);

@@ -14,12 +14,6 @@ public interface IssueService {
 
     Issue saveIssue(Issue issue);
 
-    List<Issue> getIssuesByInitiator(User initiator);
-
-    List<Issue> getIssuesByExecutor(User executor);
-
-    List<Card> getCardsByInitiator(User initiator);
-
     List<Card> getCardsByExecutor(User executor);
 
     List<Card> getAllCardsForUser(User user);

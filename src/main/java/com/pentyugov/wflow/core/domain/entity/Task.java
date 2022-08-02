@@ -8,13 +8,13 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.util.Date;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity(name = "workflow$Task")
 @Table(name = "WORKFLOW_TASK")
 @Where(clause="DELETE_DATE is null")
 @PrimaryKeyJoinColumn(name = "CARD_ID", referencedColumnName = "ID")
-@Getter
-@Setter
-@NoArgsConstructor
 public class Task extends Card {
 
     @Transient

@@ -9,6 +9,7 @@ import com.pentyugov.wflow.core.service.MessageService;
 import com.pentyugov.wflow.web.exception.DepartmentExistException;
 import com.pentyugov.wflow.web.exception.DepartmentNotFoundException;
 import com.pentyugov.wflow.web.exception.ValidationException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,19 +19,12 @@ import org.springframework.util.ObjectUtils;
 import java.util.*;
 
 @Service(DepartmentService.NAME)
+@RequiredArgsConstructor
 public class DepartmentServiceImpl extends AbstractService implements DepartmentService {
 
     private final ModelMapper modelMapper;
     private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
-
-    @Autowired
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository, MessageService messageService, ModelMapper modelMapper, EmployeeRepository employeeRepository) {
-        this.departmentRepository = departmentRepository;
-        this.modelMapper = modelMapper;
-        this.messageService = messageService;
-        this.employeeRepository = employeeRepository;
-    }
 
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();

@@ -25,7 +25,7 @@ public class InstallerUtils {
     @PostConstruct
     public void startRedis() {
         if (enableRedis) {
-            LOGGER.info("STARTING REDIS SERVER");
+            LOGGER.info("Starting redis redis");
             File redisExec = new File(REDIS_FOLDER + "/redis-server.exe");
             if (!isRedisInstalled(redisExec)) {
                 installRedis();
@@ -33,14 +33,11 @@ public class InstallerUtils {
                 startRedisServer();
             }
         }
-
-
     }
-
 
     public void stopRedis() {
         if (redisProcess != null) {
-            LOGGER.info("STOPPING REDIS SERVER");
+            LOGGER.info("Stopping redis server");
             redisProcess.toHandle().destroy();
             redisProcess.destroy();
         }
@@ -49,14 +46,14 @@ public class InstallerUtils {
     private void startRedisServer() {
         try {
             redisProcess = Runtime.getRuntime().exec(REDIS_FOLDER + "/redis-server.exe", null, new File(REDIS_FOLDER));
-            LOGGER.info("PROCESS STARTED.. " + "[ " +redisProcess + " ]");
+            LOGGER.info("Process started.. " + "[ " +redisProcess + " ]");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void installRedis() {
-        LOGGER.info("STARTING INSTALL REDIS");
+        LOGGER.info("Starting redis installation...");
         if (!isRedisDirectoryExists()) {
             unzipRedis();
         }
@@ -67,24 +64,23 @@ public class InstallerUtils {
         if (file.isDirectory() && file.exists()) {
             return true;
         }
-        LOGGER.info("CREATING NEW REDIS FOLDER");
+        LOGGER.info("Creating new redis folder");
         return file.mkdir();
     }
 
     private void unzipRedis() {
         File file;
         try {
-            LOGGER.info("STARTING UNZIP REDIS.ZIP");
+            LOGGER.info("Starting unzip redis.zip");
             file = ResourceUtils.getFile("classpath:distr/redis.zip");
             try(ZipFile zipFile = new ZipFile(file)) {
                 zipFile.extractAll(REDIS_FOLDER);
                 startRedisServer();
-                LOGGER.error("ERROR UNZIP REDIS");
             } catch (IOException e) {
-                LOGGER.error("ERROR UNZIP REDIS");
+                LOGGER.error("Error occurred during unzip redis");
             }
         } catch (FileNotFoundException e) {
-            LOGGER.error("FILE WITH REDIS NOT FOUND");
+            LOGGER.error("redis.zip not found");
         }
     }
 

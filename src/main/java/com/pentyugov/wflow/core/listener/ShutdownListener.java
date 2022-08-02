@@ -20,8 +20,8 @@ public class ShutdownListener {
     }
 
     @PreDestroy
-    public void onDestroy() throws Exception {
-        LOGGER.warn("EXECUTING PREDESTROY CONFIGURATION");
+    public void onDestroy() {
+        LOGGER.warn("Executing preDestroy configuration...");
         installerUtils.stopRedis();
         System.out.println("Spring Container is destroyed!");
     }

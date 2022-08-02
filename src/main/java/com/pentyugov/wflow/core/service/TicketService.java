@@ -10,6 +10,4 @@ public interface TicketService {
     String NAME = "wflow$TicketService";
 
     List<Ticket> getAllTickets();
-    List<Ticket> getAllTicketsForUser();
-    TicketDto createTicketDto(Ticket ticket, boolean withProject);
 }

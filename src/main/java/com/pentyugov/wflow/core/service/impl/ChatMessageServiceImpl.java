@@ -6,6 +6,7 @@ import com.pentyugov.wflow.core.repository.ChatRepository;
 import com.pentyugov.wflow.core.service.ChatMessageService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,18 +22,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service(ChatMessageService.NAME)
+@RequiredArgsConstructor
 public class ChatMessageServiceImpl extends AbstractService implements ChatMessageService {
 
     private  final EntityManager entityManager;
     private final ChatRepository chatRepository;
     private final UserService userService;
-
-    @Autowired
-    public ChatMessageServiceImpl(EntityManager entityManager, ChatRepository chatRepository, UserService userService) {
-        this.entityManager = entityManager;
-        this.chatRepository = chatRepository;
-        this.userService = userService;
-    }
 
     public ChatMessage save(ChatMessage chatMessage) {
         return this.chatRepository.save(chatMessage);

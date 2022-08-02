@@ -1,9 +1,16 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity(name = "sec$Permission")
 @Table(name = "SECURITY_PERMISSION")
 public class Permission extends BaseEntity {
@@ -16,14 +23,6 @@ public class Permission extends BaseEntity {
 
     @Column(name = "NAME")
     private String name;
-
-    public Permission() {
-
-    }
-
-    public Permission(String name) {
-        this.name = name;
-    }
 
     public String getName() {
         return name;

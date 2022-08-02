@@ -8,6 +8,7 @@ import com.pentyugov.wflow.core.repository.CalendarEventRepository;
 import com.pentyugov.wflow.core.service.CalendarEventService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -17,15 +18,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service(CalendarEventService.NAME)
+@RequiredArgsConstructor
 public class CalendarEventServiceImpl implements CalendarEventService {
 
     private final UserService userService;
     private final CalendarEventRepository calendarEventRepository;
-
-    public CalendarEventServiceImpl(UserService userService, CalendarEventRepository calendarEventRepository) {
-        this.userService = userService;
-        this.calendarEventRepository = calendarEventRepository;
-    }
 
     @Override
     public List<CalendarEventDto> getAllForCurrentUser(Principal principal) throws UserNotFoundException {
@@ -45,7 +42,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
     }
 
     @Override
-    public CalendarEventDto addCalendarEventForCard(Card card) {
+    public void addCalendarEventForCard(Card card) {
         CalendarEvent calendarEvent = createCalendarEventTemplateForCard();
         calendarEvent.setTitle(card.getNumber());
         calendarEvent.setDescription(card.getDescription());
@@ -59,7 +56,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         }
 
         calendarEvent = calendarEventRepository.save(calendarEvent);
-        return createDtoFromEvent(calendarEvent);
+        createDtoFromEvent(calendarEvent);
     }
 
     @Override

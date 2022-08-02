@@ -1,9 +1,15 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity(name = "workflow$Card")
 @Table(name = "WORKFLOW_CARD")
 @Where(clause="DELETE_DATE is null")
@@ -34,59 +40,4 @@ public class Card extends BaseEntity {
     @JoinColumn(name = "ISSUE_ID")
     private Issue issue;
 
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public Card getParentCard() {
-        return parentCard;
-    }
-
-    public void setParentCard(Card parentCard) {
-        this.parentCard = parentCard;
-    }
-
-    public User getCreator() {
-        return creator;
-    }
-
-    public void setCreator(User creator) {
-        this.creator = creator;
-    }
-
-    public Issue getIssue() {
-        return issue;
-    }
-
-    public void setIssue(Issue issue) {
-        this.issue = issue;
-    }
 }

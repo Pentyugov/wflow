@@ -1,9 +1,15 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity(name = "security$ScreenPermissions")
 @Table(name = "SECURITY_SCREEN_PERMISSIONS")
 @Where(clause="DELETE_DATE is null")
@@ -28,52 +34,4 @@ public class ScreenPermissions extends BaseEntity {
     @Column(name = "CAN_DELETE")
     private Boolean delete = Boolean.FALSE;
 
-
-    public String getScreen() {
-        return screen;
-    }
-
-    public void setScreen(String screen) {
-        this.screen = screen;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Boolean getRead() {
-        return read;
-    }
-
-    public void setRead(Boolean read) {
-        this.read = read;
-    }
-
-    public Boolean getCreate() {
-        return create;
-    }
-
-    public void setCreate(Boolean create) {
-        this.create = create;
-    }
-
-    public Boolean getDelete() {
-        return delete;
-    }
-
-    public void setDelete(Boolean delete) {
-        this.delete = delete;
-    }
-
-    public Boolean getUpdate() {
-        return update;
-    }
-
-    public void setUpdate(Boolean update) {
-        this.update = update;
-    }
 }

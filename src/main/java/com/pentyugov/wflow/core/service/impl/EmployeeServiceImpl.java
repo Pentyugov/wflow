@@ -6,9 +6,9 @@ import com.pentyugov.wflow.core.dto.EmployeeDto;
 import com.pentyugov.wflow.core.repository.EmployeeRepository;
 import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.*;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 @Service(EmployeeService.NAME)
+@RequiredArgsConstructor
 public class EmployeeServiceImpl extends AbstractService implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
@@ -28,21 +29,6 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
     private final ValidationService validationService;
     private final UserSettingsService userSettingsService;
     private final ModelMapper modelMapper;
-
-    @Autowired
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository,
-                               DepartmentService departmentService,
-                               UserService userService,
-                               PositionService positionService,
-                               ValidationService validationService, UserSettingsService userSettingsService, ModelMapper modelMapper) {
-        this.employeeRepository = employeeRepository;
-        this.departmentService = departmentService;
-        this.userService = userService;
-        this.positionService = positionService;
-        this.validationService = validationService;
-        this.userSettingsService = userSettingsService;
-        this.modelMapper = modelMapper;
-    }
 
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();

@@ -11,24 +11,12 @@ import java.util.UUID;
 public interface EmployeeRepository extends BaseRepository<Employee> {
 
     @Transactional(readOnly = true)
-    @Query("select e from workflow$Employee e where e.firstName = ?1")
-    List<Employee> findByFirstName(String firstName);
-
-    @Transactional(readOnly = true)
-    @Query("select e from workflow$Employee e where e.lastName = ?1")
-    List<Employee> findByLastName(String lastName);
-
-    @Transactional(readOnly = true)
     @Query("select e from workflow$Employee e where e.email = ?1")
     Optional<Employee> findByEmail(String email);
 
     @Transactional(readOnly = true)
     @Query("select e from workflow$Employee e where e.department.id = ?1")
     List<Employee> findByEmployeesDepartment(UUID departmentId);
-
-    @Transactional(readOnly = true)
-    @Query("select e from workflow$Employee e where e.position.id = ?1")
-    List<Employee> findByPosition(UUID positionId);
 
     @Transactional(readOnly = true)
     @Query("select e from workflow$Employee e where e.user.id = ?1")

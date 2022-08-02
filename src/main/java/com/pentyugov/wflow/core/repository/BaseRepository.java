@@ -23,15 +23,6 @@ public interface BaseRepository<T extends BaseEntity> extends JpaRepository<T, U
     @Query("select e from #{#entityName} e where e.id = ?1 and e.deleteDate is null")
     Optional<T> findById(UUID id);
 
-    @Query("select e from #{#entityName} e where e.deleteDate is null")
-    @Transactional(readOnly = true)
-    List<T> findDeleted();
-
-    @Transactional(readOnly = true)
-    default boolean exists(UUID id) {
-        return findById(id).isPresent();
-    }
-
     @Query("update #{#entityName} e set e.deleteDate = current_timestamp where e.id = ?1")
     @Transactional
     @Modifying

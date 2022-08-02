@@ -4,9 +4,9 @@ import com.pentyugov.wflow.core.domain.entity.SysMail;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.repository.SysMailRepository;
 import com.pentyugov.wflow.core.service.EmailService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service(EmailService.NAME)
+@RequiredArgsConstructor
 public class EmailServiceImpl extends AbstractService implements EmailService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
@@ -38,13 +39,6 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
     private final JavaMailSender emailSender;
     private final SpringTemplateEngine templateEngine;
     private final SysMailRepository sysMailRepository;
-
-    @Autowired
-    public EmailServiceImpl(JavaMailSender emailSender, SpringTemplateEngine templateEngine, SysMailRepository sysMailRepository) {
-        this.emailSender = emailSender;
-        this.templateEngine = templateEngine;
-        this.sysMailRepository = sysMailRepository;
-    }
 
     @Async
     public void sendSimpleMessage(SysMail sysMail) {
@@ -76,8 +70,8 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         return sysMail;
     }
 
-    public SysMail saveSysMail(SysMail sysMail) {
-        return sysMailRepository.save(sysMail);
+    public void saveSysMail(SysMail sysMail) {
+        sysMailRepository.save(sysMail);
     }
 
     @Async
@@ -93,7 +87,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
                 } catch (AddressException e) {
                     LOGGER.error(e.getMessage());
                     isSent = false;
-                    sysMail.setIsSend(isSent);
+                    sysMail.setIsSend(false);
                     sysMailRepository.delete(sysMail);
                 } catch (MessagingException e) {
                     LOGGER.error(e.getMessage());
@@ -101,7 +95,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
 
                 if (isSent) {
                     sysMail.setSendTime(LocalDateTime.now());
-                    sysMail.setIsSend(isSent);
+                    sysMail.setIsSend(true);
                     sysMailRepository.save(sysMail);
                     LOGGER.info("System mail to {} was successfully sent", sysMail.getReceiver());
                 }
@@ -182,7 +176,7 @@ public class EmailServiceImpl extends AbstractService implements EmailService {
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(templateModel);
 
-        String subject = messageService.getMessage(messagesPath, "resetPswSubject");
+        String subject = messageService.getMessage(messagesPath, "verificationCodeSubject");
         String htmlBody = templateEngine.process("verification-code.html", thymeleafContext);
 
         SysMail sysMail = createSysMail(sender, user.getEmail(), subject, htmlBody);

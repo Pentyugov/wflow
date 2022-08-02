@@ -4,7 +4,7 @@ import com.pentyugov.wflow.core.domain.entity.Role;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.repository.UserRepository;
 import com.pentyugov.wflow.core.service.LoginAttemptService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,18 +23,11 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Qualifier("UserDetailsService")
+@RequiredArgsConstructor
 public class WflowUserDetailsService implements UserDetailsService {
 
-
     private final UserRepository userRepository;
-
     private final LoginAttemptService loginAttemptService;
-
-    @Autowired
-    public WflowUserDetailsService(UserRepository userRepository, LoginAttemptService loginAttemptService) {
-        this.userRepository = userRepository;
-        this.loginAttemptService = loginAttemptService;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

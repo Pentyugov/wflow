@@ -1,6 +1,10 @@
 package com.pentyugov.wflow.core.domain.entity;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,13 +16,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "security$User")
 @Table(name = "SECURITY_USERS")
 @Where(clause="DELETE_DATE is null")
 public class User extends BaseEntity implements UserDetails {
-
-    public User() {
-    }
 
     public User(UUID id,
                 String username,
@@ -102,77 +107,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "TEL_LOGGED")
     private Boolean telLogged = Boolean.FALSE;
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    public boolean isNotLocked() {
-        return isNotLocked;
-    }
-
-    public void setNotLocked(boolean notLocked) {
-        isNotLocked = notLocked;
-    }
-
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-    }
-
-    public LocalDateTime getLastLoginDate() {
-        return lastLoginDate;
-    }
-
-    public void setLastLoginDate(LocalDateTime lastLoginDate) {
-        this.lastLoginDate = lastLoginDate;
-    }
-
-    public LocalDateTime getLastLoginDateDisplay() {
-        return lastLoginDateDisplay;
-    }
-
-    public void setLastLoginDateDisplay(LocalDateTime lastLoginDateDisplay) {
-        this.lastLoginDateDisplay = lastLoginDateDisplay;
-    }
-
-    public LocalDateTime getJoinDate() {
-        return joinDate;
-    }
-
-    public void setJoinDate(LocalDateTime joinDate) {
-        this.joinDate = joinDate;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
-    }
-
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     @Override
@@ -198,58 +135,6 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isActive;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Long getTelUserId() {
-        return telUserId;
-    }
-
-    public void setTelUserId(Long telUserId) {
-        this.telUserId = telUserId;
-    }
-
-    public Long getTelChatId() {
-        return telChatId;
-    }
-
-    public void setTelChatId(Long telChatId) {
-        this.telChatId = telChatId;
-    }
-
-    public Boolean getTelLogged() {
-        return telLogged;
-    }
-
-    public void setTelLogged(Boolean telLogged) {
-        this.telLogged = telLogged;
     }
 
     @PrePersist

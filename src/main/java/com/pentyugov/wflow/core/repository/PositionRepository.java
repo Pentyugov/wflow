@@ -14,10 +14,6 @@ public interface PositionRepository extends BaseRepository<Position> {
     Optional<Position> findByName(String name);
 
     @Transactional(readOnly = true)
-    @Query("select p from workflow$Position p where p.code = ?1")
-    Optional<Position> findByCode(String code);
-
-    @Transactional(readOnly = true)
     @Query("select p from workflow$Position p where p.id <> ?1 and (p.code = ?2 or p.name = ?3)")
     Optional<Position> findByCodeOrName(UUID id, String code, String name);
 

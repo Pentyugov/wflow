@@ -1,10 +1,16 @@
 package com.pentyugov.wflow.core.domain.entity;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity(name = "workflow$projectParticipant")
 @Table(name = "WORKFLOW_PROJECT_PARTICIPANT")
 @Where(clause="DELETE_DATE is null")
@@ -18,19 +24,4 @@ public class ProjectParticipant extends BaseEntity {
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

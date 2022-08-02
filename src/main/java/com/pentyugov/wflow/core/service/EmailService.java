@@ -16,7 +16,7 @@ public interface EmailService {
 
     SysMail createSysMail(String sender, String receiver, String subject, String body);
 
-    SysMail saveSysMail(SysMail sysMail);
+    void saveSysMail(SysMail sysMail);
 
     void  resendEmails();
 

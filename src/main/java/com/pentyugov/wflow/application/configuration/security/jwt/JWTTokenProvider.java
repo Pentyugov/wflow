@@ -4,6 +4,7 @@ import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +21,15 @@ import static com.pentyugov.wflow.application.configuration.constant.Application
 
 
 @Component
+@RequiredArgsConstructor
 public class JWTTokenProvider {
 
     public static final Logger LOG = LoggerFactory.getLogger(JWTTokenProvider.class);
 
     private final UserService userService;
 
-
     @Value("${jwt.secret}")
     private String secret;
-
-    @Autowired
-    public JWTTokenProvider(UserService userService) {
-        this.userService = userService;
-    }
 
     public String generateToken(Authentication authentication) throws UserNotFoundException {
         User user = (User) authentication.getPrincipal();
@@ -95,7 +91,7 @@ public class JWTTokenProvider {
                 .parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token).getBody();
-        return  Arrays.stream(claims.get("authorities").toString().split(","))
+        return Arrays.stream(claims.get("authorities").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 

@@ -7,7 +7,6 @@ import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import com.pentyugov.wflow.core.dto.TelegramUserDto;
 import com.pentyugov.wflow.core.service.EmailService;
-import com.pentyugov.wflow.core.service.TaskService;
 import com.pentyugov.wflow.core.service.TelegramService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
@@ -16,6 +15,7 @@ import com.pentyugov.wflow.web.payload.request.TelegramTaskSendMessageRequest;
 import com.pentyugov.wflow.web.payload.request.TelegramVerifyCodeRequest;
 import com.pentyugov.wflow.web.payload.response.TelegramLoginUserResponse;
 import com.pentyugov.wflow.web.payload.response.TelegramTaskSendMessageResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service(TelegramService.NAME)
+@RequiredArgsConstructor
 public class TelegramServiceImpl implements TelegramService {
 
     private final Logger logger = LoggerFactory.getLogger(TelegramServiceImpl.class);
@@ -38,15 +39,7 @@ public class TelegramServiceImpl implements TelegramService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserService userService;
     private final ApplicationUtils applicationUtils;
-
     private final Map<Long, String> codesMap = new HashMap<>();
-
-    public TelegramServiceImpl(EmailService emailService, BCryptPasswordEncoder passwordEncoder, UserService userService, ApplicationUtils applicationUtils) {
-        this.emailService = emailService;
-        this.passwordEncoder = passwordEncoder;
-        this.userService = userService;
-        this.applicationUtils = applicationUtils;
-    }
 
     @Override
     public List<TelegramUserDto> getLoggedUsers() {

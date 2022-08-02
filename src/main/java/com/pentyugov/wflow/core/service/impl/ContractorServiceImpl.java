@@ -7,6 +7,7 @@ import com.pentyugov.wflow.core.service.ContractorService;
 import com.pentyugov.wflow.core.service.ValidationService;
 import com.pentyugov.wflow.web.exception.ContractorNotFoundException;
 import com.pentyugov.wflow.web.exception.ValidationException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,18 +18,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service(ContractorService.NAME)
+@RequiredArgsConstructor
 public class ContractorServiceImpl extends AbstractService implements ContractorService {
 
     private final ModelMapper modelMapper;
     private final ContractorRepository contractorRepository;
     private final ValidationService validationService;
-
-    @Autowired
-    public ContractorServiceImpl(ModelMapper modelMapper, ContractorRepository contractorRepository, ValidationService validationService) {
-        this.modelMapper = modelMapper;
-        this.contractorRepository = contractorRepository;
-        this.validationService = validationService;
-    }
 
     @Override
     public List<Contractor> getAllContractors() {
@@ -58,7 +53,8 @@ public class ContractorServiceImpl extends AbstractService implements Contractor
 
     @Override
     public Contractor getContractorById(UUID id) throws ContractorNotFoundException {
-        return contractorRepository.findById(id).orElseThrow(() -> new ContractorNotFoundException(getMessage("exception.contractor.with.id.not.found", id)));
+        return contractorRepository.findById(id).orElseThrow(
+                () -> new ContractorNotFoundException(getMessage("exception.contractor.with.id.not.found", id)));
     }
 
     @Override
@@ -78,12 +74,7 @@ public class ContractorServiceImpl extends AbstractService implements Contractor
     }
 
     private Contractor createContractorFromDto(ContractorDto contractorDto) {
-        Contractor contractor;
-        if (contractorDto.getId() != null) {
-            contractor = contractorRepository.getById(contractorDto.getId());
-        } else {
-            contractor = new Contractor();
-        }
+        Contractor contractor = contractorRepository.findById(contractorDto.getId()).orElse(new Contractor());
 
         contractor.setName(contractorDto.getName());
         contractor.setFullName(contractorDto.getFullName());
@@ -100,7 +91,7 @@ public class ContractorServiceImpl extends AbstractService implements Contractor
         contractor.setNonResident(contractorDto.getNonResident());
         contractor.setSupplier(contractorDto.getSupplier());
         contractor.setCustomer(contractorDto.getCustomer());
-        contractor.setOrganization(contractorDto.getIsOrganization());
+        contractor.setIsOrganization(contractorDto.getIsOrganization());
 
         return contractor;
     }

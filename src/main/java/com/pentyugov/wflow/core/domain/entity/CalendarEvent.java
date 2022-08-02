@@ -1,10 +1,16 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Date;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity(name = "workflow$CalendarEvent")
 @Table(name = "WORKFLOW_CALENDAR_EVENT")
 @Where(clause="DELETE_DATE is null")
@@ -66,115 +72,4 @@ public class CalendarEvent extends BaseEntity {
     @Column(name = "ACTIONS")
     private String actions;
 
-    public Card getCard() {
-        return card;
-    }
-
-    public void setCard(Card card) {
-        this.card = card;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getDraggable() {
-        return draggable;
-    }
-
-    public void setDraggable(Boolean draggable) {
-        this.draggable = draggable;
-    }
-
-    public Boolean getResizableBeforeStart() {
-        return resizableBeforeStart;
-    }
-
-    public void setResizableBeforeStart(Boolean resizableBeforeStart) {
-        this.resizableBeforeStart = resizableBeforeStart;
-    }
-
-    public Boolean getResizableAfterEnd() {
-        return resizableAfterEnd;
-    }
-
-    public void setResizableAfterEnd(Boolean resizableAfterEnd) {
-        this.resizableAfterEnd = resizableAfterEnd;
-    }
-
-    public String getActions() {
-        return actions;
-    }
-
-    public void setActions(String actions) {
-        this.actions = actions;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getColorPrimary() {
-        return colorPrimary;
-    }
-
-    public void setColorPrimary(String colorPrimary) {
-        this.colorPrimary = colorPrimary;
-    }
-
-    public String getColorSecondary() {
-        return colorSecondary;
-    }
-
-    public void setColorSecondary(String colorSecondary) {
-        this.colorSecondary = colorSecondary;
-    }
-
-    public Boolean getAllDay() {
-        return allDay;
-    }
-
-    public void setAllDay(Boolean allDay) {
-        this.allDay = allDay;
-    }
 }

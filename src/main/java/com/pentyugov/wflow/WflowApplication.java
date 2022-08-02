@@ -1,6 +1,5 @@
 package com.pentyugov.wflow;
 
-import com.pentyugov.wflow.application.configuration.constant.ApplicationConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +14,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,13 +23,12 @@ import java.util.List;
 @EnableAsync
 public class WflowApplication extends SpringBootServletInitializer {
 
-	private static Logger logger = LoggerFactory.getLogger(WflowApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(WflowApplication.class);
 
 	public static List<String> allowedOrigins;
 
 	public static void main(String[] args) {
 		SpringApplication.run(WflowApplication.class, args);
-		createUserFolder();
 		logger.info("ALLOWED ORIGINS: " + WflowApplication.allowedOrigins.toString());
 	}
 
@@ -71,7 +68,4 @@ public class WflowApplication extends SpringBootServletInitializer {
 		return new CorsFilter(urlBasedCorsConfigurationSource);
 	}
 
-	private static void createUserFolder() {
-		new File(ApplicationConstants.File.USER_FOLDER).mkdirs();
-	}
 }

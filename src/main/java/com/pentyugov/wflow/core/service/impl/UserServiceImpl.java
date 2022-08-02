@@ -8,34 +8,26 @@ import com.pentyugov.wflow.core.repository.UserRepository;
 import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.*;
 import com.pentyugov.wflow.web.payload.request.SignUpRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.pentyugov.wflow.application.configuration.constant.ApplicationConstants.File.*;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.springframework.http.MediaType.*;
+import static com.pentyugov.wflow.application.configuration.constant.ApplicationConstants.File.PROFILE_IMAGE_RESOURCE_HOST;
+import static com.pentyugov.wflow.application.configuration.constant.ApplicationConstants.File.TEMP_PROFILE_IMAGE_BASE_URL;
 
 @Service(UserService.NAME)
+@RequiredArgsConstructor
 public class UserServiceImpl extends AbstractService implements UserService {
 
     public static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -52,19 +44,6 @@ public class UserServiceImpl extends AbstractService implements UserService {
     private final EmailService emailService;
     private final ImageService imageService;
     private final ApplicationService applicationService;
-
-    public UserServiceImpl(RoleService roleService,
-                           BCryptPasswordEncoder passwordEncoder,
-                           UserRepository userRepository,
-                           EmailService emailService,
-                           ImageService imageService, ApplicationService applicationService) {
-        this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
-        this.emailService = emailService;
-        this.imageService = imageService;
-        this.applicationService = applicationService;
-    }
 
     public User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
         if (validateUsernameAndEmail(null, userIn.getUsername(), userIn.getEmail())) {
@@ -89,7 +68,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return null;
     }
 
-    public User addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
+    public void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
         validateUsernameAndEmail(null, userDto.getUsername(), userDto.getEmail());
         User user = createUserFromDto(userDto);
         String rawPassword = applicationService.generatePassword();
@@ -106,38 +85,12 @@ public class UserServiceImpl extends AbstractService implements UserService {
         if (sendGreetingEmail) {
             emailService.sendRegisterSuccessMail(user, rawPassword);
         }
-        return user;
     }
 
-    public User updateLastLoginDate(User user) {
+    public void updateLastLoginDate(User user) {
         user.setLastLoginDate(LocalDateTime.now());
         user.setLastLoginDateDisplay(LocalDateTime.now());
-        return userRepository.save(user);
-    }
-
-    public User updateUser(UserDto userDto, String profileImageUrl) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException, EmailIsEmptyException {
-        User currentUser = getUserById(userDto.getId());
-        validateUsernameAndEmail(currentUser, userDto.getUsername(), userDto.getEmail());
-        currentUser = updateUserFromDto(currentUser, userDto);
-
-        LOG.info("Updating USER {} : {}", currentUser.getUsername(), currentUser.getEmail());
-        if (StringUtils.hasText(profileImageUrl)) {
-            if (currentUser.getProfileImageUrl().startsWith(PROFILE_IMAGE_RESOURCE_HOST)) {
-                String oldImage = currentUser.getProfileImageUrl().split(PROFILE_IMAGE_RESOURCE_HOST)[1].replace("/", "");
-                try {
-                    UUID oldImageId = UUID.fromString(oldImage);
-                    imageService.deleteUserProfileImage(oldImageId);
-                } catch (IllegalArgumentException e) {
-                    LOG.error(e.getMessage());
-                }
-            }
-
-            currentUser.setProfileImageUrl(profileImageUrl);
-        }
-        currentUser = userRepository.save(currentUser);
-        userDto.setProfileImage(currentUser.getProfileImageUrl());
-        return currentUser;
-
+        userRepository.save(user);
     }
 
     public User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException, EmailIsEmptyException {
@@ -174,8 +127,8 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public User updateUser(User user) {
-        return userRepository.save(user);
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 
     public void deleteUser(UUID id) {
@@ -267,11 +220,6 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return userRepository.findAllInAnyRole(names);
     }
 
-    @Override
-    public List<User> getAllWithPermission(String permission) {
-        return userRepository.findAllByPermission(permission.toUpperCase());
-    }
-
     public List<User> getUsersWithEmployee() {
         return userRepository.findWithEmployee().stream().collect(Collectors.toList());
     }
@@ -282,10 +230,6 @@ public class UserServiceImpl extends AbstractService implements UserService {
             return userRepository.findWithoutEmployee(ids);
         }
         return getAllUsers();
-    }
-
-    public Page<User> getPageOfUsers(int page, int size, Sort.Direction direction, String sortBy) {
-        return userRepository.findAll(PageRequest.of(page, size, direction, sortBy));
     }
 
     public User createUserFromDto(UserDto userDto) {
@@ -378,6 +322,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     private boolean validateUsernameAndEmail(User currentUser, String username, String email) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
         User checkedUser;
+
         if (!StringUtils.hasText(username)) {
             throw new UsernameIsEmptyException(getMessage(sourcePath, "exception.username.empty", null));
         }
@@ -385,8 +330,10 @@ public class UserServiceImpl extends AbstractService implements UserService {
         if (!StringUtils.hasText(email)) {
             throw new EmailIsEmptyException(getMessage(sourcePath, "exception.email.empty", null));
         }
+
         if (ObjectUtils.isEmpty(currentUser)) {
             checkedUser = userRepository.findByUsername(username).orElse(null);
+
             if (!ObjectUtils.isEmpty(checkedUser)) {
                 throw new UsernameExistException(getMessage(sourcePath, "exception.user.with.username.exist", username));
             }
@@ -397,6 +344,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
             }
         } else {
             checkedUser = userRepository.findByUsername(username).orElse(null);
+
             if (!ObjectUtils.isEmpty(checkedUser) && !currentUser.getId().equals(checkedUser.getId())) {
                 throw new UsernameExistException(getMessage(sourcePath, "exception.user.with.username.exist", username));
             }
@@ -427,46 +375,8 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     private String getTemporaryProfileImageUrl(String username) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(DEFAULT_USER_IMAGE_PATH + "/temp/" + username).toUriString();
+        return TEMP_PROFILE_IMAGE_BASE_URL + username;
     }
-
-    private void saveProfileImage(User user, MultipartFile profileImage) throws IOException, NotAnImageFileException {
-        if (!ObjectUtils.isEmpty(profileImage)) {
-
-            if(!Arrays.asList(IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE).contains(profileImage.getContentType())) {
-                throw new NotAnImageFileException(profileImage.getOriginalFilename() + NOT_AN_IMAGE_FILE);
-            }
-
-            Path userFolder = Paths.get(USER_FOLDER + user.getUsername()).toAbsolutePath().normalize();
-            if (!Files.exists(userFolder)) {
-                Files.createDirectories(userFolder);
-                LOG.info(DIRECTORY_CREATED + userFolder);
-            }
-
-            Files.deleteIfExists(Paths.get(userFolder + user.getUsername() + DOT + JPG_EXTENSION));
-            Files.copy(profileImage.getInputStream(), userFolder.resolve(user.getUsername() + DOT + JPG_EXTENSION), REPLACE_EXISTING);
-
-            user.setProfileImageUrl(setProfileImageUrl(user.getUsername()));
-            userRepository.save(user);
-            LOG.info(FILE_SAVED_IN_FILE_SYSTEM + profileImage.getOriginalFilename());
-        }
-    }
-
-    private String setProfileImageUrl(String username) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(API_PREFIX + USER_IMAGE_PATH + username +
-                FORWARD_SLASH + username + DOT + JPG_EXTENSION).toUriString();
-    }
-
-    private List<String> getExistingRolesNames(String namesFromRequest) {
-        String prepared = namesFromRequest.toUpperCase().replace(" ", "");
-        List<Role> existingRoles = roleService.getRolesByName(Arrays.asList(prepared.split("\\s*;\\s*")));
-        if (CollectionUtils.isEmpty(existingRoles)) {
-            existingRoles = Collections.singletonList(getStandardRole());
-        }
-        return existingRoles.stream().map(Role::getName).collect(Collectors.toList());
-    }
-
 
     public User deleteUserProfileImage(UUID id) {
         User user = userRepository.findById(id).orElse(null);
@@ -481,10 +391,6 @@ public class UserServiceImpl extends AbstractService implements UserService {
             user.setProfileImageUrl(TEMP_PROFILE_IMAGE_BASE_URL + user.getUsername());
         }
         return userRepository.save(user);
-    }
-
-    public void removeUserByUsername(String username) {
-        userRepository.removeUserByUsername(username);
     }
 
     @Override

@@ -19,11 +19,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class JWTAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception)
-                                                                                        throws IOException {
+            throws IOException {
         HttpResponse httpResponse = new HttpResponse(UNAUTHORIZED.value(),
-                                                     UNAUTHORIZED,
-                                                     UNAUTHORIZED.getReasonPhrase().toUpperCase(),
-                                                     Security.ACCESS_DENIED_MESSAGE);
+                UNAUTHORIZED,
+                UNAUTHORIZED.getReasonPhrase().toUpperCase(),
+                Security.ACCESS_DENIED_MESSAGE);
 
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setStatus(UNAUTHORIZED.value());

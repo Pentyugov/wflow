@@ -19,7 +19,7 @@ public interface CalendarEventService {
 
     CalendarEventDto addCalendarEvent(CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException;
 
-    CalendarEventDto addCalendarEventForCard(Card card);
+    void addCalendarEventForCard(Card card);
 
     CalendarEventDto updateCalendarEvent(CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException;
 
