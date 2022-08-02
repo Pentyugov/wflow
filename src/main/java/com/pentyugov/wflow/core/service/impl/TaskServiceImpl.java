@@ -105,8 +105,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
     @Override
     public List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException {
-        return taskRepository.findActiveForExecutor(userService.getUserByPrincipal(principal).getId(),
-                Arrays.asList(Task.STATE_ASSIGNED, Task.STATE_REWORK));
+        return getActiveForExecutor(userService.getUserByPrincipal(principal));
     }
 
     @Override
@@ -347,8 +346,10 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public Page<Task> getTaskPageForTelBot(Long telUserId, Pageable pageable) {
-        return null;
+    public Page<Task> getTaskPageForTelBot(Long telUserId, Pageable pageable) throws UserNotFoundException {
+        User user = userService.getUserByTelUserId(telUserId);
+        List<UUID> ids = getActiveForExecutor(user).stream().map(Task::getId).collect(Collectors.toList());
+        return taskRepository.findActiveTasksPage(ids, pageable);
     }
 
     @Override
@@ -393,6 +394,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     @Override
     public TelegramTaskDto createTelegramDto(Task task) {
         TelegramTaskDto taskDto = new TelegramTaskDto();
+        taskDto.setId(task.getId());
         taskDto.setNumber(task.getNumber());
         taskDto.setDescription(task.getDescription());
         taskDto.setDueDate(task.getExecutionDatePlan());
@@ -454,6 +456,11 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     public void checkOverdueTasks() {
         List<Task> tasks = taskRepository.findActiveWithDueDate();
         tasks.forEach(this::checkOverdue);
+    }
+
+    private List<Task> getActiveForExecutor(User user) {
+        return taskRepository.findActiveForExecutor(user.getId(),
+                Arrays.asList(Task.STATE_ASSIGNED, Task.STATE_REWORK));
     }
 
     private long getDaysUntilDueDate(Date executionDatePlan) {

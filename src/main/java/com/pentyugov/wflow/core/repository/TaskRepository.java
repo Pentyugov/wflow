@@ -38,4 +38,8 @@ public interface TaskRepository extends BaseRepository<Task> {
     @Query("select t from workflow$Task t where t.started = TRUE and t.executionDatePlan is not NULL")
     List<Task> findActiveWithDueDate();
 
+    @Transactional(readOnly = true)
+    @Query("select t from workflow$Task t where t.id in ?1")
+    Page<Task> findActiveTasksPage(List<UUID> taskIds, Pageable pageable);
+
 }

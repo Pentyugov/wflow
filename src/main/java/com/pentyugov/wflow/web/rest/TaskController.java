@@ -11,13 +11,8 @@ import com.pentyugov.wflow.web.http.HttpResponse;
 import com.pentyugov.wflow.web.payload.request.FiltersRequest;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
-import com.pentyugov.wflow.web.payload.request.TelegramGetTaskPageRequest;
-import com.pentyugov.wflow.web.payload.response.TelegramGetTaskPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -126,21 +121,6 @@ public class TaskController extends ExceptionHandling {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping("/page")
-    @Operation(summary = "Get task page", security = @SecurityRequirement(name = BEARER))
-    public TelegramGetTaskPageResponse getTaskPage(TelegramGetTaskPageRequest request) {
-        TelegramGetTaskPageResponse response = new TelegramGetTaskPageResponse();
-        Page<Task> resultPage = taskService.getTaskPageForTelBot(request.getTelUserId(), PageRequest.of(
-                request.getPage().orElse(0),
-                10,
-                Sort.Direction.DESC, request.getSortBy().orElse("createDate")));
-
-        response.setPage(resultPage.getPageable().getPageNumber());
-        response.setTasks(resultPage.getContent().stream().map(taskService::createTelegramDto).collect(Collectors.toList()));
-        return response;
-
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {

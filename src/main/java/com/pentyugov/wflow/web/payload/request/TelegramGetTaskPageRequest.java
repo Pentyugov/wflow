@@ -11,7 +11,7 @@ import java.util.Optional;
 @NoArgsConstructor
 public class TelegramGetTaskPageRequest {
     Long telUserId;
-    Optional<Integer> page;
-    Optional<String> sortBy;
+    Integer page;
+    String sortBy;
 
 }

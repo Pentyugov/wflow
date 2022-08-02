@@ -56,7 +56,7 @@ public interface TaskService {
 
     List<TaskDto> getAllTaskDto(Principal principal) throws UserNotFoundException;
 
-    Page<Task> getTaskPageForTelBot(Long telUserId, Pageable pageable);
+    Page<Task> getTaskPageForTelBot(Long telUserId, Pageable pageable) throws UserNotFoundException;
 
     TaskDto createDto(Task task);
 
