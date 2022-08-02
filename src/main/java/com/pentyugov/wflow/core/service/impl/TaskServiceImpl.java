@@ -6,6 +6,7 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
+import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import com.pentyugov.wflow.core.repository.TaskRepository;
 import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
@@ -17,6 +18,8 @@ import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -70,6 +73,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         this.telegramService = telegramService;
     }
 
+    @Override
     public Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
         Task task = createTaskFromDto(taskDto);
         task.setState(Task.STATE_CREATED);
@@ -79,11 +83,13 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return taskRepository.save(task);
     }
 
+    @Override
     public Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
         Task task = createTaskFromDto(taskDto);
         return taskRepository.save(task);
     }
 
+    @Override
     public void deleteTask(UUID id, Principal principal) throws TaskNotFoundException, UserNotFoundException {
         Task toDelete = getTaskById(id);
         calendarEventService.deleteCalendarEventByCard(toDelete);
@@ -91,6 +97,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         taskRepository.delete(id);
     }
 
+    @Override
     public Task getTaskById(UUID id) throws TaskNotFoundException {
         return taskRepository.findById(id).orElseThrow(() ->
                 new TaskNotFoundException(getMessage(sourcePath, "exception.task.with.id.not.found", id)));
@@ -181,6 +188,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return null;
     }
 
+    @Override
     public String startTask(Task task, User currentUser) {
         task.setInitiator(currentUser);
         task.setKanbanState(Task.KANBAN_STATE_NEW);
@@ -201,6 +209,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.assigned.message", task.getNumber(), executor.getUsername());
     }
 
+    @Override
     public String cancelTask(Task task, User currentUser, String comment) {
         task = workflowService.cancelTaskProcess(task, currentUser, comment);
         taskRepository.save(task);
@@ -215,6 +224,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.canceled.message", task.getNumber(), executor.getUsername());
     }
 
+    @Override
     public String executeTask(Task task, User currentUser, String comment) {
         task = workflowService.executeTask(task, currentUser, comment);
         task.setKanbanState(Task.KANBAN_STATE_COMPLETED);
@@ -229,6 +239,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.executed.message", task.getNumber());
     }
 
+    @Override
     public String reworkTask(Task task, User currentUser, String comment) {
         task = workflowService.reworkTask(task, currentUser, comment);
         task.setKanbanState(Task.KANBAN_STATE_NEW);
@@ -244,6 +255,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.rework.message", task.getNumber());
     }
 
+    @Override
     public String finishTask(Task task, User currentUser, String comment) {
         task = workflowService.finishTask(task, currentUser, comment);
         taskRepository.save(task);
@@ -257,6 +269,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.finish.message", task.getNumber());
     }
 
+    @Override
     public List<CardHistoryDto> getTaskHistory(Task task) {
         List<Issue> issues = issueService.getAllIssuesByCard(task);
         List<CardHistoryDto> result = new ArrayList<>();
@@ -264,7 +277,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return result;
     }
 
-
+    @Override
     public Task createTaskFromDto(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
         Task task = taskRepository.findById(taskDto.getId()).orElse(new Task());
 
@@ -303,6 +316,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return task;
     }
 
+    @Override
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
@@ -332,6 +346,12 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Page<Task> getTaskPageForTelBot(Long telUserId, Pageable pageable) {
+        return null;
+    }
+
+    @Override
     public TaskDto createDto(Task task) {
         TaskDto taskDto = new TaskDto();
         taskDto.setId(task.getId());
@@ -367,6 +387,18 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         long days = getDaysUntilDueDate(taskDto.getExecutionDatePlan());
         taskDto.setDaysUntilDueDate(days);
 
+        return taskDto;
+    }
+
+    @Override
+    public TelegramTaskDto createTelegramDto(Task task) {
+        TelegramTaskDto taskDto = new TelegramTaskDto();
+        taskDto.setNumber(task.getNumber());
+        taskDto.setDescription(task.getDescription());
+        taskDto.setDueDate(task.getExecutionDatePlan());
+        taskDto.setPriority(task.getPriority());
+        taskDto.setComment(task.getComment());
+        taskDto.setProject(task.getProject() != null ? task.getProject().getName() : null);
         return taskDto;
     }
 

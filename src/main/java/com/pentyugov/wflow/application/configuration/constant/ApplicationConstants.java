@@ -25,7 +25,6 @@ public class ApplicationConstants {
     }
 
     public interface File {
-        String USER_FOLDER = System.getProperty("user.home") + "/wflow/user/";
         String REDIS_FOLDER = System.getProperty("user.home") + "/wflow/data/redis";
         String TEMP_PROFILE_IMAGE_BASE_URL = "https://robohash.org/";
         String PROFILE_IMAGE_DELETE_API = "https://api.uploadcare.com/files/";

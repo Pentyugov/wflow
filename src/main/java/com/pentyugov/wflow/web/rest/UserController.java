@@ -1,11 +1,15 @@
 package com.pentyugov.wflow.web.rest;
 
+import static com.pentyugov.wflow.application.configuration.SwaggerConfig.BEARER;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pentyugov.wflow.core.dto.RoleDto;
 import com.pentyugov.wflow.core.dto.UserDto;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.*;
 import com.pentyugov.wflow.web.http.HttpResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +39,7 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all users", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getAll() {
         List<UserDto> userDtos = userService.getAllUsers()
                 .stream()
@@ -44,12 +49,14 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get user by ID", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getById(@PathVariable String id) throws UserNotFoundException {
         UserDto userDto = userService.createUserDtoFromUser(userService.getUserById(UUID.fromString(id)));
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
     @GetMapping("/role/{roleName}")
+    @Operation(summary = "Get all users with role (roleName in path variable)", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getAllWithRole(@PathVariable String roleName) {
         List<UserDto> userDtos = userService.getAllWithRole(roleName)
                 .stream()
@@ -59,6 +66,7 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping("/any-role")
+    @Operation(summary = "Get all users with any role in path param", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getAllWithAnyRole(@RequestParam String roleNames) {
         List<UserDto> userDtos = userService.getAllWithAnyRole(roleNames)
                 .stream()
@@ -68,6 +76,7 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping("/without-employee")
+    @Operation(summary = "Get all users without linked employee", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getUsersWithoutEmployee() {
         List<UserDto> userDtos = userService.getUsersWithoutEmployee()
                 .stream()
@@ -77,14 +86,15 @@ public class UserController extends AbstractController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestParam("username") String username,
-                                      @RequestParam("email") @Email String email,
-                                      @RequestParam("firstName") String firstName,
-                                      @RequestParam("lastName") String lastName,
-                                      @RequestParam(value = "roles", required = false) String roles,
-                                      @RequestParam("active") String isActive,
-                                      @RequestParam("nonLocked") String isNotLocked,
-                                      @RequestParam(value = "profileImage", required = false) String profileImage)
+    @Operation(summary = "Post new user", security = @SecurityRequirement(name = BEARER))
+    public ResponseEntity<Object> post(@RequestParam("username") String username,
+                                       @RequestParam("email") @Email String email,
+                                       @RequestParam("firstName") String firstName,
+                                       @RequestParam("lastName") String lastName,
+                                       @RequestParam(value = "roles", required = false) String roles,
+                                       @RequestParam("active") String isActive,
+                                       @RequestParam("nonLocked") String isNotLocked,
+                                       @RequestParam(value = "profileImage", required = false) String profileImage)
             throws UsernameExistException, EmailExistException, IOException, UsernameIsEmptyException,
             EmailIsEmptyException {
 
@@ -96,6 +106,7 @@ public class UserController extends AbstractController {
     }
 
     @PutMapping
+    @Operation(summary = "Update existing user", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> update(@RequestBody UserDto userDto) throws UsernameExistException,
             EmailExistException,
             UserNotFoundException,
@@ -105,6 +116,7 @@ public class UserController extends AbstractController {
     }
 
     @PostMapping("/profile-image")
+    @Operation(summary = "Update user profile image", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> updateUserProfileImage(@RequestParam String id,
                                                          @RequestParam String profileImageUrl) throws UserNotFoundException {
         UserDto userDto = userService.createUserDtoFromUser(userService.updateProfileImage(UUID.fromString(id), profileImageUrl));
@@ -113,6 +125,7 @@ public class UserController extends AbstractController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('DELETE')")
+    @Operation(summary = "Delete user by ID", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
         userService.deleteUser(UUID.fromString(id));
         String message = String.format("User with id: %s was deleted", id);
@@ -120,6 +133,7 @@ public class UserController extends AbstractController {
     }
 
     @DeleteMapping("/profile-image/{id}")
+    @Operation(summary = "Delete user profile image", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> deleteProfileImage(@PathVariable String id) {
         UserDto userDto = userService.createUserDtoFromUser(userService.deleteUserProfileImage(UUID.fromString(id)));
         return new ResponseEntity<>(userDto, HttpStatus.OK);

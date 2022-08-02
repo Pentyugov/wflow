@@ -4,12 +4,15 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
+import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.request.FiltersRequest;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.security.Principal;
 import java.util.List;
@@ -53,7 +56,11 @@ public interface TaskService {
 
     List<TaskDto> getAllTaskDto(Principal principal) throws UserNotFoundException;
 
+    Page<Task> getTaskPageForTelBot(Long telUserId, Pageable pageable);
+
     TaskDto createDto(Task task);
+
+    TelegramTaskDto createTelegramDto(Task task);
 
     String getNextTaskNumber();
 
