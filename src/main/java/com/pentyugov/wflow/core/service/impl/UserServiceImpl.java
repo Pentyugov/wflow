@@ -113,7 +113,9 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
         if (StringUtils.hasText(userDto.getProfileImage())) {
             if (currentUser.getProfileImageUrl().startsWith(PROFILE_IMAGE_RESOURCE_HOST)) {
-                String oldImage = currentUser.getProfileImageUrl().split(PROFILE_IMAGE_RESOURCE_HOST)[1].replace("/", "");
+                String oldImage = currentUser.getProfileImageUrl()
+                        .split(PROFILE_IMAGE_RESOURCE_HOST)[1]
+                        .split("/")[0];
                 try {
                     UUID oldImageId = UUID.fromString(oldImage);
                     imageService.deleteUserProfileImage(oldImageId);
