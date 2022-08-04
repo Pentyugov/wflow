@@ -20,6 +20,7 @@ public class Role extends BaseEntity {
     public static final String PROJECT_PARTICIPANT = "ROLE_PROJECT_PARTICIPANT";
     public static final String TASK_INITIATOR = "ROLE_TASK_INITIATOR";
     public static final String TASK_EXECUTOR = "ROLE_TASK_EXECUTOR";
+    public static final String TELBOT = "ROLE_TELBOT";
     public static final String PREFIX = "ROLE_";
 
     @Column(name = "NAME", nullable = false)

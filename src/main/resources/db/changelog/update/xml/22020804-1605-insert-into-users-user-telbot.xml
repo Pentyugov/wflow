@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="apentyugov" id="22020804-1605-add-user-telbot">
+
+        <insert tableName="security_users" dbms="postgresql">
+            <column name="id" value="9f2c8b36-a7d4-4f14-ab92-377cb3dad42c"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="email" value="telbot@wflow.ru"/>
+            <column name="join_date" value="now()"/>
+            <column name="password" value="$2a$12$xi5HLZSKsZk2hAKJ7V32S.YE4KGiQ2OQ/Yg1LGVTy.kUPWUj/WXt."/>
+            <column name="username" value="telbot"/>
+            <column name="is_active" value="true"/>
+            <column name="is_not_locked" value="true"/>
+            <column name="image_url" value="https://robohash.org/telbot"/>
+        </insert>
+
+        <insert tableName="security_role" dbms="postgresql">
+            <column name="id" value="2494b0d5-44ef-453d-a9ef-de0de7909bd5"/>
+            <column name="create_date" value="now()"/>
+            <column name="version" value="1"/>
+            <column name="name" value="ROLE_TELBOT"/>
+            <column name="description" value="Role for telbot"/>
+        </insert>
+
+        <insert tableName="security_user_role" dbms="postgresql">
+            <column name="user_id" value="9f2c8b36-a7d4-4f14-ab92-377cb3dad42c"/>
+            <column name="role_id" value="2494b0d5-44ef-453d-a9ef-de0de7909bd5"/>
+        </insert>
+
+    </changeSet>
+
+
+
+</databaseChangeLog>
