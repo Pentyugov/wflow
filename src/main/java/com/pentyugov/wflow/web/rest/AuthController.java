@@ -23,7 +23,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 import static com.pentyugov.wflow.application.configuration.constant.ApplicationConstants.Security;
 
@@ -79,9 +78,10 @@ public class AuthController extends AbstractController {
     @PostMapping("/change-password")
     public ResponseEntity<HttpResponse> changePassword(@RequestParam(value = "email", required = false) String email,
                                                        @RequestParam(value = "password") String password,
-                                                       @RequestParam(value = "confirmPassword") String confirmPassword,
-                                                       Principal principal) throws UserNotFoundException, ValidationException {
-        userService.changePassword(email, password, confirmPassword, principal);
+                                                       @RequestParam(value = "confirmPassword") String confirmPassword)
+            throws ValidationException, UserNotFoundException {
+
+        userService.changePassword(email, password, confirmPassword);
         return response(HttpStatus.OK, "Password was successfully changed");
     }
 

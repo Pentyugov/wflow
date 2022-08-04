@@ -4,46 +4,38 @@ import com.pentyugov.wflow.core.domain.entity.ChatMessage;
 import com.pentyugov.wflow.core.domain.entity.ChatRoom;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.ChatMessageDto;
-import com.pentyugov.wflow.core.service.ChatMessageService;
-import com.pentyugov.wflow.core.service.ChatRoomService;
-import com.pentyugov.wflow.core.service.UserService;
-import com.pentyugov.wflow.core.service.UserWsSessionService;
+import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.response.ChatMessagePageResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/chat-messages")
+@RequiredArgsConstructor
 public class ChatMessagesController extends AbstractController {
 
     private final ChatMessageService chatMessageService;
     private final ChatRoomService chatRoomService;
     private final UserService userService;
     private final UserWsSessionService userWsSessionService;
-
-    @Autowired
-    public ChatMessagesController(ChatMessageService chatMessageService, ChatRoomService chatRoomService, UserService userService, UserWsSessionService userWsSessionService) {
-        this.chatMessageService = chatMessageService;
-        this.chatRoomService = chatRoomService;
-        this.userService = userService;
-        this.userWsSessionService = userWsSessionService;
-    }
+    private final UserSessionService userSessionService;
 
     @GetMapping("/get-room-messages/{recipientId}")
-    public ResponseEntity<Object> getChatRoomMessages(@PathVariable String recipientId, Principal principal) throws UserNotFoundException {
-        User sender = userService.getUserByPrincipal(principal);
-        String chatId = chatRoomService.getChatId(sender.getId(), UUID.fromString(recipientId), false).orElse(null);
+    public ResponseEntity<Object> getChatRoomMessages(@PathVariable String recipientId) throws UserNotFoundException {
+        User sender = userSessionService.getCurrentUser();
+        String chatId = chatRoomService.getChatId(sender.getId(), UUID.fromString(recipientId), false)
+                .orElse(null);
         if (StringUtils.hasText(chatId)) {
             List<ChatMessageDto> result = new ArrayList<>();
-            chatMessageService.getChatMessagesByChatId(chatId).forEach(chatMessage -> result.add(chatMessageService.createProxyFromChatMessage(chatMessage)));
+            chatMessageService.getChatMessagesByChatId(chatId)
+                    .forEach(chatMessage -> result.add(chatMessageService.createProxyFromChatMessage(chatMessage)));
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             return ResponseEntity.badRequest().build();
@@ -51,23 +43,21 @@ public class ChatMessagesController extends AbstractController {
     }
 
     @GetMapping("/get-user-chat-messages-map")
-    public ResponseEntity<Object> getUserChatMessagesMap(Principal principal) throws UserNotFoundException {
-        User current = userService.getUserByPrincipal(principal);
+    public ResponseEntity<Object> getUserChatMessagesMap() {
+        User current = userSessionService.getCurrentUser();
         List<ChatRoom> rooms = chatRoomService.getRoomsForUser(current);
-
         Map<String, ChatMessagePageResponse> result = new HashMap<>();
         for (ChatRoom chatRoom : rooms) {
-            ChatMessagePageResponse chatMessagePageResponse = new ChatMessagePageResponse();
+            ChatMessagePageResponse response = new ChatMessagePageResponse();
             List<ChatMessageDto> messages = new ArrayList<>();
             Page<ChatMessage> page = chatMessageService.getPageChatMessagesByChatId(chatRoom.getChatId(), Optional.of(0), Optional.empty());
-            chatMessagePageResponse.setTotalPages(page.getTotalPages());
+            response.setTotalPages(page.getTotalPages());
             page.forEach(chatMessage ->
                     messages.add(chatMessageService.createProxyFromChatMessage(chatMessage)));
             Collections.reverse(messages);
-            chatMessagePageResponse.setMessages(messages);
-            result.put(chatRoom.getRecipient().getId().toString(), chatMessagePageResponse);
+            response.setMessages(messages);
+            result.put(chatRoom.getRecipient().getId().toString(), response);
         }
-
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -77,8 +67,8 @@ public class ChatMessagesController extends AbstractController {
                                                            @RequestParam String chatId,
                                                            @RequestParam Optional<String> sortBy) {
         List<ChatMessageDto> result = new ArrayList<>();
-        Page<ChatMessage> pageChatMessagesByChatId = chatMessageService.getPageChatMessagesByChatId(chatId, page, sortBy);
-        pageChatMessagesByChatId.getContent().forEach(message ->
+        Page<ChatMessage> chatPage = chatMessageService.getPageChatMessagesByChatId(chatId, page, sortBy);
+        chatPage.getContent().forEach(message ->
                 result.add(chatMessageService.createProxyFromChatMessage(message)));
         Collections.reverse(result);
         return result;
@@ -100,27 +90,25 @@ public class ChatMessagesController extends AbstractController {
     }
 
     @GetMapping("/get-new-messages-count")
-    public ResponseEntity<Object> getNewMessagesCount(Principal principal) throws UserNotFoundException {
-        User user = userService.getUserByPrincipal(principal);
-        Integer count = chatMessageService.getNewChatMessagesCountForUser(user.getId());
+    public ResponseEntity<Object> getNewMessagesCount() {
+        Integer count = chatMessageService.getNewChatMessagesCountForUser(userSessionService.getCurrentUser().getId());
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
     @GetMapping("/get-messages-for-current-user")
-    public ResponseEntity<Object> getMessagesForUserByStatus(Principal principal, @RequestParam Integer status) throws UserNotFoundException {
-        User user = userService.getUserByPrincipal(principal);
+    public ResponseEntity<Object> getMessagesForUserByStatus(@RequestParam Integer status) {
+
         return new ResponseEntity<>(
-                chatMessageService.getChatMessagesForUserWithStatus(user.getId(), status),
+                chatMessageService.getChatMessagesForUserWithStatus(userSessionService.getCurrentUser().getId(), status),
                 HttpStatus.OK
         );
 
     }
 
     @GetMapping("/get-new-messages-for-current-user")
-    public ResponseEntity<Object> getNewMessagesForUser(Principal principal) throws UserNotFoundException {
-        User user = userService.getUserByPrincipal(principal);
+    public ResponseEntity<Object> getNewMessagesForUser() {
         return new ResponseEntity<>(
-                chatMessageService.getNewMessagesForUser(user.getId()),
+                chatMessageService.getNewMessagesForUser(userSessionService.getCurrentUser().getId()),
                 HttpStatus.OK
         );
     }

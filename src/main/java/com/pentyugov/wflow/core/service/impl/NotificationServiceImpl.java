@@ -7,6 +7,7 @@ import com.pentyugov.wflow.core.dto.NotificationDto;
 import com.pentyugov.wflow.core.repository.NotificationRepository;
 import com.pentyugov.wflow.core.service.NotificationService;
 import com.pentyugov.wflow.core.service.UserService;
+import com.pentyugov.wflow.core.service.UserSessionService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
     private final NotificationRepository notificationRepository;
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserSessionService userSessionService;
 
     public Page<Notification> getNotificationPage(Optional<Integer> page, Optional<String> sortBy) {
         return notificationRepository.findAll(
@@ -42,8 +44,8 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
     }
 
     @Override
-    public List<Notification> getNotificationsForCurrentUser(Principal principal) throws UserNotFoundException {
-        User currentUser = userService.getUserByPrincipal(principal);
+    public List<Notification> getNotificationsForCurrentUser() {
+        User currentUser = userSessionService.getCurrentUser();
         return getNotificationsByReceiverId(currentUser.getId());
     }
 

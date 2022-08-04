@@ -28,7 +28,7 @@ public class TicketController extends ExceptionHandling {
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<Object> getAllTickets(Principal principal) {
+    public ResponseEntity<Object> getAllTickets() {
         List<Ticket> tickets = ticketService.getAllTickets();
         return null;
     }

@@ -39,8 +39,8 @@ public class ProjectController  extends ExceptionHandling {
     }
 
     @GetMapping("/available")
-    public ResponseEntity<Object> getAvailableProjects(Principal principal) throws UserNotFoundException {
-        List<ProjectDto> projects = projectService.getAvailable(principal);
+    public ResponseEntity<Object> getAvailableProjects() {
+        List<ProjectDto> projects = projectService.getAvailable();
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 

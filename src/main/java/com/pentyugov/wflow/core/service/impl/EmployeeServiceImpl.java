@@ -1,6 +1,7 @@
 package com.pentyugov.wflow.core.service.impl;
 
 import com.pentyugov.wflow.core.domain.entity.Employee;
+import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.domain.entity.UserSettings;
 import com.pentyugov.wflow.core.dto.EmployeeDto;
 import com.pentyugov.wflow.core.repository.EmployeeRepository;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -29,31 +29,47 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
     private final ValidationService validationService;
     private final UserSettingsService userSettingsService;
     private final ModelMapper modelMapper;
+    private final UserSessionService userSessionService;
 
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
-    public Employee getEmployeeById(UUID id, Principal principal) throws EmployeeNotFoundException, UserNotFoundException {
-        Locale locale = getLocale(principal);
+    @Override
+    public Employee getEmployeeById(UUID id) throws EmployeeNotFoundException {
         return employeeRepository.findById(id).orElseThrow(() ->
-                new EmployeeNotFoundException(getMessage("exception.employee.not.found", locale, "id", id.toString())));
+                new EmployeeNotFoundException(getMessage(
+                        "exception.employee.not.found",
+                        getLocale(userSessionService.getCurrentUser()),
+                        "id",
+                        id.toString()
+                )));
     }
 
-    public Employee addNewEmployee(EmployeeDto employeeDto, Principal principal) throws PositionNotFoundException, UserNotFoundException, EmployeeExistException, ValidationException, DepartmentNotFoundException {
+    @Override
+    public Employee addNewEmployee(EmployeeDto employeeDto)
+            throws PositionNotFoundException, UserNotFoundException, EmployeeExistException,
+            ValidationException, DepartmentNotFoundException {
+
         Employee employee = createEmployeeFromDto(employeeDto);
-        validateEmployee(employee, false, getLocale(principal));
+        validateEmployee(employee, false, getLocale(userSessionService.getCurrentUser()));
         return employeeRepository.save(employee);
     }
 
-    public Employee updateEmployee(EmployeeDto employeeDto, Principal principal) throws PositionNotFoundException, UserNotFoundException, DepartmentNotFoundException, ValidationException, EmployeeExistException {
+    @Override
+    public Employee updateEmployee(EmployeeDto employeeDto)
+            throws PositionNotFoundException, UserNotFoundException, DepartmentNotFoundException,
+            ValidationException, EmployeeExistException {
+
         Employee employee = createEmployeeFromDto(employeeDto);
-        validateEmployee(employee, true, getLocale(principal));
+        validateEmployee(employee, true, getLocale(userSessionService.getCurrentUser()));
         return employeeRepository.save(employee);
     }
 
+    @Override
+    public void updateAll(List<EmployeeDto> employeeDtos)
+            throws PositionNotFoundException, UserNotFoundException, DepartmentNotFoundException {
 
-    public void updateAll(List<EmployeeDto> employeeDtos) throws PositionNotFoundException, UserNotFoundException, DepartmentNotFoundException {
         for (EmployeeDto employeeDto : employeeDtos) {
             Employee employee = createEmployeeFromDto(employeeDto);
             if (!ObjectUtils.isEmpty(employeeDto.getDepartment())) {
@@ -63,7 +79,66 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
         }
     }
 
-    private void validateEmployee(Employee employee, boolean isUpdate, Locale locale) throws EmployeeExistException, ValidationException {
+    @Override
+    public Employee createEmployeeFromDto(EmployeeDto employeeDto)
+            throws PositionNotFoundException, DepartmentNotFoundException, UserNotFoundException {
+
+        Employee employee = null;
+        if (!ObjectUtils.isEmpty(employeeDto.getId())) {
+            employee = employeeRepository.getById(employeeDto.getId());
+        }
+
+        if (ObjectUtils.isEmpty(employee)) {
+            employee = new Employee();
+            employee.setId(employeeDto.getId());
+        }
+        employee.setFirstName(employeeDto.getFirstName());
+        employee.setLastName(employeeDto.getLastName());
+        employee.setMiddleName(employeeDto.getMiddleName());
+        employee.setSalary(employeeDto.getSalary());
+        employee.setHireDate(employeeDto.getHireDate());
+        employee.setDismissalDate(employeeDto.getDismissalDate());
+        employee.setPhoneNumber(employeeDto.getPhoneNumber());
+        employee.setEmail(employeeDto.getEmail());
+        employee.setHead(employeeDto.getHead());
+        employee.setPersonnelNumber(employeeDto.getPersonnelNumber());
+
+        if (!ObjectUtils.isEmpty(employeeDto.getPosition())) {
+            employee.setPosition(positionService.getById(employeeDto.getPosition().getId()));
+        }
+        if (!ObjectUtils.isEmpty(employeeDto.getDepartment())) {
+            employee.setDepartment(departmentService.getDepartmentById(employeeDto.getDepartment().getId()));
+        } else {
+            employee.setDepartment(null);
+        }
+        if (!ObjectUtils.isEmpty(employeeDto.getUser())) {
+            employee.setUser(userService.getUserById(employeeDto.getUser().getId()));
+        }
+
+        return employee;
+    }
+
+    @Override
+    public EmployeeDto createEmployeeDtoFromEmployee(Employee employee) {
+        EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
+        if (!ObjectUtils.isEmpty(employee.getDepartment())) {
+            employeeDto.setDepartment(departmentService.createDepartmentDtoFromDepartment(employee.getDepartment()));
+        }
+        if (!ObjectUtils.isEmpty(employee.getUser())) {
+            employeeDto.setUser(userService.createUserDtoFromUser(employee.getUser()));
+        }
+
+        return employeeDto;
+    }
+
+    @Override
+    public List<Employee> getEmployeesByDepartment(UUID departmentId) {
+        return employeeRepository.findByEmployeesDepartment(departmentId);
+    }
+
+    private void validateEmployee(Employee employee, boolean isUpdate, Locale locale)
+            throws EmployeeExistException, ValidationException {
+
         if (isUpdate) {
             Employee existed = employeeRepository.findByEmail(employee.getEmail()).orElse(null);
             if (!ObjectUtils.isEmpty(existed) && !existed.getId().equals(employee.getId())) {
@@ -131,60 +206,8 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
         }
     }
 
-    public Employee createEmployeeFromDto(EmployeeDto employeeDto) throws PositionNotFoundException, DepartmentNotFoundException, UserNotFoundException {
-        Employee employee = null;
-        if (!ObjectUtils.isEmpty(employeeDto.getId())) {
-            employee = employeeRepository.getById(employeeDto.getId());
-        }
-
-        if (ObjectUtils.isEmpty(employee)) {
-            employee = new Employee();
-            employee.setId(employeeDto.getId());
-        }
-        employee.setFirstName(employeeDto.getFirstName());
-        employee.setLastName(employeeDto.getLastName());
-        employee.setMiddleName(employeeDto.getMiddleName());
-        employee.setSalary(employeeDto.getSalary());
-        employee.setHireDate(employeeDto.getHireDate());
-        employee.setDismissalDate(employeeDto.getDismissalDate());
-        employee.setPhoneNumber(employeeDto.getPhoneNumber());
-        employee.setEmail(employeeDto.getEmail());
-        employee.setHead(employeeDto.getHead());
-        employee.setPersonnelNumber(employeeDto.getPersonnelNumber());
-
-        if (!ObjectUtils.isEmpty(employeeDto.getPosition())) {
-            employee.setPosition(positionService.getById(employeeDto.getPosition().getId()));
-        }
-        if (!ObjectUtils.isEmpty(employeeDto.getDepartment())) {
-            employee.setDepartment(departmentService.getDepartmentById(employeeDto.getDepartment().getId()));
-        } else {
-            employee.setDepartment(null);
-        }
-        if (!ObjectUtils.isEmpty(employeeDto.getUser())) {
-            employee.setUser(userService.getUserById(employeeDto.getUser().getId()));
-        }
-
-        return employee;
-    }
-
-    public EmployeeDto createEmployeeDtoFromEmployee(Employee employee) {
-        EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
-        if (!ObjectUtils.isEmpty(employee.getDepartment())) {
-            employeeDto.setDepartment(departmentService.createDepartmentDtoFromDepartment(employee.getDepartment()));
-        }
-        if (!ObjectUtils.isEmpty(employee.getUser())) {
-            employeeDto.setUser(userService.createUserDtoFromUser(employee.getUser()));
-        }
-
-        return employeeDto;
-    }
-
-    public List<Employee> getEmployeesByDepartment(UUID departmentId) {
-        return employeeRepository.findByEmployeesDepartment(departmentId);
-    }
-
-    private Locale getLocale(Principal principal) throws UserNotFoundException {
-        UserSettings userSettings = this.userSettingsService.getUserSettings(this.userService.getUserByPrincipal(principal));
+    private Locale getLocale(User user) {
+        UserSettings userSettings = this.userSettingsService.getUserSettings(user);
         return new Locale(userSettings.getLocale());
     }
 

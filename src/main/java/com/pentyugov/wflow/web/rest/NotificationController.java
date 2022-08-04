@@ -3,35 +3,27 @@ package com.pentyugov.wflow.web.rest;
 import com.pentyugov.wflow.core.domain.entity.Notification;
 import com.pentyugov.wflow.core.dto.NotificationDto;
 import com.pentyugov.wflow.core.service.NotificationService;
-import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.ExceptionHandling;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.http.HttpResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/notifications")
+@RequiredArgsConstructor
 public class NotificationController extends ExceptionHandling {
 
     private final NotificationService notificationService;
-    private final UserService userService;
-
-    @Autowired
-    public NotificationController(NotificationService notificationService, UserService userService) {
-        this.notificationService = notificationService;
-        this.userService = userService;
-    }
 
     @GetMapping
-    public ResponseEntity<Object> getAll(Principal principal) throws UserNotFoundException {
-        List<NotificationDto> notificationList = notificationService.getNotificationsForCurrentUser(principal)
+    public ResponseEntity<Object> getAll() {
+        List<NotificationDto> notificationList = notificationService.getNotificationsForCurrentUser()
                 .stream()
                 .map(notificationService::createNotificationDtoFromNotification)
                 .collect(Collectors.toList());
@@ -63,19 +55,6 @@ public class NotificationController extends ExceptionHandling {
         notificationService.deleteNotification(UUID.fromString(id));
         String message = String.format("Notification with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
-    }
-
-    @PostMapping("/send-test-notification")
-    public void sendTestNotification(Principal principal) throws UserNotFoundException {
-        Notification notification = new Notification();
-        notification.setType(10);
-        notification.setAccessoryType(20);
-        notification.setRead(false);
-        notification.setTitle("WS SERVICE TEST");
-        notification.setMessage("test notification ws service");
-        notification.setReceiver(userService.getUserByPrincipal(principal));
-        notificationService.saveNotification(notification);
-        notificationService.sendNotificationWithWs(notificationService.createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {

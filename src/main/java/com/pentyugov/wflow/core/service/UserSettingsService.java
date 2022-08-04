@@ -16,7 +16,7 @@ public interface UserSettingsService {
 
     UserSettings createDefaultSettingsForUser(User user);
 
-    UserSettings saveUserSettings(UserSettingsDto userSettingsDto, Principal principal) throws UserNotFoundException;
+    UserSettings saveUserSettings(UserSettingsDto userSettingsDto);
 
     UserSettingsDto createProxyFromUserSettings(UserSettings userSettings);
 

@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,8 +36,8 @@ public class TaskController extends ExceptionHandling {
 
     @GetMapping
     @Operation(summary = "Get all tasks", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<Object> getAll(Principal principal) throws UserNotFoundException {
-        return new ResponseEntity<>(taskService.getAllTaskDto(principal), HttpStatus.OK);
+    public ResponseEntity<Object> getAll() {
+        return new ResponseEntity<>(taskService.getAllTaskDto(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -50,8 +49,8 @@ public class TaskController extends ExceptionHandling {
 
     @GetMapping("/active")
     @Operation(summary = "Get active tasks for current user", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<Object> getActive(Principal principal) throws UserNotFoundException {
-        List<TaskDto> result = taskService.getActiveForExecutor(principal)
+    public ResponseEntity<Object> getActive() {
+        List<TaskDto> result = taskService.getActiveForExecutor()
                 .stream()
                 .map(taskService::createDto)
                 .collect(Collectors.toList());
@@ -60,8 +59,8 @@ public class TaskController extends ExceptionHandling {
 
     @GetMapping("/productivity-data")
     @Operation(summary = "Get current user`s productivity data", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<Object> getProductivityData(Principal principal) throws UserNotFoundException {
-        List<TaskDto> result = taskService.getProductivityData(principal)
+    public ResponseEntity<Object> getProductivityData() {
+        List<TaskDto> result = taskService.getProductivityData()
                 .stream()
                 .map(taskService::createDto)
                 .collect(Collectors.toList());
@@ -77,8 +76,8 @@ public class TaskController extends ExceptionHandling {
 
     @PostMapping
     @Operation(summary = "Post new task", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<Object> post(@RequestBody TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
-        Task task = taskService.createNewTask(taskDto, principal);
+    public ResponseEntity<Object> post(@RequestBody TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException {
+        Task task = taskService.createNewTask(taskDto);
         return new ResponseEntity<>(taskService.createDto(task), HttpStatus.OK);
     }
 
@@ -91,16 +90,16 @@ public class TaskController extends ExceptionHandling {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Get task by ID", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<HttpResponse> delete(@PathVariable String id, Principal principal) throws TaskNotFoundException, UserNotFoundException {
-        taskService.deleteTask(UUID.fromString(id), principal);
+    public ResponseEntity<HttpResponse> delete(@PathVariable String id) throws TaskNotFoundException {
+        taskService.deleteTask(UUID.fromString(id));
         String message = String.format("Task with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
     }
 
     @PostMapping("/signal-proc")
     @Operation(summary = "Signal task proc to switch state", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<HttpResponse> signalProcAction(@RequestBody TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException {
-        String message = taskService.signalProc(taskSignalProcRequest, principal);
+    public ResponseEntity<HttpResponse> signalProcAction(@RequestBody TaskSignalProcRequest taskSignalProcRequest) throws TaskNotFoundException {
+        String message = taskService.signalProc(taskSignalProcRequest);
         return response(HttpStatus.OK, message);
     }
 
@@ -113,13 +112,12 @@ public class TaskController extends ExceptionHandling {
 
     @PostMapping("/filter")
     @Operation(summary = "Search task with filter", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<Object> applyTaskFilters(@RequestBody FiltersRequest filtersRequest, Principal principal) throws UserNotFoundException {
+    public ResponseEntity<Object> applyTaskFilters(@RequestBody FiltersRequest filtersRequest) throws UserNotFoundException {
         List<TaskDto> result = taskService
-                .getTasksWithFilters(principal, filtersRequest)
+                .getTasksWithFilters(filtersRequest)
                 .stream()
                 .map(taskService::createDto)
                 .collect(Collectors.toList());
-
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

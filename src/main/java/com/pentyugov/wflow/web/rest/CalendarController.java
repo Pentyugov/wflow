@@ -2,13 +2,11 @@ package com.pentyugov.wflow.web.rest;
 
 import com.pentyugov.wflow.core.dto.CalendarEventDto;
 import com.pentyugov.wflow.core.service.CalendarEventService;
-import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.http.HttpResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -23,8 +21,8 @@ public class CalendarController extends AbstractController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllForCurrentUser(Principal principal) throws UserNotFoundException {
-        return new ResponseEntity<>(calendarEventService.getAllForCurrentUser(principal), HttpStatus.OK);
+    public ResponseEntity<Object> getAllForCurrentUser() {
+        return new ResponseEntity<>(calendarEventService.getAllForCurrentUser(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -33,14 +31,14 @@ public class CalendarController extends AbstractController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
-        CalendarEventDto result = calendarEventService.addCalendarEvent(calendarEventDto, principal);
+    public ResponseEntity<Object> add(@RequestBody CalendarEventDto calendarEventDto) {
+        CalendarEventDto result = calendarEventService.addCalendarEvent(calendarEventDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Object> update(@RequestBody CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
-        CalendarEventDto result = calendarEventService.updateCalendarEvent(calendarEventDto, principal);
+    public ResponseEntity<Object> update(@RequestBody CalendarEventDto calendarEventDto) {
+        CalendarEventDto result = calendarEventService.updateCalendarEvent(calendarEventDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

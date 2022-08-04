@@ -18,7 +18,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +43,9 @@ public class UserServiceImpl extends AbstractService implements UserService {
     private final EmailService emailService;
     private final ImageService imageService;
     private final ApplicationService applicationService;
+    private final UserSessionService userSessionService;
 
+    @Override
     public User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
         if (validateUsernameAndEmail(null, userIn.getUsername(), userIn.getEmail())) {
             User user = new User();
@@ -68,6 +69,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return null;
     }
 
+    @Override
     public void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
         validateUsernameAndEmail(null, userDto.getUsername(), userDto.getEmail());
         User user = createUserFromDto(userDto);
@@ -87,12 +89,14 @@ public class UserServiceImpl extends AbstractService implements UserService {
         }
     }
 
+    @Override
     public void updateLastLoginDate(User user) {
         user.setLastLoginDate(LocalDateTime.now());
         user.setLastLoginDateDisplay(LocalDateTime.now());
         userRepository.save(user);
     }
 
+    @Override
     public User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException, EmailIsEmptyException {
         User currentUser = getUserById(userDto.getId());
         validateUsernameAndEmail(currentUser, userDto.getUsername(), userDto.getEmail());
@@ -131,10 +135,12 @@ public class UserServiceImpl extends AbstractService implements UserService {
         userRepository.save(user);
     }
 
+    @Override
     public void deleteUser(UUID id) {
         userRepository.delete(id);
     }
 
+    @Override
     public void resetPassword(String email) throws UserNotFoundException {
         User user = getUserByEmail(email);
         String rawPassword = applicationService.generatePassword();
@@ -143,13 +149,14 @@ public class UserServiceImpl extends AbstractService implements UserService {
         emailService.sentResetPasswordMail(user, rawPassword);
     }
 
-    public void changePassword(String email, String password, String confirmPassword, Principal principal) throws UserNotFoundException, ValidationException {
+    @Override
+    public void changePassword(String email, String password, String confirmPassword) throws ValidationException, UserNotFoundException {
         User user;
         if (StringUtils.hasText(email)) {
             user = userRepository.findByEmail(email).orElseThrow(() ->
                     new UserNotFoundException(getMessage(sourcePath, "exception.user.with.email.not.found", email)));
         } else {
-            user = getUserByPrincipal(principal);
+            user = userSessionService.getCurrentUser();
         }
         if (password.length() < 8) {
             throw new ValidationException("Password must contain at least 8 characters");
@@ -163,6 +170,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         }
     }
 
+    @Override
     public User updateProfileImage(UUID id, String profileImageUrl) throws UserNotFoundException {
         User user = getUserById(id);
         if (StringUtils.hasText(profileImageUrl)) {
@@ -183,25 +191,30 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return user;
     }
 
-    public User getCurrentUser(Principal principal) throws UserNotFoundException {
-        return getUserByPrincipal(principal);
+    @Override
+    public User getCurrentUser() {
+        return userSessionService.getCurrentUser();
     }
 
+    @Override
     public User getUserById(UUID id) throws UserNotFoundException {
         return userRepository.findById(id).orElseThrow(() ->
                 new UserNotFoundException(getMessage(sourcePath, "exception.user.with.id.not.found", id.toString())));
     }
 
+    @Override
     public User getUserByEmail(String email) throws UserNotFoundException {
         return userRepository.findByEmail(email).orElseThrow(() ->
                 new UserNotFoundException(getMessage(sourcePath, "exception.user.with.email.not.found", email)));
     }
 
+    @Override
     public User getUserByUsername(String username) throws UserNotFoundException {
         return userRepository.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(getMessage(sourcePath, "exception.user.with.username.not.found", username)));
     }
 
+    @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -232,6 +245,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return getAllUsers();
     }
 
+    @Override
     public User createUserFromDto(UserDto userDto) {
         User user = new User();
         if (userDto.getId() != null) {
@@ -257,6 +271,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return user;
     }
 
+    @Override
     public UserDto createUserDto(UUID id,
                                  String username,
                                  String email,
@@ -277,6 +292,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return userDto;
     }
 
+    @Override
     public UserDto createUserDtoFromUser(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
@@ -298,6 +314,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return userDto;
     }
 
+    @Override
     public User updateUserFromDto(User currentUser, UserDto userDto) {
         currentUser.setUsername(userDto.getUsername());
         currentUser.setEmail(userDto.getEmail());
@@ -359,25 +376,11 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     }
 
-    public User getUserByPrincipal(Principal principal) throws UserNotFoundException {
-        String username = principal.getName();
-        return userRepository.findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException("User with username {" + username + "} not found"));
-    }
-
-    public boolean isUserAdmin(User user) {
-        return user.getRoles().stream().anyMatch(role -> role.getName().equals(Role.ADMIN));
-    }
-
-    @Override
-    public boolean isUserInRole(User user, String roleName) {
-        return user.getRoles().stream().anyMatch(role -> role.getName().equals(roleName));
-    }
-
     private String getTemporaryProfileImageUrl(String username) {
         return TEMP_PROFILE_IMAGE_BASE_URL + username;
     }
 
+    @Override
     public User deleteUserProfileImage(UUID id) {
         User user = userRepository.findById(id).orElse(null);
         if (!ObjectUtils.isEmpty(user) && user.getProfileImageUrl().startsWith(PROFILE_IMAGE_RESOURCE_HOST)) {

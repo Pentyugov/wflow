@@ -28,11 +28,11 @@ public interface UserService {
 
     void resetPassword(String email) throws UserNotFoundException;
 
-    void changePassword(String email, String password, String confirmPassword, Principal principal) throws UserNotFoundException, ValidationException;
+    void changePassword(String email, String password, String confirmPassword) throws ValidationException, UserNotFoundException;
 
     User updateProfileImage(UUID id, String profileImageUrl) throws UserNotFoundException;
 
-    User getCurrentUser(Principal principal) throws UserNotFoundException;
+    User getCurrentUser();
 
     User getUserById(UUID id) throws UserNotFoundException;
 
@@ -57,12 +57,6 @@ public interface UserService {
     UserDto createUserDtoFromUser(User user);
 
     User updateUserFromDto(User currentUser, UserDto userDto);
-
-    User getUserByPrincipal(Principal principal) throws UserNotFoundException;
-
-    boolean isUserAdmin(User user);
-
-    boolean isUserInRole(User user, String roleName);
 
     User deleteUserProfileImage(UUID id);
 

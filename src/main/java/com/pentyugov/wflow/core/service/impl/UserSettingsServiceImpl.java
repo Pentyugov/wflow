@@ -9,24 +9,22 @@ import com.pentyugov.wflow.core.domain.entity.UserSettings;
 import com.pentyugov.wflow.core.dto.UserSettingsDto;
 import com.pentyugov.wflow.core.dto.WidgetSettingsDto;
 import com.pentyugov.wflow.core.repository.UserSettingsRepository;
-import com.pentyugov.wflow.core.service.UserService;
+import com.pentyugov.wflow.core.service.UserSessionService;
 import com.pentyugov.wflow.core.service.UserSettingsService;
-import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Locale;
 
 @Service(UserSettingsService.NAME)
 @RequiredArgsConstructor
 public class UserSettingsServiceImpl extends AbstractService implements UserSettingsService {
 
     private final UserSettingsRepository userSettingsRepository;
-    private final UserService userService;
+    private final UserSessionService userSessionService;
 
+    @Override
     public UserSettings getUserSettings(User user) {
         UserSettings userSettings = userSettingsRepository.findUserSettingsForUser(user.getId()).orElse(null);
         if (ObjectUtils.isEmpty(userSettings)) {
@@ -35,6 +33,7 @@ public class UserSettingsServiceImpl extends AbstractService implements UserSett
         return userSettings;
     }
 
+    @Override
     public UserSettings createDefaultSettingsForUser(User user) {
         UserSettings userSettings = new UserSettings();
         userSettings.setUser(user);
@@ -47,17 +46,15 @@ public class UserSettingsServiceImpl extends AbstractService implements UserSett
         return userSettingsRepository.save(userSettings);
     }
 
-    public UserSettings saveUserSettings(UserSettings userSettings) {
-        return userSettingsRepository.save(userSettings);
-    }
-
-    public UserSettings saveUserSettings(UserSettingsDto userSettingsDto, Principal principal) throws UserNotFoundException {
-        User user = userService.getUserByPrincipal(principal);
+    @Override
+    public UserSettings saveUserSettings(UserSettingsDto userSettingsDto) {
+        User user = userSessionService.getCurrentUser();
         UserSettings userSettings = createUserSettingsFromProxy(userSettingsDto);
         userSettings.setUser(user);
         return userSettingsRepository.save(userSettings);
     }
 
+    @Override
     public UserSettingsDto createProxyFromUserSettings(UserSettings userSettings) {
         ObjectMapper mapper = new ObjectMapper();
         UserSettingsDto userSettingsDto = new UserSettingsDto();
@@ -79,6 +76,7 @@ public class UserSettingsServiceImpl extends AbstractService implements UserSett
         return userSettingsDto;
     }
 
+    @Override
     public UserSettings createUserSettingsFromProxy(UserSettingsDto userSettingsDto) {
 
         UserSettings userSettings = null;
@@ -98,11 +96,6 @@ public class UserSettingsServiceImpl extends AbstractService implements UserSett
         userSettings.setMiniSidebar(userSettingsDto.getMiniSidebar());
         userSettings.setDarkTheme(userSettingsDto.getDarkTheme());
         return userSettings;
-    }
-
-    public Locale getLocale(Principal principal) throws UserNotFoundException {
-        String locale = getUserSettings(userService.getUserByPrincipal(principal)).getLocale();
-        return new Locale(locale);
     }
 
     private String getDefaultWidgetSettings() {

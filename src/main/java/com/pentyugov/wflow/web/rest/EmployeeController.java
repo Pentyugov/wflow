@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,9 +35,8 @@ public class EmployeeController extends AbstractController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable String id, Principal principal)
-            throws EmployeeNotFoundException, UserNotFoundException {
-        Employee employee = employeeService.getEmployeeById(UUID.fromString(id), principal);
+    public ResponseEntity<Object> getById(@PathVariable String id) throws EmployeeNotFoundException {
+        Employee employee = employeeService.getEmployeeById(UUID.fromString(id));
         return new ResponseEntity<>(employeeService.createEmployeeDtoFromEmployee(employee), HttpStatus.OK);
     }
 
@@ -51,20 +49,20 @@ public class EmployeeController extends AbstractController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody EmployeeDto employeeDto, Principal principal)
+    public ResponseEntity<Object> add(@RequestBody EmployeeDto employeeDto)
             throws UserNotFoundException, EmployeeExistException, PositionNotFoundException, ValidationException,
             DepartmentNotFoundException {
 
-        Employee employee = employeeService.addNewEmployee(employeeDto, principal);
+        Employee employee = employeeService.addNewEmployee(employeeDto);
         return new ResponseEntity<>(employeeService.createEmployeeDtoFromEmployee(employee), HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Object> update(@RequestBody EmployeeDto employeeDto, Principal principal)
+    public ResponseEntity<Object> update(@RequestBody EmployeeDto employeeDto)
             throws UserNotFoundException, EmployeeExistException, DepartmentNotFoundException,
             PositionNotFoundException, ValidationException {
 
-        Employee employee = employeeService.updateEmployee(employeeDto, principal);
+        Employee employee = employeeService.updateEmployee(employeeDto);
         return new ResponseEntity<>(employeeService.createEmployeeDtoFromEmployee(employee), HttpStatus.OK);
     }
 

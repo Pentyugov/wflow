@@ -15,8 +15,8 @@ import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import com.pentyugov.wflow.web.payload.request.FiltersRequest;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service(TaskService.NAME)
+@RequiredArgsConstructor
 public class TaskServiceImpl extends AbstractService implements TaskService {
 
     private static final String TASK_PREFIX = "TS-";
@@ -56,28 +57,14 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     private final ProjectService projectService;
     private final FilterService filterService;
     private final TelegramService telegramService;
+    private final UserSessionService userSessionService;
 
-
-    @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService,
-                           WorkflowService workflowService, IssueService issueService, CalendarEventService calendarEventService,
-                           ProjectService projectService, FilterService filterService, TelegramService telegramService) {
-        this.taskRepository = taskRepository;
-        this.userService = userService;
-        this.notificationService = notificationService;
-        this.workflowService = workflowService;
-        this.issueService = issueService;
-        this.calendarEventService = calendarEventService;
-        this.projectService = projectService;
-        this.filterService = filterService;
-        this.telegramService = telegramService;
-    }
 
     @Override
-    public Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException {
+    public Task createNewTask(TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException {
         Task task = createTaskFromDto(taskDto);
         task.setState(Task.STATE_CREATED);
-        User creator = userService.getUserByPrincipal(principal);
+        User creator = userSessionService.getCurrentUser();
         task.setCreator(creator);
         task.setInitiator(creator);
         return taskRepository.save(task);
@@ -90,10 +77,10 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public void deleteTask(UUID id, Principal principal) throws TaskNotFoundException, UserNotFoundException {
+    public void deleteTask(UUID id) throws TaskNotFoundException {
         Task toDelete = getTaskById(id);
         calendarEventService.deleteCalendarEventByCard(toDelete);
-        cancelTask(toDelete, userService.getUserByPrincipal(principal), "Deleted");
+        cancelTask(toDelete, userSessionService.getCurrentUser(), "Deleted");
         taskRepository.delete(id);
     }
 
@@ -104,29 +91,29 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException {
-        return getActiveForExecutor(userService.getUserByPrincipal(principal));
+    public List<Task> getActiveForExecutor() {
+        return getActiveForExecutor(userSessionService.getCurrentUser());
     }
 
     @Override
-    public List<Task> getProductivityData(Principal principal) throws UserNotFoundException {
-        User user = userService.getUserByPrincipal(principal);
+    public List<Task> getProductivityData() {
         List<Task> result = new ArrayList<>();
-        issueService.findCardByExecutorIdAndResult(user, Task.STATE_ASSIGNED).forEach(card -> {
-            if (card instanceof Task) {
-                result.add((Task) card);
-            }
-        });
+        issueService.findCardByExecutorIdAndResult(userSessionService.getCurrentUser(), Task.STATE_ASSIGNED)
+                .forEach(card -> {
+                    if (card instanceof Task) {
+                        result.add((Task) card);
+                    }
+                });
         return result;
     }
 
     @Override
-    public List<Task> getTasksWithFilters(Principal principal, FiltersRequest filtersRequest) throws UserNotFoundException {
+    public List<Task> getTasksWithFilters(FiltersRequest filtersRequest) {
         List<UUID> availableTasksIds;
         if (!CollectionUtils.isEmpty(filtersRequest.getIds())) {
             availableTasksIds = filtersRequest.getIds();
         } else {
-            availableTasksIds = getAllTasks(principal)
+            availableTasksIds = getAllTasks(userSessionService.getCurrentUser())
                     .stream()
                     .map(Task::getId).collect(Collectors.toList());
         }
@@ -164,8 +151,8 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public String signalProc(TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException {
-        User currentUser = userService.getUserByPrincipal(principal);
+    public String signalProc(TaskSignalProcRequest taskSignalProcRequest) throws TaskNotFoundException {
+        User currentUser = userSessionService.getCurrentUser();
         UUID taskId = UUID.fromString(taskSignalProcRequest.getTaskId());
         Task task = taskRepository.findById(taskId).orElseThrow(() ->
                 new TaskNotFoundException(getMessage(sourcePath, "exception.task.with.id.not.found", taskId)));
@@ -173,21 +160,20 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
         switch (action) {
             case Task.ACTION_START:
-                return this.startTask(task, currentUser);
+                return startTask(task, currentUser);
             case Task.ACTION_FINISH:
-                return this.finishTask(task, currentUser, taskSignalProcRequest.getComment());
+                return finishTask(task, currentUser, taskSignalProcRequest.getComment());
             case Task.ACTION_EXECUTE:
-                return this.executeTask(task, currentUser, taskSignalProcRequest.getComment());
+                return executeTask(task, currentUser, taskSignalProcRequest.getComment());
             case Task.ACTION_REWORK:
-                return this.reworkTask(task, currentUser, taskSignalProcRequest.getComment());
+                return reworkTask(task, currentUser, taskSignalProcRequest.getComment());
             case Task.ACTION_CANCEL:
-                return this.cancelTask(task, currentUser, taskSignalProcRequest.getComment());
+                return cancelTask(task, currentUser, taskSignalProcRequest.getComment());
         }
 
         return null;
     }
 
-    @Override
     public String startTask(Task task, User currentUser) {
         task.setInitiator(currentUser);
         task.setKanbanState(Task.KANBAN_STATE_NEW);
@@ -208,7 +194,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.assigned.message", task.getNumber(), executor.getUsername());
     }
 
-    @Override
     public String cancelTask(Task task, User currentUser, String comment) {
         task = workflowService.cancelTaskProcess(task, currentUser, comment);
         taskRepository.save(task);
@@ -223,7 +208,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.canceled.message", task.getNumber(), executor.getUsername());
     }
 
-    @Override
     public String executeTask(Task task, User currentUser, String comment) {
         task = workflowService.executeTask(task, currentUser, comment);
         task.setKanbanState(Task.KANBAN_STATE_COMPLETED);
@@ -238,7 +222,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.executed.message", task.getNumber());
     }
 
-    @Override
     public String reworkTask(Task task, User currentUser, String comment) {
         task = workflowService.reworkTask(task, currentUser, comment);
         task.setKanbanState(Task.KANBAN_STATE_NEW);
@@ -254,7 +237,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.rework.message", task.getNumber());
     }
 
-    @Override
     public String finishTask(Task task, User currentUser, String comment) {
         task = workflowService.finishTask(task, currentUser, comment);
         taskRepository.save(task);
@@ -320,19 +302,18 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return taskRepository.findAll();
     }
 
-    private List<Task> getAllTasks(Principal principal) throws UserNotFoundException {
-        User currentUser = userService.getUserByPrincipal(principal);
-        if (userService.isUserAdmin(currentUser)) {
+    private List<Task> getAllTasks(User user) {
+        if (userSessionService.isCurrentUserAdmin()) {
             return this.getAllTasks();
         } else {
-            return taskRepository.findAllForUser(currentUser.getId());
+            return taskRepository.findAllForUser(user.getId());
         }
     }
 
     @Override
-    public List<TaskDto> getAllTaskDto(Principal principal) throws UserNotFoundException {
-        User currentUser = userService.getUserByPrincipal(principal);
-        if (userService.isUserAdmin(currentUser)) {
+    public List<TaskDto> getAllTaskDto() {
+        User currentUser = userSessionService.getCurrentUser();
+        if (userSessionService.isCurrentUserAdmin()) {
             return taskRepository.findAll()
                     .stream()
                     .map(this::createDto)

@@ -22,31 +22,21 @@ public interface TaskService {
 
     String NAME = "wflow$TaskService";
 
-    Task createNewTask(TaskDto taskDto, Principal principal) throws UserNotFoundException, ProjectNotFoundException;
+    Task createNewTask(TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException;
 
     Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
 
-    void deleteTask(UUID id, Principal principal) throws TaskNotFoundException, UserNotFoundException;
+    void deleteTask(UUID id) throws TaskNotFoundException;
 
     Task getTaskById(UUID id) throws TaskNotFoundException;
 
-    List<Task> getActiveForExecutor(Principal principal) throws UserNotFoundException;
+    List<Task> getActiveForExecutor();
 
-    List<Task> getProductivityData(Principal principal) throws UserNotFoundException;
+    List<Task> getProductivityData();
 
-    List<Task> getTasksWithFilters(Principal principal, FiltersRequest filtersRequest) throws UserNotFoundException;
+    List<Task> getTasksWithFilters(FiltersRequest filtersRequest) throws UserNotFoundException;
 
-    String signalProc(TaskSignalProcRequest taskSignalProcRequest, Principal principal) throws UserNotFoundException, TaskNotFoundException;
-
-    String startTask(Task task, User currentUser);
-
-    String cancelTask(Task task, User currentUser, String comment);
-
-    String executeTask(Task task, User currentUser, String comment);
-
-    String reworkTask(Task task, User currentUser, String comment);
-
-    String finishTask(Task task, User currentUser, String comment);
+    String signalProc(TaskSignalProcRequest taskSignalProcRequest) throws TaskNotFoundException;
 
     List<CardHistoryDto> getTaskHistory(Task task);
 
@@ -54,7 +44,7 @@ public interface TaskService {
 
     List<Task> getAllTasks();
 
-    List<TaskDto> getAllTaskDto(Principal principal) throws UserNotFoundException;
+    List<TaskDto> getAllTaskDto();
 
     Page<Task> getTaskPageForTelBot(Long telUserId, Pageable pageable) throws UserNotFoundException;
 

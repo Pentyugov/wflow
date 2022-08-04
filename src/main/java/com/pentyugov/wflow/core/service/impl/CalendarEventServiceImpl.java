@@ -6,13 +6,11 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.dto.CalendarEventDto;
 import com.pentyugov.wflow.core.repository.CalendarEventRepository;
 import com.pentyugov.wflow.core.service.CalendarEventService;
-import com.pentyugov.wflow.core.service.UserService;
-import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import com.pentyugov.wflow.core.service.UserSessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,12 +19,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CalendarEventServiceImpl implements CalendarEventService {
 
-    private final UserService userService;
     private final CalendarEventRepository calendarEventRepository;
+    private final UserSessionService userSessionService;
 
     @Override
-    public List<CalendarEventDto> getAllForCurrentUser(Principal principal) throws UserNotFoundException {
-        return calendarEventRepository.getAllByUserId(userService.getUserByPrincipal(principal).getId())
+    public List<CalendarEventDto> getAllForCurrentUser() {
+        return calendarEventRepository.getAllByUserId(userSessionService.getCurrentUser().getId())
                 .stream().map(this::createDtoFromEvent).collect(Collectors.toList());
     }
 
@@ -35,8 +33,9 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         return createDtoFromEvent(calendarEventRepository.getById(id));
     }
 
-    public CalendarEventDto addCalendarEvent(CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
-        CalendarEvent calendarEvent = createEventFromDto(calendarEventDto, principal);
+    @Override
+    public CalendarEventDto addCalendarEvent(CalendarEventDto calendarEventDto) {
+        CalendarEvent calendarEvent = createEventFromDto(calendarEventDto);
         calendarEvent = calendarEventRepository.save(calendarEvent);
         return createDtoFromEvent(calendarEvent);
     }
@@ -60,20 +59,20 @@ public class CalendarEventServiceImpl implements CalendarEventService {
     }
 
     @Override
-    public CalendarEventDto updateCalendarEvent(CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
-        CalendarEvent calendarEvent = createEventFromDto(calendarEventDto, principal);
+    public CalendarEventDto updateCalendarEvent(CalendarEventDto calendarEventDto) {
+        CalendarEvent calendarEvent = createEventFromDto(calendarEventDto);
         calendarEvent = calendarEventRepository.save(calendarEvent);
         return createDtoFromEvent(calendarEvent);
     }
 
     @Override
-    public CalendarEvent createEventFromDto(CalendarEventDto calendarEventDto, Principal principal) throws UserNotFoundException {
+    public CalendarEvent createEventFromDto(CalendarEventDto calendarEventDto) {
         CalendarEvent calendarEvent;
         if (calendarEventDto.getId() != null) {
             calendarEvent = calendarEventRepository.getById(calendarEventDto.getId());
         } else {
             calendarEvent = new CalendarEvent();
-            calendarEvent.setUser(userService.getUserByPrincipal(principal));
+            calendarEvent.setUser(userSessionService.getCurrentUser());
         }
 
         calendarEvent.setType(calendarEventDto.getType());

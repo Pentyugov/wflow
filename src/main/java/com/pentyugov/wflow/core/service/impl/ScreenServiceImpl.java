@@ -3,7 +3,9 @@ package com.pentyugov.wflow.core.service.impl;
 import com.pentyugov.wflow.core.dto.ScreenPermissionDto;
 import com.pentyugov.wflow.core.service.ScreenPermissionService;
 import com.pentyugov.wflow.core.service.ScreenService;
+import com.pentyugov.wflow.core.service.UserSessionService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -14,22 +16,19 @@ import java.util.List;
 import static com.pentyugov.wflow.application.configuration.constant.ApplicationConstants.Screen.Action.*;
 
 @Service(ScreenService.NAME)
+@RequiredArgsConstructor
 public class ScreenServiceImpl implements ScreenService {
 
     private final ScreenPermissionService screenPermissionService;
 
-    public ScreenServiceImpl(ScreenPermissionService screenPermissionService) {
-        this.screenPermissionService = screenPermissionService;
-    }
-
     @Override
-    public boolean hasAccessToScreen(Principal principal, String screenAlias) throws UserNotFoundException {
+    public boolean hasAccessToScreen(String screenAlias) {
         if (!StringUtils.hasText(screenAlias))
             return false;
 
         String[] tmp = screenAlias.split("\\.");
         String screenId = tmp[0];
-        List<ScreenPermissionDto> screenPermissions = screenPermissionService.loadScreenPermissionForCurrentUser(principal, screenId);
+        List<ScreenPermissionDto> screenPermissions = screenPermissionService.loadScreenPermissionForCurrentUser(screenId);
 
 
         if (CollectionUtils.isEmpty(screenPermissions))

@@ -17,7 +17,7 @@ public interface ProjectService {
 
     List<Project> getAllProjects();
 
-    List<ProjectDto> getAvailable(Principal principal) throws UserNotFoundException;
+    List<ProjectDto> getAvailable();
 
     Project getProjectById(UUID id) throws ProjectNotFoundException;
 

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ScreenPermissionService {
     String NAME = "wflow$ScreenPermissionService";
-    List<ScreenPermissionDto> loadScreenPermissionForCurrentUser(Principal principal) throws UserNotFoundException;
-    List<ScreenPermissionDto> loadScreenPermissionForCurrentUser(Principal principal, String screenId) throws UserNotFoundException;
+    List<ScreenPermissionDto> loadScreenPermissionForCurrentUser();
+    List<ScreenPermissionDto> loadScreenPermissionForCurrentUser(String screenId);
 }

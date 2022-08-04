@@ -20,7 +20,7 @@ public interface NotificationService {
 
     Page<Notification> getNotificationPage(Optional<Integer> page, Optional<String> sortBy);
 
-    List<Notification> getNotificationsForCurrentUser(Principal principal) throws UserNotFoundException;
+    List<Notification> getNotificationsForCurrentUser();
 
     List<Notification> getNotificationsByReceiverId(UUID receiverId);
 

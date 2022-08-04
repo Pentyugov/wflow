@@ -9,6 +9,7 @@ import com.pentyugov.wflow.core.repository.ProjectRepository;
 import com.pentyugov.wflow.core.service.ContractorService;
 import com.pentyugov.wflow.core.service.ProjectService;
 import com.pentyugov.wflow.core.service.UserService;
+import com.pentyugov.wflow.core.service.UserSessionService;
 import com.pentyugov.wflow.web.exception.ContractorNotFoundException;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +37,7 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
     private final ProjectParticipantRepository projectParticipantRepository;
     private final UserService userService;
     private final ContractorService contractorService;
+    private final UserSessionService userSessionService;
 
     @Override
     public List<Project> getAllProjects() {
@@ -44,15 +45,14 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
     }
 
     @Override
-    public List<ProjectDto> getAvailable(Principal principal) throws UserNotFoundException {
-        User currentUser = userService.getUserByPrincipal(principal);
-        if (userService.isUserAdmin(currentUser) || userService.isUserInRole(currentUser, PROJECT_MANAGER)) {
+    public List<ProjectDto> getAvailable() {
+        if (userSessionService.isCurrentUserAdmin() || userSessionService.isUserInRole(PROJECT_MANAGER)) {
             return projectRepository.findAll()
                     .stream()
                     .map(this::createProjectDto)
                     .collect(Collectors.toList());
         }
-        List<Project> projects = projectRepository.getAvailableProjectsForUser(userService.getUserByPrincipal(principal).getId());
+        List<Project> projects = projectRepository.getAvailableProjectsForUser(userSessionService.getCurrentUser().getId());
         return projects
                 .stream()
                 .map(this::createProjectDto)
