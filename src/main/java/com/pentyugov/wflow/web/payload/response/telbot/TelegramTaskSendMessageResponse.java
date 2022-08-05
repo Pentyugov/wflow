@@ -1,4 +1,4 @@
-package com.pentyugov.wflow.web.payload.response;
+package com.pentyugov.wflow.web.payload.response.telbot;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

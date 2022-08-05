@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet author="apentyugov" id="22020804-1605-add-user-telbot">
+    <changeSet id="22020804-1605-add-user-telbot" author="apentyugov">
 
         <insert tableName="security_users" dbms="postgresql">
             <column name="id" value="9f2c8b36-a7d4-4f14-ab92-377cb3dad42c"/>
@@ -33,6 +33,13 @@
             <column name="role_id" value="2494b0d5-44ef-453d-a9ef-de0de7909bd5"/>
         </insert>
 
+    </changeSet>
+
+    <changeSet id="22020805-2017-add-permission-to-telbot-role" author="apentyugov">
+        <insert tableName="security_role_permission" dbms="postgresql">
+            <column name="role_id" value="2494b0d5-44ef-453d-a9ef-de0de7909bd5"/>
+            <column name="permission_id" value="31560d5c-2548-4a45-9454-29715c97949e"/>
+        </insert>
     </changeSet>
 
 

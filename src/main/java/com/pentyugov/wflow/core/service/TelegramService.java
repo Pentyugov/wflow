@@ -4,9 +4,9 @@ import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.TelegramUserDto;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
-import com.pentyugov.wflow.web.payload.request.TelegramLoginUserRequest;
-import com.pentyugov.wflow.web.payload.request.TelegramVerifyCodeRequest;
-import com.pentyugov.wflow.web.payload.response.TelegramLoginUserResponse;
+import com.pentyugov.wflow.web.payload.request.telbot.TelegramLoginUserRequest;
+import com.pentyugov.wflow.web.payload.request.telbot.TelegramVerifyCodeRequest;
+import com.pentyugov.wflow.web.payload.response.telbot.TelegramLoginUserResponse;
 
 import java.util.List;
 

@@ -18,7 +18,6 @@ public class ApplicationConstants {
                 "/api/user/image/**",
                 "/api/auth/**",
                 "/test/**",
-                "/api/v1/telegram/**",
                 "/v3/**",
                 "/ws/**"};
 //        public static final String [] PUBLIC_URLS = {"**"};

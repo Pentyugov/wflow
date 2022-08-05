@@ -1,4 +1,4 @@
-package com.pentyugov.wflow.web.payload.request;
+package com.pentyugov.wflow.web.payload.request.telbot;
 
 import com.pentyugov.wflow.core.dto.TelegramTaskDto;
 import lombok.Getter;
