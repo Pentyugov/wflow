@@ -55,6 +55,11 @@ public class UserSettingsServiceImpl extends AbstractService implements UserSett
     }
 
     @Override
+    public void updateUserSettings(UserSettings userSettings) {
+        userSettingsRepository.save(userSettings);
+    }
+
+    @Override
     public UserSettingsDto createProxyFromUserSettings(UserSettings userSettings) {
         ObjectMapper mapper = new ObjectMapper();
         UserSettingsDto userSettingsDto = new UserSettingsDto();

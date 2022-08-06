@@ -29,7 +29,6 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -58,7 +57,6 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     private final FilterService filterService;
     private final TelegramService telegramService;
     private final UserSessionService userSessionService;
-
 
     @Override
     public Task createNewTask(TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException {
@@ -187,10 +185,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
-
-        if (executor.getTelLogged() && executor.getTelUserId() != null && executor.getTelChatId() != null) {
-            telegramService.sendAssignedTaskMessage(executor, task);
-        }
+        notificationService.sendTelBotTaskNotification(executor, task);
         return getMessage(sourcePath, "notification.task.assigned.message", task.getNumber(), executor.getUsername());
     }
 

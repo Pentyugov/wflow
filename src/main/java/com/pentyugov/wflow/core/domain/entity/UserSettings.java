@@ -43,4 +43,10 @@ public class UserSettings extends BaseEntity {
     @Column(name = "WIDGET_SETTINGS", length = 1000)
     private String widgetSettings;
 
+    @Column(name = "TELBOT_TASK_NOTIFICATION")
+    private Boolean telbotTaskNotification = Boolean.FALSE;
+
+    @Column(name = "TELBOT_CALENDAR_NOTIFICATION")
+    private Boolean telbotCalendarNotification = Boolean.FALSE;
+
 }

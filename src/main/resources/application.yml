@@ -1,8 +1,12 @@
 jwt:
-  secret: a-zA-Z0-9._^+$Guidelines89797987forAlphabeticalArraNumeralsandOtherSymbo$
+  secret: ${WFLOW_JWT_SECRET:}
 
 server:
   port: ${PORT:8080}
+
+telbot:
+  api:
+    url: ${WFLOW_TELBOT_API_URL:}
 
 spring:
   datasource:
@@ -65,7 +69,7 @@ job:
 uploadcare:
   scheme: "Uploadcare.Simple"
   public-key: "0023b247fac8f6e0fb7e"
-  secret-key: "e1fbbc8edb0974a81353"
+  secret-key: ${WFLOW_UPLOADCARE_SECRET:}
 
 app:
   saveImageInDb: true

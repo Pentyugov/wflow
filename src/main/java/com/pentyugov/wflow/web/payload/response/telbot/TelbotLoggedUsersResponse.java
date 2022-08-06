@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TelegramLoggedUsersResponse {
+public class TelbotLoggedUsersResponse {
     private HttpStatus httpStatus;
     private List<TelegramUserDto> users;
 }

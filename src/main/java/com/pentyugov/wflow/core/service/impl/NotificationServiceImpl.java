@@ -2,12 +2,11 @@ package com.pentyugov.wflow.core.service.impl;
 
 import com.pentyugov.wflow.core.domain.entity.Card;
 import com.pentyugov.wflow.core.domain.entity.Notification;
+import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.NotificationDto;
 import com.pentyugov.wflow.core.repository.NotificationRepository;
-import com.pentyugov.wflow.core.service.NotificationService;
-import com.pentyugov.wflow.core.service.UserService;
-import com.pentyugov.wflow.core.service.UserSessionService;
+import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +31,8 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
     private final UserSessionService userSessionService;
+    private final TelegramService telegramService;
+    private final UserSettingsService settingsService;
 
     public Page<Notification> getNotificationPage(Optional<Integer> page, Optional<String> sortBy) {
         return notificationRepository.findAll(
@@ -84,6 +84,13 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
         notificationDto.setCardId(notification.getCard() != null ? notification.getCard().getId() : null);
         notificationDto.setCreateDate(Date.from(notification.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()));
         return notificationDto;
+    }
+
+    @Override
+    public void sendTelBotTaskNotification(User user, Task task) {
+        if (user.getTelLogged() && settingsService.getUserSettings(user).getTelbotTaskNotification()) {
+            telegramService.sendAssignedTaskMessage(user, task);
+        }
     }
 
     @Override

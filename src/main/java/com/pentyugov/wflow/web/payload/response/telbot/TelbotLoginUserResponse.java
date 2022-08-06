@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TelegramLoginUserResponse {
+public class TelbotLoginUserResponse {
 
     private String userId;
     private String hashCode;

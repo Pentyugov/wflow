@@ -4,13 +4,10 @@ import com.pentyugov.wflow.core.domain.entity.UserSettings;
 import com.pentyugov.wflow.core.dto.UserSettingsDto;
 import com.pentyugov.wflow.core.service.UserSessionService;
 import com.pentyugov.wflow.core.service.UserSettingsService;
-import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/app")

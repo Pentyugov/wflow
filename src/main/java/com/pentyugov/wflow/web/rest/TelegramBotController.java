@@ -6,13 +6,14 @@ import com.pentyugov.wflow.core.service.TaskService;
 import com.pentyugov.wflow.core.service.TelegramService;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
-import com.pentyugov.wflow.web.payload.request.telbot.TelegramGetTaskPageRequest;
-import com.pentyugov.wflow.web.payload.request.telbot.TelegramLoginUserRequest;
-import com.pentyugov.wflow.web.payload.request.telbot.TelegramVerifyCodeRequest;
-import com.pentyugov.wflow.web.payload.response.telbot.TelegramGetTaskPageResponse;
-import com.pentyugov.wflow.web.payload.response.telbot.TelegramLoggedUsersResponse;
-import com.pentyugov.wflow.web.payload.response.telbot.TelegramLoginUserResponse;
-import com.pentyugov.wflow.web.payload.response.telbot.TelegramVerifyCodeResponse;
+import com.pentyugov.wflow.web.payload.request.telbot.TelbotGetTaskPageRequest;
+import com.pentyugov.wflow.web.payload.request.telbot.TelbotLoginUserRequest;
+import com.pentyugov.wflow.web.payload.request.telbot.TelbotUpdateUserSettingsRequest;
+import com.pentyugov.wflow.web.payload.request.telbot.TelbotVerifyCodeRequest;
+import com.pentyugov.wflow.web.payload.response.telbot.TelbotGetTaskPageResponse;
+import com.pentyugov.wflow.web.payload.response.telbot.TelbotLoggedUsersResponse;
+import com.pentyugov.wflow.web.payload.response.telbot.TelbotLoginUserResponse;
+import com.pentyugov.wflow.web.payload.response.telbot.TelbotVerifyCodeResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
@@ -47,8 +48,8 @@ public class TelegramBotController {
 
     @GetMapping("/logged-users")
     @Operation(summary = "Telbot gets info about logged users", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<TelegramLoggedUsersResponse> getLoggedUsers() {
-        TelegramLoggedUsersResponse response = new TelegramLoggedUsersResponse();
+    public ResponseEntity<TelbotLoggedUsersResponse> getLoggedUsers() {
+        TelbotLoggedUsersResponse response = new TelbotLoggedUsersResponse();
         response.setUsers(telegramService.getLoggedUsers());
         response.setHttpStatus(HttpStatus.OK);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -56,15 +57,15 @@ public class TelegramBotController {
 
     @PostMapping("/login")
     @Operation(summary = "Login telbot user", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<TelegramLoginUserResponse> loginTelegramUser(@RequestBody TelegramLoginUserRequest request) throws UserNotFoundException {
+    public ResponseEntity<TelbotLoginUserResponse> loginTelegramUser(@RequestBody TelbotLoginUserRequest request) throws UserNotFoundException {
         return new ResponseEntity<>(telegramService.loginTelegramUser(request), HttpStatus.OK);
     }
 
     @PostMapping("/verify-code")
     @Operation(summary = "Check telbot verification code", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<TelegramVerifyCodeResponse> verifyCode(@RequestBody TelegramVerifyCodeRequest request) throws UserNotFoundException {
+    public ResponseEntity<TelbotVerifyCodeResponse> verifyCode(@RequestBody TelbotVerifyCodeRequest request) throws UserNotFoundException {
         boolean verified = telegramService.verifyCode(request);
-        TelegramVerifyCodeResponse response = new TelegramVerifyCodeResponse();
+        TelbotVerifyCodeResponse response = new TelbotVerifyCodeResponse();
         response.setVerified(verified);
         response.setHttpStatus(HttpStatus.OK);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -72,8 +73,8 @@ public class TelegramBotController {
 
     @PostMapping("/tasks/page")
     @Operation(summary = "Get task page", security = @SecurityRequirement(name = BEARER))
-    public TelegramGetTaskPageResponse getTaskPage(@RequestBody TelegramGetTaskPageRequest request) throws UserNotFoundException {
-        TelegramGetTaskPageResponse response = new TelegramGetTaskPageResponse();
+    public TelbotGetTaskPageResponse getTaskPage(@RequestBody TelbotGetTaskPageRequest request) throws UserNotFoundException {
+        TelbotGetTaskPageResponse response = new TelbotGetTaskPageResponse();
         Page<Task> resultPage = taskService.getTaskPageForTelBot(request.getTelUserId(), PageRequest.of(
                 request.getPage(),
                 10,
@@ -89,6 +90,12 @@ public class TelegramBotController {
     public ResponseEntity<TelegramTaskDto> getTask(@PathVariable String id) throws TaskNotFoundException {
         Task task = taskService.getTaskById(UUID.fromString(id));
         return new ResponseEntity<>(taskService.createTelegramDto(task), HttpStatus.OK);
+    }
+
+    @PutMapping("/settings")
+    public ResponseEntity<Object> updateUserSettings(@RequestBody TelbotUpdateUserSettingsRequest request) throws UserNotFoundException {
+        telegramService.updateTelUserSettings(request.getTelUserId(), request.getUserSettings());
+        return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
     }
 
 

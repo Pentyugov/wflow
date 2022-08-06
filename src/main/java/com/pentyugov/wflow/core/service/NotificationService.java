@@ -2,6 +2,7 @@ package com.pentyugov.wflow.core.service;
 
 import com.pentyugov.wflow.core.domain.entity.Card;
 import com.pentyugov.wflow.core.domain.entity.Notification;
+import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.NotificationDto;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
@@ -29,6 +30,8 @@ public interface NotificationService {
     Notification createNotificationFromDto(NotificationDto notificationDto) throws UserNotFoundException;
 
     NotificationDto createNotificationDtoFromNotification(Notification notification);
+
+    void sendTelBotTaskNotification(User user, Task task);
 
     void sendNotificationWithWs(NotificationDto notificationDto, UUID recientId);
 

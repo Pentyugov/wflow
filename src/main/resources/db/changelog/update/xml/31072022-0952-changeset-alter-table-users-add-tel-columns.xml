@@ -27,6 +27,20 @@
 
     </changeSet>
 
+    <changeSet author="" id="db-update_20220805_2347-changeset-alter-table-system_user_settigns">
+
+        <addColumn tableName="system_user_settings">
+            <column name="telbot_task_notification" type="BOOLEAN"/>
+            <column name="telbot_calendar_notification" type="BOOLEAN"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="system_user_settings" columnName="telbot_task_notification"/>
+            <dropColumn tableName="system_user_settings" columnName="telbot_calendar_notification"/>
+        </rollback>
+
+    </changeSet>
+
 
 
 </databaseChangeLog>

@@ -7,8 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TelegramVerifyCodeRequest {
+public class TelbotGetTaskPageRequest {
+    Long telUserId;
+    Integer page;
+    String sortBy;
 
-    private Long telUserId;
-    private String code;
 }
