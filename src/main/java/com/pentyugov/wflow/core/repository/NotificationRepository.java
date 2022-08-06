@@ -18,11 +18,20 @@ public interface NotificationRepository extends BaseRepository<Notification> {
     List<Notification> findByReceiverId(UUID receiverId);
 
     @Transactional(readOnly = true)
+    @Query("select n from workflow$Notification n where n.card.id = ?1 and n.read <> TRUE")
+    List<Notification> findByCardId(UUID cardId);
+
+    @Transactional(readOnly = true)
     Page<Notification> findAllByReceiverId(Pageable pageable, UUID receiverId);
 
     @Query("delete from workflow$Notification n where n.id = ?1")
     @Transactional
     @Modifying
     void delete(UUID id);
+
+    @Query("delete from workflow$Notification n where n.card.id = ?1")
+    @Transactional
+    @Modifying
+    void deleteByCard(UUID cardId);
 
 }

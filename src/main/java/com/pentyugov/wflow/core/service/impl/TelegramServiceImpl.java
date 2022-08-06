@@ -24,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -121,7 +122,7 @@ public class TelegramServiceImpl implements TelegramService {
 
         try {
             template.postForObject(ApplicationConstants.TelBot.TASKS_SEND_MESSAGE_ENDPOINT, request, TelbotTaskSendMessageResponse.class);
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | ResourceAccessException e) {
             logger.error(e.getMessage());
         }
     }

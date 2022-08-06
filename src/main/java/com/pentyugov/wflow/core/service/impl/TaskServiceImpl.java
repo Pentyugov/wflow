@@ -78,7 +78,8 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     public void deleteTask(UUID id) throws TaskNotFoundException {
         Task toDelete = getTaskById(id);
         calendarEventService.deleteCalendarEventByCard(toDelete);
-        cancelTask(toDelete, userSessionService.getCurrentUser(), "Deleted");
+        notificationService.deleteNotification(toDelete);
+        cancelTask(toDelete, userSessionService.getCurrentUser(), "Deleted", true);
         taskRepository.delete(id);
     }
 
@@ -166,7 +167,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
             case Task.ACTION_REWORK:
                 return reworkTask(task, currentUser, taskSignalProcRequest.getComment());
             case Task.ACTION_CANCEL:
-                return cancelTask(task, currentUser, taskSignalProcRequest.getComment());
+                return cancelTask(task, currentUser, taskSignalProcRequest.getComment(), false);
         }
 
         return null;
@@ -189,17 +190,26 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getMessage(sourcePath, "notification.task.assigned.message", task.getNumber(), executor.getUsername());
     }
 
-    public String cancelTask(Task task, User currentUser, String comment) {
+    public String cancelTask(Task task, User currentUser, String comment, boolean deleted) {
         task = workflowService.cancelTaskProcess(task, currentUser, comment);
         taskRepository.save(task);
         calendarEventService.deleteCalendarEventByCard(task);
         User executor = task.getExecutor();
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
-        String message = getMessage(sourcePath, "notification.task.canceled.to.executor", task.getNumber(), currentUser.getUsername());
-        Notification notification = notificationService.createNotification(title, message, Notification.WARNING, Notification.WORKFLOW, executor, task);
+
+        Notification notification;
+        if (!deleted) {
+            String message = getMessage(sourcePath, "notification.task.canceled.to.executor", task.getNumber(), currentUser.getUsername());
+            notification = notificationService.createNotification(title, message, Notification.WARNING, Notification.WORKFLOW, executor, task);
+        } else {
+            String message = getMessage(sourcePath, "notification.task.deleted.to.executor", task.getNumber(), currentUser.getUsername());
+            notification = notificationService.createNotification(title, message, Notification.WARNING, Notification.WORKFLOW, executor, null);
+        }
+
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
+
         return getMessage(sourcePath, "notification.task.canceled.message", task.getNumber(), executor.getUsername());
     }
 

@@ -37,6 +37,8 @@ public interface NotificationService {
 
     void deleteNotification(UUID id);
 
+    void deleteNotification(Card card);
+
     void saveNotification(Notification notification);
 
     Notification createNotification(String title, String message, int type, int accessoryType, User receiver, Card card);

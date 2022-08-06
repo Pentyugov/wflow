@@ -9,6 +9,7 @@ import com.pentyugov.wflow.core.repository.NotificationRepository;
 import com.pentyugov.wflow.core.service.*;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -88,7 +89,9 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
 
     @Override
     public void sendTelBotTaskNotification(User user, Task task) {
-        if (user.getTelLogged() && settingsService.getUserSettings(user).getTelbotTaskNotification()) {
+
+        if (BooleanUtils.isNotFalse(user.getTelLogged()) &&
+                BooleanUtils.isNotFalse(settingsService.getUserSettings(user).getTelbotTaskNotification())) {
             telegramService.sendAssignedTaskMessage(user, task);
         }
     }
@@ -101,6 +104,12 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
     @Override
     public void deleteNotification(UUID id) {
         this.notificationRepository.delete(id);
+    }
+
+    @Override
+    public void deleteNotification(Card card) {
+        List<Notification> notifications = notificationRepository.findByCardId(card.getId());
+        notifications.forEach(notification -> deleteNotification(notification.getId()));
     }
 
     @Override
