@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface DepartmentRepository extends BaseRepository<Department>{
+public interface DepartmentRepository extends BaseRepository<Department> {
 
     @Transactional(readOnly = true)
     @Query("select d from workflow$Department d where d.name = ?1")

@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity(name = "workflow$Task")
 @Table(name = "WORKFLOW_TASK")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 @PrimaryKeyJoinColumn(name = "CARD_ID", referencedColumnName = "ID")
 public class Task extends Card {
 

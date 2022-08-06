@@ -56,7 +56,9 @@ public class DepartmentController extends AbstractController {
     }
 
     @PutMapping
-    public ResponseEntity<Object> update(@RequestBody DepartmentDto departmentDto) throws DepartmentExistException, DepartmentNotFoundException {
+    public ResponseEntity<Object> update(@RequestBody DepartmentDto departmentDto)
+            throws DepartmentExistException, DepartmentNotFoundException {
+
         Department department = departmentService.updateDepartment(departmentDto);
         return new ResponseEntity<>(departmentService.createDepartmentDtoFromDepartment(department), HttpStatus.OK);
     }

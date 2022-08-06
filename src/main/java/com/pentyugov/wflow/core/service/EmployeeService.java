@@ -16,13 +16,17 @@ public interface EmployeeService {
 
     Employee getEmployeeById(UUID id) throws EmployeeNotFoundException;
 
-    Employee addNewEmployee(EmployeeDto employeeDto) throws PositionNotFoundException, UserNotFoundException, EmployeeExistException, ValidationException, DepartmentNotFoundException;
+    Employee addNewEmployee(EmployeeDto employeeDto) throws PositionNotFoundException, UserNotFoundException,
+            EmployeeExistException, ValidationException, DepartmentNotFoundException;
 
-    Employee updateEmployee(EmployeeDto employeeDto) throws PositionNotFoundException, UserNotFoundException, DepartmentNotFoundException, ValidationException, EmployeeExistException;
+    Employee updateEmployee(EmployeeDto employeeDto) throws PositionNotFoundException, UserNotFoundException,
+            DepartmentNotFoundException, ValidationException, EmployeeExistException;
 
-    void updateAll(List<EmployeeDto> employeeDtos) throws PositionNotFoundException, UserNotFoundException, DepartmentNotFoundException;
+    void updateAll(List<EmployeeDto> employeeDtos) throws PositionNotFoundException, UserNotFoundException,
+            DepartmentNotFoundException;
 
-    Employee createEmployeeFromDto(EmployeeDto employeeDto) throws PositionNotFoundException, DepartmentNotFoundException, UserNotFoundException;
+    Employee createEmployeeFromDto(EmployeeDto employeeDto) throws PositionNotFoundException, DepartmentNotFoundException,
+            UserNotFoundException;
 
     EmployeeDto createEmployeeDtoFromEmployee(Employee employee);
 

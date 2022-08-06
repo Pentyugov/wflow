@@ -29,7 +29,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailServiceImpl extends AbstractService implements EmailService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     @Value("${spring.mail.username}")
     public String sender;

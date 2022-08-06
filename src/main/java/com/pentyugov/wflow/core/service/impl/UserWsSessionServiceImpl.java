@@ -4,6 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.pentyugov.wflow.core.service.UserWsSessionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 @Service(UserWsSessionService.NAME)
 public class UserWsSessionServiceImpl implements UserWsSessionService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserWsSessionServiceImpl.class);
 
     private final LoadingCache<String, String> userWsSessionCache;
     private final SimpMessagingTemplate messagingTemplate;
@@ -49,8 +53,8 @@ public class UserWsSessionServiceImpl implements UserWsSessionService {
     private void onUserChangeStatus() {
         try {
             messagingTemplate.convertAndSend("/user/change-chat-status", "");
-        } catch (MessageDeliveryException ignored) {
-
+        } catch (MessageDeliveryException e) {
+            LOGGER.error(e.getMessage());
         }
 
     }

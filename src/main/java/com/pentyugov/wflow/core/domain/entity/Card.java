@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity(name = "workflow$Card")
 @Table(name = "WORKFLOW_CARD")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Card extends BaseEntity {
 

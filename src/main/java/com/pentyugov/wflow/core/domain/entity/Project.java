@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity(name = "workflow$project")
 @Table(name = "WORKFLOW_PROJECT")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 @PrimaryKeyJoinColumn(name = "CARD_ID", referencedColumnName = "ID")
 public class Project extends Card {
 

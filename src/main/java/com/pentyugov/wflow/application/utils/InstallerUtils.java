@@ -46,7 +46,7 @@ public class InstallerUtils {
     private void startRedisServer() {
         try {
             redisProcess = Runtime.getRuntime().exec(REDIS_FOLDER + "/redis-server.exe", null, new File(REDIS_FOLDER));
-            LOGGER.info("Process started.. " + "[ " +redisProcess + " ]");
+            LOGGER.info("Process started.. " + "[ " + redisProcess + " ]");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -73,7 +73,7 @@ public class InstallerUtils {
         try {
             LOGGER.info("Starting unzip redis.zip");
             file = ResourceUtils.getFile("classpath:distr/redis.zip");
-            try(ZipFile zipFile = new ZipFile(file)) {
+            try (ZipFile zipFile = new ZipFile(file)) {
                 zipFile.extractAll(REDIS_FOLDER);
                 startRedisServer();
             } catch (IOException e) {

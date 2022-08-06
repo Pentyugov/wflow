@@ -9,7 +9,6 @@ import com.pentyugov.wflow.web.exception.ContractorNotFoundException;
 import com.pentyugov.wflow.web.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -54,7 +53,7 @@ public class ContractorServiceImpl extends AbstractService implements Contractor
     @Override
     public Contractor getContractorById(UUID id) throws ContractorNotFoundException {
         return contractorRepository.findById(id).orElseThrow(
-                () -> new ContractorNotFoundException(getMessage("exception.contractor.with.id.not.found", id)));
+            () -> new ContractorNotFoundException(getMessage("exception.contractor.with.id.not.found", id)));
     }
 
     @Override

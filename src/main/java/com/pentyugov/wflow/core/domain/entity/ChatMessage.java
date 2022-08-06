@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity(name = "workflow$ChatMessage")
 @Table(name = "WORKFLOW_CHAT_MESSAGE")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class ChatMessage extends BaseEntity {
 
     public static final int SEND = 10;

@@ -16,7 +16,7 @@ public interface TaskRepository extends BaseRepository<Task> {
 
     @Transactional(readOnly = true)
     @Query("select t from workflow$Task t where t.priority = ?1 and " +
-           "(t.creator.id =?2 or t.executor.id = ?2 or t.initiator.id = ?2)")
+            "(t.creator.id =?2 or t.executor.id = ?2 or t.initiator.id = ?2)")
     List<Task> findAllByPriorityForUser(int priority, UUID userId);
 
     @Transactional(readOnly = true)

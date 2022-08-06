@@ -28,7 +28,7 @@ public class ChatRoomServiceImpl extends AbstractService implements ChatRoomServ
                 .findBySenderAndRecipient(senderId, recipientId)
                 .map(ChatRoom::getChatId)
                 .or(() -> {
-                    if(!createIfNotExist) {
+                    if (!createIfNotExist) {
                         return  Optional.empty();
                     }
                     String chatId = String.format("%s_%s", senderId, recipientId);

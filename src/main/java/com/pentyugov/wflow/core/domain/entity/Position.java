@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity(name = "workflow$Position")
 @Table(name = "WORKFLOW_POSITION")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class Position extends BaseEntity {
 
     @Column(name = "NAME")

@@ -14,13 +14,16 @@ public interface UserService {
 
     String NAME = "wflow$UserService";
 
-    User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException;
+    User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
+            EmailIsEmptyException;
 
-    void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException;
+    void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
+            EmailIsEmptyException;
 
     void updateLastLoginDate(User user);
 
-    User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException, EmailIsEmptyException;
+    User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException,
+            EmailIsEmptyException;
 
     void updateUser(User user);
 
@@ -52,7 +55,8 @@ public interface UserService {
 
     User createUserFromDto(UserDto userDto);
 
-    UserDto createUserDto(UUID id, String username, String email, String firstName, String lastName, List<RoleDto> roles, String isActive, String isNonLocked);
+    UserDto createUserDto(UUID id, String username, String email, String firstName, String lastName, List<RoleDto> roles, String isActive,
+                          String isNonLocked);
 
     UserDto createUserDtoFromUser(User user);
 

@@ -94,6 +94,11 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         return getActiveForExecutor(userSessionService.getCurrentUser());
     }
 
+    private List<Task> getActiveForExecutor(User user) {
+        return taskRepository.findActiveForExecutor(user.getId(),
+                Arrays.asList(Task.STATE_ASSIGNED, Task.STATE_REWORK));
+    }
+
     @Override
     public List<Task> getProductivityData() {
         List<Task> result = new ArrayList<>();
@@ -168,9 +173,9 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
                 return reworkTask(task, currentUser, taskSignalProcRequest.getComment());
             case Task.ACTION_CANCEL:
                 return cancelTask(task, currentUser, taskSignalProcRequest.getComment(), false);
+            default: return null;
         }
 
-        return null;
     }
 
     public String startTask(Task task, User currentUser) {
@@ -182,7 +187,9 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         User executor = task.getExecutor();
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.assigned.to.executor", task.getNumber());
-        Notification notification = notificationService.createNotification(title, message, Notification.INFO, Notification.WORKFLOW, executor, task);
+        Notification notification = notificationService.createNotification(
+                title, message, Notification.INFO, Notification.WORKFLOW, executor, task
+        );
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -199,11 +206,23 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
         Notification notification;
         if (!deleted) {
-            String message = getMessage(sourcePath, "notification.task.canceled.to.executor", task.getNumber(), currentUser.getUsername());
-            notification = notificationService.createNotification(title, message, Notification.WARNING, Notification.WORKFLOW, executor, task);
+
+            String message = getMessage(
+                    sourcePath, "notification.task.canceled.to.executor", task.getNumber(), currentUser.getUsername()
+            );
+
+            notification = notificationService.createNotification(
+                    title, message, Notification.WARNING, Notification.WORKFLOW, executor, task
+            );
+
         } else {
-            String message = getMessage(sourcePath, "notification.task.deleted.to.executor", task.getNumber(), currentUser.getUsername());
-            notification = notificationService.createNotification(title, message, Notification.WARNING, Notification.WORKFLOW, executor, null);
+            String message = getMessage(
+                    sourcePath, "notification.task.deleted.to.executor", task.getNumber(), currentUser.getUsername()
+            );
+
+            notification = notificationService.createNotification(
+                    title, message, Notification.WARNING, Notification.WORKFLOW, executor, null
+            );
         }
 
         notificationService.saveNotification(notification);
@@ -220,7 +239,9 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         calendarEventService.deleteCalendarEventByCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.executed.to.initiator", task.getNumber(), currentUser.getUsername());
-        Notification notification = notificationService.createNotification(title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getInitiator(), task);
+        Notification notification = notificationService.createNotification(
+                title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getInitiator(), task
+        );
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -234,7 +255,9 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         calendarEventService.addCalendarEventForCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.rework.to.executor", task.getNumber(), currentUser.getUsername());
-        Notification notification = notificationService.createNotification(title, message, Notification.DANGER, Notification.WORKFLOW, task.getExecutor(), task);
+        Notification notification = notificationService.createNotification(
+                title, message, Notification.DANGER, Notification.WORKFLOW, task.getExecutor(), task
+        );
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -247,7 +270,9 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         taskRepository.save(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.finish.to.executor", task.getNumber(), currentUser.getUsername());
-        Notification notification = notificationService.createNotification(title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getExecutor(), task);
+        Notification notification = notificationService.createNotification(
+                title, message, Notification.SUCCESS, Notification.WORKFLOW, task.getExecutor(), task
+        );
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
                 .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
@@ -410,8 +435,10 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
                             }
                         }
                         Integer number = parseNumber(num.toString());
-                        if (number != null)
+                        if (number != null) {
                             result.add(number);
+                        }
+
                     }
                 }
             });
@@ -444,14 +471,10 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         tasks.forEach(this::checkOverdue);
     }
 
-    private List<Task> getActiveForExecutor(User user) {
-        return taskRepository.findActiveForExecutor(user.getId(),
-                Arrays.asList(Task.STATE_ASSIGNED, Task.STATE_REWORK));
-    }
-
     private long getDaysUntilDueDate(Date executionDatePlan) {
-        if (ObjectUtils.isEmpty(executionDatePlan))
+        if (ObjectUtils.isEmpty(executionDatePlan)) {
             return 0L;
+        }
         LocalDateTime in = LocalDateTime.ofInstant(executionDatePlan.toInstant(), ZoneId.systemDefault());
         return Duration.between(LocalDateTime.now(), in).toDays();
 

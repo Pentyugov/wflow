@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity(name = "workflow$Employee")
 @Table(name = "WORKFLOW_EMPLOYEE")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class Employee extends BaseEntity {
 
     @Column(name = "FIRST_NAME")

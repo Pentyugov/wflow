@@ -57,7 +57,9 @@ public class TelegramBotController {
 
     @PostMapping("/login")
     @Operation(summary = "Login telbot user", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<TelbotLoginUserResponse> loginTelegramUser(@RequestBody TelbotLoginUserRequest request) throws UserNotFoundException {
+    public ResponseEntity<TelbotLoginUserResponse> loginTelegramUser(@RequestBody TelbotLoginUserRequest request)
+            throws UserNotFoundException {
+
         return new ResponseEntity<>(telegramService.loginTelegramUser(request), HttpStatus.OK);
     }
 

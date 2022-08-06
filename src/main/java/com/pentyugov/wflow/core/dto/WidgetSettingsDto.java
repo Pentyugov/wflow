@@ -14,9 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 public class WidgetSettingsDto {
 
-    public final static Integer WIDGET_CALENDAR_TYPE = 10;
-    public final static Integer WIDGET_ACTIVE_TASKS_TYPE = 20;
-    public final static Integer WIDGET_PRODUCTIVITY_TYPE = 30;
+    public static final Integer WIDGET_CALENDAR_TYPE = 10;
+    public static final Integer WIDGET_ACTIVE_TASKS_TYPE = 20;
+    public static final Integer WIDGET_PRODUCTIVITY_TYPE = 30;
 
     private Integer type = 0;
     private Boolean visible = Boolean.TRUE;

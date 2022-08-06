@@ -37,8 +37,10 @@ public class UserSessionServiceImpl implements UserSessionService {
     @Override
     public Boolean isUserInAnyRole(List<String> roleNames) {
         for (String roleName : roleNames) {
-            if (isUserInRole(roleName))
+            if (isUserInRole(roleName)) {
                 return true;
+            }
+
         }
         return false;
     }

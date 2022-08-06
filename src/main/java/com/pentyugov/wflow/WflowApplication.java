@@ -12,8 +12,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableAsync
 public class WflowApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(WflowApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(WflowApplication.class, args);
+    }
 
 }

@@ -22,7 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity(name = "security$User")
 @Table(name = "SECURITY_USERS")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class User extends BaseEntity implements UserDetails {
 
     public User(UUID id,

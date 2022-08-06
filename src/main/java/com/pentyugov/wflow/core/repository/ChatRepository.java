@@ -16,6 +16,9 @@ public interface ChatRepository extends BaseRepository<ChatMessage> {
     List<ChatMessage> findByChatId(String chatId);
 
     @Transactional(readOnly = true)
+    Page<ChatMessage> findByChatId(String chatId, Pageable pageable);
+
+    @Transactional(readOnly = true)
     @Query("select count(cm) from workflow$ChatMessage cm where cm.recipient.id = ?1 and cm.status <> ?2")
     Integer findNewMessagesCountForUser(UUID userId, int status);
 
@@ -27,6 +30,4 @@ public interface ChatRepository extends BaseRepository<ChatMessage> {
     @Query("select cm from workflow$ChatMessage cm where cm.recipient.id = ?1 and cm.status <> ?2")
     List<ChatMessage> findNewMessagesForUser(UUID userId, int status);
 
-    @Transactional(readOnly = true)
-    Page<ChatMessage> findByChatId(String chatId, Pageable pageable);
 }

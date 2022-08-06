@@ -12,18 +12,18 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity(name = "workflow$Notification")
 @Table(name = "WORKFLOW_NOTIFICATION")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class Notification extends BaseEntity {
 
-    public static int SUCCESS = 10;
-    public static int INFO = 20;
-    public static int WARNING = 30;
-    public static int DANGER = 40;
+    public static final int SUCCESS = 10;
+    public static final int INFO = 20;
+    public static final int WARNING = 30;
+    public static final int DANGER = 40;
 
-    public static int SYSTEM = 10;
-    public static int CALENDAR = 20;
-    public static int TODO = 30;
-    public static int WORKFLOW = 40;
+    public static final int SYSTEM = 10;
+    public static final int CALENDAR = 20;
+    public static final int TODO = 30;
+    public static final int WORKFLOW = 40;
 
 
     @Column(name = "TITLE", nullable = false)

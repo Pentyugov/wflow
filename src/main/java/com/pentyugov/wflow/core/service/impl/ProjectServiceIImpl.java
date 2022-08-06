@@ -101,10 +101,15 @@ public class ProjectServiceIImpl extends AbstractService implements ProjectServi
 
     @Override
     @Transactional
-    public Project updateProject(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException {
-        Project project = projectRepository.findById(projectDto.getId()).orElseThrow(
-                () -> new ProjectNotFoundException(getMessage("exception.user.with.id.not.found", projectDto.getId().toString()))
-        );
+    public Project updateProject(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException,
+            ProjectNotFoundException {
+
+        Project project = projectRepository.findById(projectDto.getId()).orElseThrow(() ->
+                new ProjectNotFoundException(getMessage(
+                        "exception.user.with.id.not.found",
+                        projectDto.getId().toString()
+                )));
+
         project.setName(projectDto.getName());
         project.setCode(projectDto.getCode());
         project.setStatus(projectDto.getStatus());

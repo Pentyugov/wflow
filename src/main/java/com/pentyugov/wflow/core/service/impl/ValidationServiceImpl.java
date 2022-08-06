@@ -24,8 +24,11 @@ public class ValidationServiceImpl implements ValidationService {
 
     public String parsePhoneNumber(String phoneNumber) {
         phoneNumber = StringUtils.trimAllWhitespace(phoneNumber);
-        if (!phoneNumber.startsWith("+"))
+
+        if (!phoneNumber.startsWith("+")) {
             phoneNumber = "+" + phoneNumber;
+        }
+
         PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
         Phonenumber.PhoneNumber number;
         StringBuilder builder = new StringBuilder();

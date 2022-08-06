@@ -46,7 +46,9 @@ public class UserServiceImpl extends AbstractService implements UserService {
     private final UserSessionService userSessionService;
 
     @Override
-    public User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
+    public User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
+            EmailIsEmptyException {
+
         if (validateUsernameAndEmail(null, userIn.getUsername(), userIn.getEmail())) {
             User user = new User();
             user.setUsername(userIn.getUsername());
@@ -70,7 +72,9 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
+    public void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException,
+            UsernameIsEmptyException, EmailIsEmptyException {
+
         validateUsernameAndEmail(null, userDto.getUsername(), userDto.getEmail());
         User user = createUserFromDto(userDto);
         String rawPassword = applicationService.generatePassword();
@@ -97,7 +101,9 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException, EmailIsEmptyException {
+    public User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException,
+            UsernameIsEmptyException, EmailIsEmptyException {
+
         User currentUser = getUserById(userDto.getId());
         validateUsernameAndEmail(currentUser, userDto.getUsername(), userDto.getEmail());
         currentUser = updateUserFromDto(currentUser, userDto);
@@ -176,8 +182,8 @@ public class UserServiceImpl extends AbstractService implements UserService {
     public User updateProfileImage(UUID id, String profileImageUrl) throws UserNotFoundException {
         User user = getUserById(id);
         if (StringUtils.hasText(profileImageUrl)) {
-            if (StringUtils.hasText(user.getProfileImageUrl()) &&
-                    user.getProfileImageUrl().startsWith(PROFILE_IMAGE_RESOURCE_HOST)) {
+            if (StringUtils.hasText(user.getProfileImageUrl())
+                    && user.getProfileImageUrl().startsWith(PROFILE_IMAGE_RESOURCE_HOST)) {
                 String oldImage = user.getProfileImageUrl().split(PROFILE_IMAGE_RESOURCE_HOST)[1].replace("/", "");
                 try {
                     UUID oldImageId = UUID.fromString(oldImage);
@@ -339,7 +345,9 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return roleService.getRoleByName(Role.USER);
     }
 
-    private boolean validateUsernameAndEmail(User currentUser, String username, String email) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
+    private boolean validateUsernameAndEmail(User currentUser, String username, String email) throws UsernameExistException,
+            EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
+
         User checkedUser;
 
         if (!StringUtils.hasText(username)) {

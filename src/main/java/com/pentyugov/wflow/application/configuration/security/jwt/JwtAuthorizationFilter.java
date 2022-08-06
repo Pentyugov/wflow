@@ -27,20 +27,22 @@ import static com.pentyugov.wflow.application.configuration.constant.Application
 
 
 @Component
-public class JWTAuthorizationFilter extends OncePerRequestFilter {
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JWTAuthorizationFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
 
     @Autowired
-    private JWTTokenProvider jwtTokenProvider;
+    private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private WflowUserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String jwt = getJWTFromRequest(request);
+            String jwt = getJwtFromRequest(request);
             if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                 UUID userId = jwtTokenProvider.getUserIdFromToken(jwt);
                 User userDetails = userDetailsService.getUserById(userId);
@@ -62,7 +64,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getJWTFromRequest(HttpServletRequest request) {
+    private String getJwtFromRequest(HttpServletRequest request) {
         String bearToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(bearToken) && bearToken.startsWith(Security.TOKEN_PREFIX)) {
             return bearToken.substring(Security.TOKEN_PREFIX.length());

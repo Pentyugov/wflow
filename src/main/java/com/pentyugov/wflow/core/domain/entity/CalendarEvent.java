@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity(name = "workflow$CalendarEvent")
 @Table(name = "WORKFLOW_CALENDAR_EVENT")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class CalendarEvent extends BaseEntity {
 
     public static final int TYPE_TASK = 10;

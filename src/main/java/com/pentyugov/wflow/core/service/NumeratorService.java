@@ -11,4 +11,4 @@ public interface NumeratorService {
     String ORDER_LAST = "LAST";
 
     String getNextNumber(String type);
- }
+}

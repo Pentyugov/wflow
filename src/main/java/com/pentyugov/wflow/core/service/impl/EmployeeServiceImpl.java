@@ -142,47 +142,80 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
         if (isUpdate) {
             Employee existed = employeeRepository.findByEmail(employee.getEmail()).orElse(null);
             if (!ObjectUtils.isEmpty(existed) && !existed.getId().equals(employee.getId())) {
-                throw new EmployeeExistException(getMessage("exception.employee.exist", locale, "email", employee.getEmail()));
+                throw new EmployeeExistException(getMessage(
+                        "exception.employee.exist",
+                        locale,
+                        "email",
+                        employee.getEmail()));
             }
 
             if (BooleanUtils.isTrue(employee.getHead()) && !ObjectUtils.isEmpty(employee.getDepartment())) {
                 existed = employeeRepository.findHeadOfDepartment(employee.getDepartment().getId()).orElse(null);
                 if (!ObjectUtils.isEmpty(existed) && !existed.getId().equals(employee.getId())) {
-                    throw new EmployeeExistException(getMessage("exception.employee.head.exist", locale, employee.getDepartment().getName()));
+                    throw new EmployeeExistException(getMessage(
+                            "exception.employee.head.exist",
+                            locale,
+                            employee.getDepartment().getName()
+                    ));
                 }
             }
 
             if (!ObjectUtils.isEmpty(employee.getUser())) {
                 Employee e = employeeRepository.findByUserId(employee.getUser().getId()).orElse(null);
                 if (!ObjectUtils.isEmpty(e) && !employee.getId().equals(e.getId())) {
-                    throw new EmployeeExistException(getMessage("exception.employee.exist", locale, "user", employee.getUser().getUsername()));
+                    throw new EmployeeExistException(getMessage("exception.employee.exist",
+                            locale,
+                            "user",
+                            employee.getUser().getUsername()
+                    ));
                 }
             }
 
             if (!ObjectUtils.isEmpty(employee.getPersonnelNumber())) {
                 Employee e = employeeRepository.findByPersonnelNumber(employee.getPersonnelNumber()).orElse(null);
                 if (!ObjectUtils.isEmpty(e) && !employee.getId().equals(e.getId())) {
-                    throw new EmployeeExistException(getMessage("exception.employee.exist", locale, "personnel number", employee.getPersonnelNumber()));
+                    throw new EmployeeExistException(getMessage("exception.employee.exist",
+                            locale,
+                            "personnel number",
+                            employee.getPersonnelNumber()
+                    ));
                 }
             }
 
         } else {
-            if(!ObjectUtils.isEmpty(employeeRepository.findByEmail(employee.getEmail()))) {
-                throw new EmployeeExistException(getMessage("exception.employee.exist", locale, "email", employee.getEmail()));
+            if (!ObjectUtils.isEmpty(employeeRepository.findByEmail(employee.getEmail()))) {
+                throw new EmployeeExistException(getMessage("exception.employee.exist",
+                        locale,
+                        "email",
+                        employee.getEmail()));
             }
 
             if (!ObjectUtils.isEmpty(employeeRepository.findByPersonnelNumber(employee.getPersonnelNumber()))) {
-                throw new EmployeeExistException(getMessage("exception.employee.exist", locale, "personnel number", employee.getPersonnelNumber()));
+                throw new EmployeeExistException(getMessage("exception.employee.exist",
+                        locale,
+                        "personnel number",
+                        employee.getPersonnelNumber()));
             }
 
-            if (BooleanUtils.isTrue(employee.getHead()) && !ObjectUtils.isEmpty(employeeRepository.findHeadOfDepartment(employee.getDepartment().getId()))) {
-                throw new EmployeeExistException(getMessage("exception.employee.head.exist", locale, employee.getDepartment().getName()));
+            if (BooleanUtils.isTrue(employee.getHead()) && !ObjectUtils.isEmpty(
+                    employeeRepository.findHeadOfDepartment(employee.getDepartment().getId())
+            )) {
+                throw new EmployeeExistException(getMessage(
+                        "exception.employee.head.exist",
+                        locale,
+                        employee.getDepartment().getName()
+                ));
             }
 
             if (!ObjectUtils.isEmpty(employee.getUser())) {
                 Employee e = employeeRepository.findByUserId(employee.getUser().getId()).orElse(null);
                 if (!ObjectUtils.isEmpty(e)) {
-                    throw new EmployeeExistException(getMessage("exception.employee.exist", locale, "user", employee.getUser().getUsername()));
+                    throw new EmployeeExistException(getMessage(
+                            "exception.employee.exist",
+                            locale,
+                            "user",
+                            employee.getUser().getUsername()
+                    ));
                 }
             }
         }
@@ -200,8 +233,8 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
             }
         }
 
-        if ((!ObjectUtils.isEmpty(employee.getDismissalDate()) && !ObjectUtils.isEmpty(employee.getHireDate())) &&
-                employee.getDismissalDate().before(employee.getHireDate())) {
+        if ((!ObjectUtils.isEmpty(employee.getDismissalDate()) && !ObjectUtils.isEmpty(employee.getHireDate()))
+                && employee.getDismissalDate().before(employee.getHireDate())) {
             throw new ValidationException(getMessage("exception.validation.invalid.dismissal.date", locale));
         }
     }

@@ -98,7 +98,9 @@ public class TaskController extends ExceptionHandling {
 
     @PostMapping("/signal-proc")
     @Operation(summary = "Signal task proc to switch state", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<HttpResponse> signalProcAction(@RequestBody TaskSignalProcRequest taskSignalProcRequest) throws TaskNotFoundException {
+    public ResponseEntity<HttpResponse> signalProcAction(@RequestBody TaskSignalProcRequest taskSignalProcRequest)
+            throws TaskNotFoundException {
+
         String message = taskService.signalProc(taskSignalProcRequest);
         return response(HttpStatus.OK, message);
     }

@@ -27,7 +27,7 @@ import java.util.Locale;
 @RequestMapping("/api/service/mail")
 public class EmailController {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(EmailController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailController.class);
 
 
     private final EmailService emailService;

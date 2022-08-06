@@ -1,6 +1,6 @@
 package com.pentyugov.wflow.web.rest;
 
-import com.pentyugov.wflow.application.configuration.security.jwt.JWTTokenProvider;
+import com.pentyugov.wflow.application.configuration.security.jwt.JwtTokenProvider;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.UserDto;
 import com.pentyugov.wflow.core.service.UserService;
@@ -10,7 +10,7 @@ import com.pentyugov.wflow.web.payload.request.LoginRequest;
 import com.pentyugov.wflow.web.payload.request.ResetPasswordRequest;
 import com.pentyugov.wflow.web.payload.request.SignUpRequest;
 import com.pentyugov.wflow.web.validator.ResponseErrorValidator;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,23 +29,18 @@ import static com.pentyugov.wflow.application.configuration.constant.Application
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController extends AbstractController {
 
     private final ResponseErrorValidator responseErrorValidator;
     private final AuthenticationManager authenticationManager;
-    private final JWTTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
 
-    @Autowired
-    public AuthController(ResponseErrorValidator responseErrorValidator, AuthenticationManager authenticationManager, JWTTokenProvider jwtTokenProvider, UserService userService) {
-        this.responseErrorValidator = responseErrorValidator;
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userService = userService;
-    }
-
     @PostMapping("/login")
-    public ResponseEntity<Object> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) throws UserNotFoundException {
+    public ResponseEntity<Object> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult)
+            throws UserNotFoundException {
+
         ResponseEntity<Object> errors = responseErrorValidator.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) {
             return errors;
@@ -63,7 +58,9 @@ public class AuthController extends AbstractController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, BindingResult bindingResult) throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
+    public ResponseEntity<Object> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, BindingResult bindingResult)
+            throws UsernameExistException, EmailExistException, UsernameIsEmptyException, EmailIsEmptyException {
+
         ResponseEntity<Object> errors = responseErrorValidator.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) {
             return errors;
@@ -86,7 +83,9 @@ public class AuthController extends AbstractController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<HttpResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) throws UserNotFoundException {
+    public ResponseEntity<HttpResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest)
+            throws UserNotFoundException {
+
         userService.resetPassword(resetPasswordRequest.getEmail());
         return response(HttpStatus.OK, "Password was successfully changed");
     }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity(name = "workflow$Issue")
 @Table(name = "WORKFLOW_ISSUE")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class Issue extends BaseEntity {
 
     @Column(name = "NAME")

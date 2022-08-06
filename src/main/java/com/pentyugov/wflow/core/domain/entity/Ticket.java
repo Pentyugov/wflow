@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity(name = "workflow$ticket")
 @Table(name = "WORKFLOW_TICKET")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class Ticket extends BaseEntity {
 
     public static final int CREATED = 10;

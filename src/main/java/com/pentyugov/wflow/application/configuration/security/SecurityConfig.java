@@ -1,11 +1,10 @@
 package com.pentyugov.wflow.application.configuration.security;
 
 import com.pentyugov.wflow.application.configuration.constant.ApplicationConstants;
-import com.pentyugov.wflow.application.configuration.security.jwt.JWTAuthenticationEntryPoint;
-import com.pentyugov.wflow.application.configuration.security.jwt.JWTAuthorizationFilter;
+import com.pentyugov.wflow.application.configuration.security.jwt.JwtAuthenticationEntryPoint;
+import com.pentyugov.wflow.application.configuration.security.jwt.JwtAuthorizationFilter;
 import com.pentyugov.wflow.core.service.impl.WflowUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-    private final JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final WflowUserDetailsService userDetailsService;
 
     @Override
@@ -58,8 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JWTAuthorizationFilter jwtAuthorizationFilter() {
-        return new JWTAuthorizationFilter();
+    public JwtAuthorizationFilter jwtAuthorizationFilter() {
+        return new JwtAuthorizationFilter();
     }
 
     @Bean

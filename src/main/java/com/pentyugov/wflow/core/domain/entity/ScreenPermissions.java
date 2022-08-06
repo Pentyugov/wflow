@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity(name = "security$ScreenPermissions")
 @Table(name = "SECURITY_SCREEN_PERMISSIONS")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class ScreenPermissions extends BaseEntity {
 
     @Column(name = "SCREEN")

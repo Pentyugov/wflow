@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity(name = "security$UserSettings")
 @Table(name = "SYSTEM_USER_SETTINGS")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class UserSettings extends BaseEntity {
 
     public static final Integer THEME_BLUE = 10;

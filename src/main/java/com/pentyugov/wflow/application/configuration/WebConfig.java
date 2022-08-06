@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 @Configuration
 public class WebConfig  extends SpringBootServletInitializer {
-    private static final Logger logger = LoggerFactory.getLogger(WflowApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WflowApplication.class);
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
@@ -49,7 +49,7 @@ public class WebConfig  extends SpringBootServletInitializer {
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
 
-        logger.info("ALLOWED ORIGINS: " + corsConfiguration.getAllowedOrigins());
+        LOGGER.info("ALLOWED ORIGINS: " + corsConfiguration.getAllowedOrigins());
         return new CorsFilter(urlBasedCorsConfigurationSource);
     }
 }

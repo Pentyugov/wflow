@@ -7,7 +7,6 @@ import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,9 +21,9 @@ import static com.pentyugov.wflow.application.configuration.constant.Application
 
 @Component
 @RequiredArgsConstructor
-public class JWTTokenProvider {
+public class JwtTokenProvider {
 
-    public static final Logger LOG = LoggerFactory.getLogger(JWTTokenProvider.class);
+    public static final Logger LOG = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     private final UserService userService;
 
@@ -68,11 +67,11 @@ public class JWTTokenProvider {
                     .setSigningKey(secret)
                     .parseClaimsJws(token);
             return true;
-        } catch (SignatureException |
-                MalformedJwtException |
-                ExpiredJwtException |
-                UnsupportedJwtException |
-                IllegalArgumentException e) {
+        } catch (SignatureException
+                | MalformedJwtException
+                | ExpiredJwtException
+                | UnsupportedJwtException
+                | IllegalArgumentException e) {
             LOG.error(e.getMessage());
             return false;
         }

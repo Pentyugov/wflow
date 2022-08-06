@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class JWTTokenSuccessResponse {
+public class JwtTokenSuccessResponse {
     private boolean success;
     private String token;
 

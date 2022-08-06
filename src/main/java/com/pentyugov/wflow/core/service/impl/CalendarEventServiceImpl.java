@@ -111,8 +111,12 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         calendarEventDto.setEnd(calendarEvent.getEndDate());
         calendarEventDto.setAllDay(calendarEvent.getAllDay());
         calendarEventDto.setDraggable(calendarEvent.getDraggable());
-        calendarEventDto.setColor(new CalendarEventDto.Color(calendarEvent.getColorPrimary(), calendarEvent.getColorSecondary()));
-        calendarEventDto.setResizable(new CalendarEventDto.Resizable(calendarEvent.getResizableBeforeStart(), calendarEvent.getResizableAfterEnd()));
+        calendarEventDto.setColor(new CalendarEventDto.Color(
+                calendarEvent.getColorPrimary(), calendarEvent.getColorSecondary()
+        ));
+        calendarEventDto.setResizable(new CalendarEventDto.Resizable(
+                calendarEvent.getResizableBeforeStart(), calendarEvent.getResizableAfterEnd()
+        ));
         return calendarEventDto;
     }
 

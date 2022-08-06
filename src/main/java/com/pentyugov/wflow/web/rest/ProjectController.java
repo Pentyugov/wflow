@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -56,7 +55,9 @@ public class ProjectController  extends ExceptionHandling {
     }
 
     @PutMapping
-    public ResponseEntity<Object> updateProject(@RequestBody ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException {
+    public ResponseEntity<Object> updateProject(@RequestBody ProjectDto projectDto)
+            throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException {
+
         Project project = projectService.updateProject(projectDto);
         return new ResponseEntity<>(projectService.createProjectDto(project), HttpStatus.OK);
     }

@@ -10,8 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TelbotTaskSendMessageRequest {
 
-    public final static Integer TYPE_ASSIGNED = 10;
-    public final static Integer TYPE_OVERDUE = 30;
+    public static final Integer TYPE_ASSIGNED = 10;
+    public static final Integer TYPE_OVERDUE = 30;
 
     private Integer type;
     private Long telUserId;

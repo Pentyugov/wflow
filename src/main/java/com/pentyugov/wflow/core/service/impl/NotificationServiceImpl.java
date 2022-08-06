@@ -90,8 +90,8 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
     @Override
     public void sendTelBotTaskNotification(User user, Task task) {
 
-        if (BooleanUtils.isNotFalse(user.getTelLogged()) &&
-                BooleanUtils.isNotFalse(settingsService.getUserSettings(user).getTelbotTaskNotification())) {
+        if (BooleanUtils.isNotFalse(user.getTelLogged())
+                && BooleanUtils.isNotFalse(settingsService.getUserSettings(user).getTelbotTaskNotification())) {
             telegramService.sendAssignedTaskMessage(user, task);
         }
     }

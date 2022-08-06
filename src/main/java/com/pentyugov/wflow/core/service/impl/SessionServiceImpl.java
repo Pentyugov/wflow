@@ -20,13 +20,13 @@ import java.util.UUID;
 public class SessionServiceImpl implements SessionService {
 
     @Value("${telbot.api.url}/server-started")
-    private String TELBOT_STARTUP_ENDPOINT;
+    private String telbotStartupEndpoint;
 
     private final RestTemplate restTemplate;
     private Boolean connected = Boolean.FALSE;
     private String telbotSessionId = "";
 
-    private final Logger logger = LoggerFactory.getLogger(SessionServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionServiceImpl.class);
 
     @Override
     public void notifyTelbotOfStartup() {
@@ -35,26 +35,26 @@ public class SessionServiceImpl implements SessionService {
         httpHeaders.add("session-id", sessionId.toString());
         try {
             ResponseEntity<Object> response = restTemplate.exchange(
-                    TELBOT_STARTUP_ENDPOINT,
+                    telbotStartupEndpoint,
                     HttpMethod.POST,
                     new HttpEntity<>(null, httpHeaders),
                     Object.class,
                     Collections.emptyMap()
             );
 
-            if (response.getStatusCode().equals(HttpStatus.OK) &&
-                sessionId.toString().equals(Objects.requireNonNull(httpHeaders.get("session-id")).get(0))) {
+            if (response.getStatusCode().equals(HttpStatus.OK)
+                    && sessionId.toString().equals(Objects.requireNonNull(httpHeaders.get("session-id")).get(0))) {
                 telbotSessionId = sessionId.toString();
                 connected = Boolean.TRUE;
-                logger.info("Successfully connected to Telbot...");
+                LOGGER.info("Successfully connected to Telbot...");
             }
             response.getHeaders().get("sessionId");
         } catch (HttpStatusCodeException | ResourceAccessException e) {
-            logger.error("Telbot service is unavailable...");
+            LOGGER.error("Telbot service is unavailable...");
         }
 
         if (!connected) {
-            logger.error("Could not connect to Telbot...");
+            LOGGER.error("Could not connect to Telbot...");
         }
     }
 

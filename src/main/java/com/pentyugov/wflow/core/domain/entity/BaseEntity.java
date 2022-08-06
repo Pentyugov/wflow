@@ -49,11 +49,13 @@ public class BaseEntity implements Serializable {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other)
+        if (this == other) {
             return true;
+        }
 
-        if (other == null || getClass() != other.getClass())
+        if (other == null || getClass() != other.getClass()) {
             return false;
+        }
 
         return Objects.equals(getId(), ((BaseEntity) other).getId());
     }

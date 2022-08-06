@@ -1,5 +1,6 @@
 package com.pentyugov.wflow.web.payload.response;
 
+import com.pentyugov.wflow.core.domain.entity.Task;
 import com.pentyugov.wflow.core.dto.ChatMessageDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

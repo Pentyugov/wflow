@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity(name = "sys$Mail")
 @Table(name = "SYSTEM_MAIL")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class SysMail extends BaseEntity {
 
     @Column(name = "SENDER")
@@ -28,7 +28,7 @@ public class SysMail extends BaseEntity {
     @Column(name = "SUBJECT")
     private String subject;
 
-    @Column(name = "BODY", columnDefinition="TEXT")
+    @Column(name = "BODY", columnDefinition = "TEXT")
     private String body;
 
     @Column(name = "SEND_TIME")

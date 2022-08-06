@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity(name = "workflow$projectParticipant")
 @Table(name = "WORKFLOW_PROJECT_PARTICIPANT")
-@Where(clause="DELETE_DATE is null")
+@Where(clause = "DELETE_DATE is null")
 public class ProjectParticipant extends BaseEntity {
 
     @ManyToOne(cascade = CascadeType.PERSIST)

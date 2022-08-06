@@ -7,7 +7,6 @@ import com.pentyugov.wflow.core.service.ChatMessageService;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -29,6 +28,7 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
     private final ChatRepository chatRepository;
     private final UserService userService;
 
+    @Override
     public ChatMessage save(ChatMessage chatMessage) {
         return this.chatRepository.save(chatMessage);
     }
@@ -40,6 +40,7 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
         return chatMessage;
     }
 
+    @Override
     public ChatMessage createChatMessageFromProxy(ChatMessageDto chatMessageDto) throws UserNotFoundException {
         ChatMessage chatMessage = new ChatMessage();
         if (chatMessageDto.getId() != null) {
@@ -53,6 +54,7 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
         return chatMessage;
     }
 
+    @Override
     public ChatMessageDto createProxyFromChatMessage(ChatMessage chatMessage) {
         ChatMessageDto chatMessageDto = new ChatMessageDto();
         chatMessageDto.setId(chatMessage.getId());
@@ -67,6 +69,7 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
         return chatMessageDto;
     }
 
+    @Override
     public List<ChatMessage> getChatMessagesByChatId(String chatId) {
         return chatRepository.findByChatId(chatId);
     }
@@ -79,6 +82,7 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
                 Sort.Direction.DESC, sortBy.orElse("createDate")));
     }
 
+    @Override
     public Integer getNewChatMessagesCountForUser(UUID userId) {
         return chatRepository.findNewMessagesCountForUser(userId, ChatMessage.READ);
     }
@@ -89,7 +93,7 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
                 .stream()
                 .map(this::createProxyFromChatMessage)
                 .collect(Collectors.toList());
-}
+    }
 
     @Override
     public List<ChatMessageDto> getNewMessagesForUser(UUID userId) {
@@ -103,4 +107,5 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
     public ChatMessage getById(UUID uuid) {
         return chatRepository.getById(uuid);
     }
+
 }
