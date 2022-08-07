@@ -75,6 +75,21 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     @Override
+    public void logoutTelegramUser(Long telUserId) throws UserNotFoundException {
+        User user = userService.getByTelUserId(telUserId);
+        user.setTelLogged(Boolean.FALSE);
+        user.setTelUserId(null);
+        user.setTelChatId(null);
+
+        userService.update(user);
+        UserSettings userSettings = userSettingsService.getUserSettings(user);
+        userSettings.setTelbotCalendarNotification(null);
+        userSettings.setTelbotTaskNotification(null);
+
+        userSettingsService.updateUserSettings(userSettings);
+    }
+
+    @Override
     public boolean verifyCode(TelbotVerifyCodeRequest request) throws UserNotFoundException {
         String code = request.getCode();
         String hashCode = codesMap.get(request.getTelUserId());

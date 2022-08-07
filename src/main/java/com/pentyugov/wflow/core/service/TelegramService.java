@@ -17,6 +17,8 @@ public interface TelegramService {
 
     TelbotLoginUserResponse loginTelegramUser(TelbotLoginUserRequest request) throws UserNotFoundException;
 
+    void logoutTelegramUser(Long telUserId) throws UserNotFoundException;
+
     boolean verifyCode(TelbotVerifyCodeRequest request) throws UserNotFoundException;
 
     void sendAssignedTaskMessage(User user, Task task);

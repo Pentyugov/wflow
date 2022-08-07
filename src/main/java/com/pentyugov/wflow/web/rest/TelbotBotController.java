@@ -33,7 +33,7 @@ import static com.pentyugov.wflow.application.configuration.SwaggerConfig.BEARER
 @RestController
 @RequestMapping("/api/v1/telbot")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class TelegramBotController {
+public class TelbotBotController {
 
     private final TelegramService telegramService;
     private final TaskService taskService;
@@ -61,6 +61,14 @@ public class TelegramBotController {
             throws UserNotFoundException {
 
         return new ResponseEntity<>(telegramService.loginTelegramUser(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Logout telbot user", security = @SecurityRequirement(name = BEARER))
+    public ResponseEntity<Boolean> logoutTelegramUser(@RequestBody Long telUserId)
+            throws UserNotFoundException {
+        telegramService.logoutTelegramUser(telUserId);
+        return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
     }
 
     @PostMapping("/verify-code")
