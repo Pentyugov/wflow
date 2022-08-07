@@ -59,8 +59,8 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     private final UserSessionService userSessionService;
 
     @Override
-    public Task createNewTask(TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException {
-        Task task = createTaskFromDto(taskDto);
+    public Task add(TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException {
+        Task task = convert(taskDto);
         task.setState(Task.STATE_CREATED);
         User creator = userSessionService.getCurrentUser();
         task.setCreator(creator);
@@ -69,22 +69,22 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
-        Task task = createTaskFromDto(taskDto);
+    public Task update(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
+        Task task = convert(taskDto);
         return taskRepository.save(task);
     }
 
     @Override
     public void deleteTask(UUID id) throws TaskNotFoundException {
-        Task toDelete = getTaskById(id);
-        calendarEventService.deleteCalendarEventByCard(toDelete);
+        Task toDelete = getById(id);
+        calendarEventService.deleteByCard(toDelete);
         notificationService.deleteNotification(toDelete);
         cancelTask(toDelete, userSessionService.getCurrentUser(), "Deleted", true);
         taskRepository.delete(id);
     }
 
     @Override
-    public Task getTaskById(UUID id) throws TaskNotFoundException {
+    public Task getById(UUID id) throws TaskNotFoundException {
         return taskRepository.findById(id).orElseThrow(() ->
                 new TaskNotFoundException(getMessage(sourcePath, "exception.task.with.id.not.found", id)));
     }
@@ -183,7 +183,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         task.setKanbanState(Task.KANBAN_STATE_NEW);
         task = workflowService.startTaskProcess(task, currentUser);
         taskRepository.save(task);
-        calendarEventService.addCalendarEventForCard(task);
+        calendarEventService.addForCard(task);
         User executor = task.getExecutor();
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.assigned.to.executor", task.getNumber());
@@ -192,7 +192,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         );
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
-                .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
+                .convert(notification), notification.getReceiver().getId());
         notificationService.sendTelBotTaskNotification(executor, task);
         return getMessage(sourcePath, "notification.task.assigned.message", task.getNumber(), executor.getUsername());
     }
@@ -200,7 +200,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     public String cancelTask(Task task, User currentUser, String comment, boolean deleted) {
         task = workflowService.cancelTaskProcess(task, currentUser, comment);
         taskRepository.save(task);
-        calendarEventService.deleteCalendarEventByCard(task);
+        calendarEventService.deleteByCard(task);
         User executor = task.getExecutor();
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
 
@@ -227,7 +227,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
-                .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
+                .convert(notification), notification.getReceiver().getId());
 
         return getMessage(sourcePath, "notification.task.canceled.message", task.getNumber(), executor.getUsername());
     }
@@ -236,7 +236,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         task = workflowService.executeTask(task, currentUser, comment);
         task.setKanbanState(Task.KANBAN_STATE_COMPLETED);
         taskRepository.save(task);
-        calendarEventService.deleteCalendarEventByCard(task);
+        calendarEventService.deleteByCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.executed.to.initiator", task.getNumber(), currentUser.getUsername());
         Notification notification = notificationService.createNotification(
@@ -244,7 +244,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         );
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
-                .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
+                .convert(notification), notification.getReceiver().getId());
         return getMessage(sourcePath, "notification.task.executed.message", task.getNumber());
     }
 
@@ -252,7 +252,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         task = workflowService.reworkTask(task, currentUser, comment);
         task.setKanbanState(Task.KANBAN_STATE_NEW);
         taskRepository.save(task);
-        calendarEventService.addCalendarEventForCard(task);
+        calendarEventService.addForCard(task);
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.rework.to.executor", task.getNumber(), currentUser.getUsername());
         Notification notification = notificationService.createNotification(
@@ -260,7 +260,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         );
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
-                .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
+                .convert(notification), notification.getReceiver().getId());
 
         return getMessage(sourcePath, "notification.task.rework.message", task.getNumber());
     }
@@ -275,7 +275,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         );
         notificationService.saveNotification(notification);
         notificationService.sendNotificationWithWs(notificationService
-                .createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
+                .convert(notification), notification.getReceiver().getId());
 
         return getMessage(sourcePath, "notification.task.finish.message", task.getNumber());
     }
@@ -289,27 +289,27 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public Task createTaskFromDto(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
+    public Task convert(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
         Task task = taskRepository.findById(taskDto.getId()).orElse(new Task());
 
         if (!ObjectUtils.isEmpty(taskDto.getProject())) {
-            task.setProject(projectService.getProjectById(taskDto.getProject().getId()));
+            task.setProject(projectService.getById(taskDto.getProject().getId()));
         } else {
             task.setProject(null);
         }
 
         if (!ObjectUtils.isEmpty(taskDto.getCreator())) {
-            task.setCreator(userService.getUserById(taskDto.getCreator().getId()));
+            task.setCreator(userService.getById(taskDto.getCreator().getId()));
         }
 
         if (!ObjectUtils.isEmpty(taskDto.getExecutor())) {
-            task.setExecutor(userService.getUserById(taskDto.getExecutor().getId()));
+            task.setExecutor(userService.getById(taskDto.getExecutor().getId()));
         } else {
             task.setExecutor(null);
         }
 
         if (!ObjectUtils.isEmpty(taskDto.getInitiator())) {
-            task.setInitiator(userService.getUserById(taskDto.getInitiator().getId()));
+            task.setInitiator(userService.getById(taskDto.getInitiator().getId()));
         }
 
         task.setPriority(taskDto.getPriority());
@@ -328,13 +328,13 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasks() {
+    public List<Task> getAll() {
         return taskRepository.findAll();
     }
 
     private List<Task> getAllTasks(User user) {
         if (userSessionService.isCurrentUserAdmin()) {
-            return this.getAllTasks();
+            return this.getAll();
         } else {
             return taskRepository.findAllForUser(user.getId());
         }
@@ -358,7 +358,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
 
     @Override
     public Page<Task> getTaskPageForTelBot(Long telUserId, Pageable pageable) throws UserNotFoundException {
-        User user = userService.getUserByTelUserId(telUserId);
+        User user = userService.getByTelUserId(telUserId);
         List<UUID> ids = getActiveForExecutor(user).stream().map(Task::getId).collect(Collectors.toList());
         return taskRepository.findActiveTasksPage(ids, pageable);
     }
@@ -369,19 +369,19 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         taskDto.setId(task.getId());
 
         if (!ObjectUtils.isEmpty(task.getProject())) {
-            taskDto.setProject(projectService.createProjectDto(task.getProject()));
+            taskDto.setProject(projectService.convert(task.getProject()));
         }
 
         if (!ObjectUtils.isEmpty(task.getCreator())) {
-            taskDto.setCreator(userService.createUserDtoFromUser(task.getCreator()));
+            taskDto.setCreator(userService.convert(task.getCreator()));
         }
 
         if (!ObjectUtils.isEmpty(task.getExecutor())) {
-            taskDto.setExecutor(userService.createUserDtoFromUser(task.getExecutor()));
+            taskDto.setExecutor(userService.convert(task.getExecutor()));
         }
 
         if (!ObjectUtils.isEmpty(task.getInitiator())) {
-            taskDto.setInitiator(userService.createUserDtoFromUser(task.getInitiator()));
+            taskDto.setInitiator(userService.convert(task.getInitiator()));
         }
 
         taskDto.setPriority(task.getPriority());
@@ -455,7 +455,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
     @Override
     public void changeKanbanState(KanbanRequest[] kanbanRequest) throws TaskNotFoundException {
         for (KanbanRequest request : kanbanRequest) {
-            Task task = getTaskById(UUID.fromString(request.getTaskId()));
+            Task task = getById(UUID.fromString(request.getTaskId()));
             if (task != null) {
                 task.setKanbanState(request.getState());
                 task.setKanbanOrder(request.getOrder());

@@ -6,7 +6,6 @@ import com.pentyugov.wflow.core.dto.UserDto;
 import com.pentyugov.wflow.web.exception.*;
 import com.pentyugov.wflow.web.payload.request.SignUpRequest;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,36 +13,32 @@ public interface UserService {
 
     String NAME = "wflow$UserService";
 
-    User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
+    List<User> getAll();
+
+    User getById(UUID id) throws UserNotFoundException;
+
+    User add(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
             EmailIsEmptyException;
 
-    void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
+    void add(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
             EmailIsEmptyException;
 
     void updateLastLoginDate(User user);
 
-    User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException,
+    User update(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException, UsernameIsEmptyException,
             EmailIsEmptyException;
 
-    void updateUser(User user);
+    void update(User user);
 
-    void deleteUser(UUID id);
+    User update(User currentUser, UserDto userDto);
 
-    void resetPassword(String email) throws UserNotFoundException;
-
-    void changePassword(String email, String password, String confirmPassword) throws ValidationException, UserNotFoundException;
-
-    User updateProfileImage(UUID id, String profileImageUrl) throws UserNotFoundException;
+    void delete(UUID id);
 
     User getCurrentUser();
 
-    User getUserById(UUID id) throws UserNotFoundException;
+    User getByEmail(String email) throws UserNotFoundException;
 
-    User getUserByEmail(String email) throws UserNotFoundException;
-
-    User getUserByUsername(String username) throws UserNotFoundException;
-
-    List<User> getAllUsers();
+    User getByUsername(String username) throws UserNotFoundException;
 
     List<User> getAllWithRole(String roleName);
 
@@ -53,18 +48,24 @@ public interface UserService {
 
     List<User> getUsersWithoutEmployee();
 
-    User createUserFromDto(UserDto userDto);
+    User getByTelUserId(Long telUserId) throws UserNotFoundException;
 
-    UserDto createUserDto(UUID id, String username, String email, String firstName, String lastName, List<RoleDto> roles, String isActive,
-                          String isNonLocked);
+    void resetPassword(String email) throws UserNotFoundException;
 
-    UserDto createUserDtoFromUser(User user);
+    void changePassword(String email, String password, String confirmPassword) throws ValidationException, UserNotFoundException;
 
-    User updateUserFromDto(User currentUser, UserDto userDto);
+    User updateProfileImage(UUID id, String profileImageUrl) throws UserNotFoundException;
+
+    User convert(UserDto userDto);
+
+    UserDto convert(UUID id, String username, String email, String firstName, String lastName, List<RoleDto> roles, String isActive,
+                    String isNonLocked);
+
+    UserDto convert(User user);
 
     User deleteUserProfileImage(UUID id);
 
     List<User> findAllLoggedInTelegram();
 
-    User getUserByTelUserId(Long telUserId) throws UserNotFoundException;
+
 }

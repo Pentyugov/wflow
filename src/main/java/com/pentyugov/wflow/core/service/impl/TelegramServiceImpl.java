@@ -56,10 +56,10 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public TelbotLoginUserResponse loginTelegramUser(TelbotLoginUserRequest request) throws UserNotFoundException {
-        User user = userService.getUserByUsername(request.getUsername());
+        User user = userService.getByUsername(request.getUsername());
         user.setTelUserId(request.getTelUserId());
         user.setTelChatId(request.getTelChatId());
-        userService.updateUser(user);
+        userService.update(user);
         UserSettings userSettings = userSettingsService.getUserSettings(user);
         userSettings.setTelbotCalendarNotification(true);
         userSettings.setTelbotTaskNotification(true);
@@ -79,12 +79,12 @@ public class TelegramServiceImpl implements TelegramService {
         String code = request.getCode();
         String hashCode = codesMap.get(request.getTelUserId());
         if (StringUtils.hasText(hashCode) && StringUtils.hasText(code)) {
-            User user = userService.getUserByTelUserId(request.getTelUserId());
+            User user = userService.getByTelUserId(request.getTelUserId());
             boolean verified = passwordEncoder.matches(code, hashCode);
             if (verified) {
                 codesMap.remove(request.getTelUserId());
                 user.setTelLogged(true);
-                userService.updateUser(user);
+                userService.update(user);
             }
             return verified;
         }
@@ -104,7 +104,7 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public void updateTelUserSettings(Long telUserId, TelegramUserDto.TelUserSettings userSettings) throws UserNotFoundException {
-        User user = userService.getUserByTelUserId(telUserId);
+        User user = userService.getByTelUserId(telUserId);
         UserSettings settings = userSettingsService.getUserSettings(user);
         settings.setTelbotTaskNotification(userSettings.getSubscribeOnTasks());
         settings.setTelbotCalendarNotification(userSettings.getSubscribeOnCalendar());

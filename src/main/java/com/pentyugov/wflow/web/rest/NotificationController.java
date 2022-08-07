@@ -25,7 +25,7 @@ public class NotificationController extends ExceptionHandling {
     public ResponseEntity<Object> getAll() {
         List<NotificationDto> notificationList = notificationService.getNotificationsForCurrentUser()
                 .stream()
-                .map(notificationService::createNotificationDtoFromNotification)
+                .map(notificationService::convert)
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(notificationList, HttpStatus.OK);
@@ -34,8 +34,8 @@ public class NotificationController extends ExceptionHandling {
 
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody NotificationDto notificationDto) throws UserNotFoundException {
-        Notification notification = notificationService.createNewNotification(notificationDto);
-        return new ResponseEntity<>(notificationService.createNotificationDtoFromNotification(notification), HttpStatus.OK);
+        Notification notification = notificationService.add(notificationDto);
+        return new ResponseEntity<>(notificationService.convert(notification), HttpStatus.OK);
 
     }
 
@@ -44,7 +44,7 @@ public class NotificationController extends ExceptionHandling {
                                          @RequestParam Optional<String> sortBy) {
         List<NotificationDto> result = new ArrayList<>();
         notificationService.getNotificationPage(page, sortBy).getContent().forEach(notification -> {
-            result.add(notificationService.createNotificationDtoFromNotification(notification));
+            result.add(notificationService.convert(notification));
         });
 
         return result;

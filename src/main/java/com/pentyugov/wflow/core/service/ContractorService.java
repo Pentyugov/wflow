@@ -12,15 +12,18 @@ public interface ContractorService {
 
     String NAME = "wflow$ContractorService";
 
-    List<Contractor> getAllContractors();
+    List<Contractor> getAll();
 
-    ContractorDto createContractorDto(Contractor contractor);
+    Contractor getById(UUID id) throws ContractorNotFoundException;
 
-    ContractorDto addNewContractor(ContractorDto contractorDto) throws ValidationException;
+    ContractorDto add(ContractorDto contractorDto) throws ValidationException;
 
-    ContractorDto updateContractor(ContractorDto contractorDto) throws ValidationException;
+    ContractorDto update(ContractorDto contractorDto) throws ValidationException;
 
-    Contractor getContractorById(UUID id) throws ContractorNotFoundException;
+    void delete(UUID id);
 
-    void deleteContractor(UUID id);
+    ContractorDto convert(Contractor contractor);
+
+    Contractor convert(ContractorDto contractorDto);
+
 }

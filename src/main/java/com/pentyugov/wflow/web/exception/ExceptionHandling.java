@@ -62,6 +62,11 @@ public class ExceptionHandling implements ErrorController {
         return createHttpResponse(UNAUTHORIZED, ACCOUNT_LOCKED);
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<HttpResponse> entityNotFoundException(EntityNotFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException exception) {
         return createHttpResponse(UNAUTHORIZED, exception.getMessage());

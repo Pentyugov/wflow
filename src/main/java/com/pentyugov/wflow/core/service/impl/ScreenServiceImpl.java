@@ -33,7 +33,6 @@ public class ScreenServiceImpl implements ScreenService {
             return false;
         }
 
-
         if (tmp.length > 1) {
             String subScreen = screenAlias.split("\\.")[1];
             if (StringUtils.hasText(subScreen)) {

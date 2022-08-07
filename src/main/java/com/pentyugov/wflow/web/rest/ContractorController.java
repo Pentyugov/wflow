@@ -28,9 +28,9 @@ public class ContractorController extends AbstractController {
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
-        List<ContractorDto> contractorDtos = contractorService.getAllContractors()
+        List<ContractorDto> contractorDtos = contractorService.getAll()
                 .stream()
-                .map(contractorService::createContractorDto)
+                .map(contractorService::convert)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(contractorDtos, HttpStatus.OK);
     }
@@ -38,25 +38,25 @@ public class ContractorController extends AbstractController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable String id) throws ContractorNotFoundException {
         ContractorDto contractorDto = contractorService
-                .createContractorDto(contractorService.getContractorById(UUID.fromString(id)));
+                .convert(contractorService.getById(UUID.fromString(id)));
         return new ResponseEntity<>(contractorDto, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody ContractorDto contractorDto) throws ValidationException {
-        ContractorDto contractor = contractorService.addNewContractor(contractorDto);
+        ContractorDto contractor = contractorService.add(contractorDto);
         return new ResponseEntity<>(contractor, HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<Object> updater(@RequestBody ContractorDto contractorDto) throws ValidationException {
-        ContractorDto contractor = contractorService.updateContractor(contractorDto);
+        ContractorDto contractor = contractorService.update(contractorDto);
         return new ResponseEntity<>(contractor, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
-        contractorService.deleteContractor(UUID.fromString(id));
+        contractorService.delete(UUID.fromString(id));
         String message = String.format("Contractor with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
     }

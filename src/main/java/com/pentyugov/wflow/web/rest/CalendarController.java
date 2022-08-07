@@ -27,24 +27,24 @@ public class CalendarController extends AbstractController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable String id) {
-        return new ResponseEntity<>(calendarEventService.getCalendarEventById(UUID.fromString(id)), HttpStatus.OK);
+        return new ResponseEntity<>(calendarEventService.getById(UUID.fromString(id)), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody CalendarEventDto calendarEventDto) {
-        CalendarEventDto result = calendarEventService.addCalendarEvent(calendarEventDto);
+        CalendarEventDto result = calendarEventService.add(calendarEventDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<Object> update(@RequestBody CalendarEventDto calendarEventDto) {
-        CalendarEventDto result = calendarEventService.updateCalendarEvent(calendarEventDto);
+        CalendarEventDto result = calendarEventService.update(calendarEventDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
-        calendarEventService.deleteCalendarEvent(UUID.fromString(id));
+        calendarEventService.delete(UUID.fromString(id));
         String message = String.format("Calendar with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
     }

@@ -63,7 +63,7 @@ public class IssueServiceImpl extends AbstractService implements IssueService {
         cardHistoryDto.setId(issue.getId());
         cardHistoryDto.setCreateDate(Date.from(issue.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()));
         cardHistoryDto.setComment(issue.getComment());
-        cardHistoryDto.setUser(userService.createUserDtoFromUser(issue.getUser()));
+        cardHistoryDto.setUser(userService.convert(issue.getUser()));
         cardHistoryDto.setResult(issue.getResult());
         return cardHistoryDto;
     }

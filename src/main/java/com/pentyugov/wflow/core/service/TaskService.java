@@ -22,13 +22,15 @@ public interface TaskService {
 
     String NAME = "wflow$TaskService";
 
-    Task createNewTask(TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException;
+    List<Task> getAll();
 
-    Task updateTask(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
+    Task getById(UUID id) throws TaskNotFoundException;
+
+    Task add(TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException;
+
+    Task update(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
 
     void deleteTask(UUID id) throws TaskNotFoundException;
-
-    Task getTaskById(UUID id) throws TaskNotFoundException;
 
     List<Task> getActiveForExecutor();
 
@@ -40,9 +42,7 @@ public interface TaskService {
 
     List<CardHistoryDto> getTaskHistory(Task task);
 
-    Task createTaskFromDto(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
-
-    List<Task> getAllTasks();
+    Task convert(TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException;
 
     List<TaskDto> getAllTaskDto();
 

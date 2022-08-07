@@ -43,7 +43,7 @@ public class TaskController extends ExceptionHandling {
     @GetMapping("/{id}")
     @Operation(summary = "Get task by ID", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getById(@PathVariable String id) throws TaskNotFoundException {
-        Task task = taskService.getTaskById(UUID.fromString(id));
+        Task task = taskService.getById(UUID.fromString(id));
         return new ResponseEntity<>(taskService.createDto(task), HttpStatus.OK);
     }
 
@@ -70,21 +70,21 @@ public class TaskController extends ExceptionHandling {
     @GetMapping("/{id}/history")
     @Operation(summary = "Get task history", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getTaskHistory(@PathVariable String id) throws TaskNotFoundException {
-        Task task = taskService.getTaskById(UUID.fromString(id));
+        Task task = taskService.getById(UUID.fromString(id));
         return new ResponseEntity<>(taskService.getTaskHistory(task), HttpStatus.OK);
     }
 
     @PostMapping
     @Operation(summary = "Post new task", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> post(@RequestBody TaskDto taskDto) throws ProjectNotFoundException, UserNotFoundException {
-        Task task = taskService.createNewTask(taskDto);
+        Task task = taskService.add(taskDto);
         return new ResponseEntity<>(taskService.createDto(task), HttpStatus.OK);
     }
 
     @PutMapping
     @Operation(summary = "Update existing task", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> update(@RequestBody TaskDto taskDto) throws UserNotFoundException, ProjectNotFoundException {
-        Task task = taskService.updateTask(taskDto);
+        Task task = taskService.update(taskDto);
         return new ResponseEntity<>(taskService.createDto(task), HttpStatus.OK);
     }
 

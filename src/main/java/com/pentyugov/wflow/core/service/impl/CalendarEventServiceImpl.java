@@ -7,7 +7,9 @@ import com.pentyugov.wflow.core.dto.CalendarEventDto;
 import com.pentyugov.wflow.core.repository.CalendarEventRepository;
 import com.pentyugov.wflow.core.service.CalendarEventService;
 import com.pentyugov.wflow.core.service.UserSessionService;
+import com.pentyugov.wflow.web.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -17,7 +19,10 @@ import java.util.stream.Collectors;
 
 @Service(CalendarEventService.NAME)
 @RequiredArgsConstructor
-public class CalendarEventServiceImpl implements CalendarEventService {
+public class CalendarEventServiceImpl extends AbstractService implements CalendarEventService {
+
+    @Value("${source.service.auth}")
+    private String sourcePath;
 
     private final CalendarEventRepository calendarEventRepository;
     private final UserSessionService userSessionService;
@@ -25,23 +30,24 @@ public class CalendarEventServiceImpl implements CalendarEventService {
     @Override
     public List<CalendarEventDto> getAllForCurrentUser() {
         return calendarEventRepository.getAllByUserId(userSessionService.getCurrentUser().getId())
-                .stream().map(this::createDtoFromEvent).collect(Collectors.toList());
+                .stream().map(this::convert).collect(Collectors.toList());
     }
 
     @Override
-    public CalendarEventDto getCalendarEventById(UUID id) {
-        return createDtoFromEvent(calendarEventRepository.getById(id));
+    public CalendarEventDto getById(UUID id) {
+        return convert(calendarEventRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(getMessage(sourcePath, "exception.entity.with.id.not.found", id.toString()))));
     }
 
     @Override
-    public CalendarEventDto addCalendarEvent(CalendarEventDto calendarEventDto) {
-        CalendarEvent calendarEvent = createEventFromDto(calendarEventDto);
+    public CalendarEventDto add(CalendarEventDto calendarEventDto) {
+        CalendarEvent calendarEvent = convert(calendarEventDto);
         calendarEvent = calendarEventRepository.save(calendarEvent);
-        return createDtoFromEvent(calendarEvent);
+        return convert(calendarEvent);
     }
 
     @Override
-    public void addCalendarEventForCard(Card card) {
+    public void addForCard(Card card) {
         CalendarEvent calendarEvent = createCalendarEventTemplateForCard();
         calendarEvent.setTitle(card.getNumber());
         calendarEvent.setDescription(card.getDescription());
@@ -55,26 +61,20 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         }
 
         calendarEvent = calendarEventRepository.save(calendarEvent);
-        createDtoFromEvent(calendarEvent);
+        convert(calendarEvent);
     }
 
     @Override
-    public CalendarEventDto updateCalendarEvent(CalendarEventDto calendarEventDto) {
-        CalendarEvent calendarEvent = createEventFromDto(calendarEventDto);
+    public CalendarEventDto update(CalendarEventDto calendarEventDto) {
+        CalendarEvent calendarEvent = convert(calendarEventDto);
         calendarEvent = calendarEventRepository.save(calendarEvent);
-        return createDtoFromEvent(calendarEvent);
+        return convert(calendarEvent);
     }
 
     @Override
-    public CalendarEvent createEventFromDto(CalendarEventDto calendarEventDto) {
-        CalendarEvent calendarEvent;
-        if (calendarEventDto.getId() != null) {
-            calendarEvent = calendarEventRepository.getById(calendarEventDto.getId());
-        } else {
-            calendarEvent = new CalendarEvent();
-            calendarEvent.setUser(userSessionService.getCurrentUser());
-        }
-
+    public CalendarEvent convert(CalendarEventDto calendarEventDto) {
+        CalendarEvent calendarEvent = calendarEventRepository.findById(calendarEventDto.getId()).orElse(new CalendarEvent());
+        calendarEvent.setUser(userSessionService.getCurrentUser());
         calendarEvent.setType(calendarEventDto.getType());
         calendarEvent.setTitle(calendarEventDto.getTitle());
         calendarEvent.setDescription(calendarEventDto.getDescription());
@@ -101,27 +101,27 @@ public class CalendarEventServiceImpl implements CalendarEventService {
     }
 
     @Override
-    public CalendarEventDto createDtoFromEvent(CalendarEvent calendarEvent) {
-        CalendarEventDto calendarEventDto = new CalendarEventDto();
-        calendarEventDto.setId(calendarEvent.getId());
-        calendarEventDto.setType(calendarEvent.getType());
-        calendarEventDto.setTitle(calendarEvent.getTitle());
-        calendarEventDto.setDescription(calendarEvent.getDescription());
-        calendarEventDto.setStart(calendarEvent.getStartDate());
-        calendarEventDto.setEnd(calendarEvent.getEndDate());
-        calendarEventDto.setAllDay(calendarEvent.getAllDay());
-        calendarEventDto.setDraggable(calendarEvent.getDraggable());
-        calendarEventDto.setColor(new CalendarEventDto.Color(
-                calendarEvent.getColorPrimary(), calendarEvent.getColorSecondary()
-        ));
-        calendarEventDto.setResizable(new CalendarEventDto.Resizable(
-                calendarEvent.getResizableBeforeStart(), calendarEvent.getResizableAfterEnd()
-        ));
-        return calendarEventDto;
+    public CalendarEventDto convert(CalendarEvent calendarEvent) {
+        return CalendarEventDto.builder()
+                .id(calendarEvent.getId())
+                .type(calendarEvent.getType())
+                .title(calendarEvent.getTitle())
+                .description(calendarEvent.getDescription())
+                .start(calendarEvent.getStartDate())
+                .end(calendarEvent.getEndDate())
+                .allDay(calendarEvent.getAllDay())
+                .draggable(calendarEvent.getDraggable())
+                .color(new CalendarEventDto.Color(
+                        calendarEvent.getColorPrimary(), calendarEvent.getColorSecondary()
+                ))
+                .resizable(new CalendarEventDto.Resizable(
+                        calendarEvent.getResizableBeforeStart(), calendarEvent.getResizableAfterEnd()
+                ))
+                .build();
     }
 
     @Override
-    public void deleteCalendarEventByCard(Card card) {
+    public void deleteByCard(Card card) {
         List<CalendarEvent> events = calendarEventRepository.findAllByCardId(card.getId());
         if (!CollectionUtils.isEmpty(events)) {
             calendarEventRepository.deleteAll(events);
@@ -129,7 +129,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
     }
 
     @Override
-    public void deleteCalendarEvent(UUID id) {
+    public void delete(UUID id) {
         this.calendarEventRepository.delete(id);
     }
 

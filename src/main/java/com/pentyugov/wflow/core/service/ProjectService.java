@@ -15,19 +15,22 @@ import java.util.UUID;
 public interface ProjectService {
     String NAME = "wflow$ProjectService";
 
-    List<Project> getAllProjects();
+    List<Project> getAll();
+
+    Project getById(UUID id) throws ProjectNotFoundException;
+
+    Project add(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException;
+
+    Project update(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException;
+
+    void delete(UUID id);
 
     List<ProjectDto> getAvailable();
 
-    Project getProjectById(UUID id) throws ProjectNotFoundException;
-
     ProjectDto getProjectDtoById(UUID id) throws ProjectNotFoundException;
 
-    ProjectDto createProjectDto(Project project);
+    Project convert(ProjectDto projectDto);
 
-    Project updateProject(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException;
+    ProjectDto convert(Project project);
 
-    void deleteProject(UUID id);
-
-    Project createNewProject(ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException;
 }

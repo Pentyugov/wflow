@@ -12,24 +12,22 @@ import java.util.UUID;
 public interface DepartmentService {
     String NAME = "wflow$DepartmentService";
 
-    List<Department> getAllDepartments();
+    List<Department> getAll();
+
+    Department getById(UUID id) throws DepartmentNotFoundException;
+
+    Department add(DepartmentDto departmentDto) throws DepartmentExistException;
+
+    Department update(DepartmentDto departmentDto) throws DepartmentExistException, DepartmentNotFoundException;
+
+    void delete(UUID id) throws ValidationException;
 
     List<Department> getPossibleParentDepartments(UUID id);
 
     List<Department> getChildren(UUID id);
 
-    Department addNewDepartment(DepartmentDto departmentDto) throws DepartmentExistException;
+    Department convert(DepartmentDto departmentDto);
 
-    Department updateDepartment(DepartmentDto departmentDto) throws DepartmentExistException, DepartmentNotFoundException;
-
-    void deleteDepartment(UUID id) throws ValidationException;
-
-    Department getDepartmentById(UUID id) throws DepartmentNotFoundException;
-
-    void validateDepartment(Department department, boolean isUpdate) throws DepartmentExistException;
-
-    Department createDepartmentFromDepartmentDto(DepartmentDto departmentDto);
-
-    DepartmentDto createDepartmentDtoFromDepartment(Department department);
+    DepartmentDto convert(Department department);
 
 }

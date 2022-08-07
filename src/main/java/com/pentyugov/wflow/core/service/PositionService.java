@@ -13,19 +13,18 @@ public interface PositionService {
 
     String NAME = "wflow$PositionService";
 
-    List<Position> getAllPositions();
-
-    Position createNewPosition(PositionDto positionDto) throws PositionExistException;
-
-    Position updatePosition(PositionDto positionDto) throws PositionExistException;
-
-    boolean isPositionExist(Position position);
+    List<Position> getAll();
 
     Position getById(UUID id) throws PositionNotFoundException;
 
-    PositionDto createPositionDtoFromPosition(Position position);
+    Position add(PositionDto positionDto) throws PositionExistException;
 
-    void deletePosition(UUID id);
+    Position update(PositionDto positionDto) throws PositionExistException;
 
+    void delete(UUID id);
+
+    boolean isPositionExist(Position position);
+
+    PositionDto convert(Position position);
 
 }

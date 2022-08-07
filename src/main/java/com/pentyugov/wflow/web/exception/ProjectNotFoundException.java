@@ -1,6 +1,6 @@
 package com.pentyugov.wflow.web.exception;
 
-public class ProjectNotFoundException extends Exception {
+public class ProjectNotFoundException extends RuntimeException {
     public ProjectNotFoundException(String message) {
         super(message);
     }

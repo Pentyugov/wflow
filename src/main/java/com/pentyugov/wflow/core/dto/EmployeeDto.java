@@ -1,14 +1,18 @@
 package com.pentyugov.wflow.core.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
 @Setter
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeDto extends BaseDto {
 

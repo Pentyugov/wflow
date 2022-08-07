@@ -1,15 +1,13 @@
 package com.pentyugov.wflow.core.service.impl;
 
 import com.pentyugov.wflow.core.domain.entity.Note;
-import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.dto.NoteDto;
 import com.pentyugov.wflow.core.repository.NoteRepository;
 import com.pentyugov.wflow.core.service.NoteService;
+import com.pentyugov.wflow.core.service.UserSessionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,53 +19,52 @@ import java.util.UUID;
 public class NoteServiceImpl extends AbstractService implements NoteService {
 
     private final NoteRepository noteRepository;
+    private final UserSessionService userSessionService;
 
-    public List<NoteDto> getNotesByUser(UUID userId) {
-        List<NoteDto> result = new ArrayList<>();
-        noteRepository.findAllByUser(userId).forEach(note -> result.add(createNoteDtoFromNote(note)));
-        return result;
+    @Override
+    public List<Note> getForUser(UUID userId) {
+        return noteRepository.findAllByUser(userId);
     }
 
-    public Note createNewNote(NoteDto noteDto, User user) {
-        Note note = createNoteFromNoteDto(noteDto, user);
+    @Override
+    public Note add(NoteDto noteDto) {
+        Note note = convert(noteDto);
         return noteRepository.save(note);
     }
 
-    public Note updateNote(NoteDto noteDto) {
-        Note note = noteRepository.findById(noteDto.getId()).orElseThrow(null);
-        if (note != null) {
-            note.setCategory(noteDto.getCategory());
-            note.setDescription(noteDto.getDescription());
-            note.setTitle(noteDto.getTitle());
-            note.setColor(noteDto.getColor());
-            return noteRepository.save(note);
-        }
-        return null;
+    @Override
+    public Note update(NoteDto noteDto) {
+        Note note = convert(noteDto);
+        return noteRepository.save(note);
     }
 
-    public void deleteNote(UUID id) {
+    @Override
+    public void delete(UUID id) {
         noteRepository.delete(id);
     }
 
-    public NoteDto createNoteDtoFromNote(Note note) {
-        NoteDto noteDto = new NoteDto();
-        noteDto.setId(note.getId());
-        noteDto.setCategory(note.getCategory());
-        noteDto.setTitle(note.getTitle());
-        noteDto.setDescription(note.getDescription());
-        noteDto.setColor(note.getColor());
-        noteDto.setDate(Date.from(note.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()));
-        return noteDto;
-    }
-
-    public Note createNoteFromNoteDto(NoteDto noteDto, User user) {
-        Note note = new Note();
+    @Override
+    public Note convert(NoteDto noteDto) {
+        Note note = noteRepository.findById(noteDto.getId()).orElse(new Note());
         note.setId(noteDto.getId());
         note.setCategory(noteDto.getCategory());
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
         note.setColor(noteDto.getColor());
-        note.setUser(user);
+        note.setUser(userSessionService.getCurrentUser());
         return note;
     }
+
+    @Override
+    public NoteDto convert(Note note) {
+        return NoteDto.builder()
+                .id(note.getId())
+                .category(note.getCategory())
+                .title(note.getTitle())
+                .description(note.getDescription())
+                .color(note.getColor())
+                .date(Date.from(note.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()))
+                .build();
+    }
+
 }

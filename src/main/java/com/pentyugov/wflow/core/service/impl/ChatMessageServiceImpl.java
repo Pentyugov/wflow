@@ -34,39 +34,36 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
     }
 
     @Override
-    public ChatMessage updateMessage(ChatMessageDto chatMessageDto) throws UserNotFoundException {
-        ChatMessage chatMessage = entityManager.merge(createChatMessageFromProxy(chatMessageDto));
+    public ChatMessage update(ChatMessageDto chatMessageDto) throws UserNotFoundException {
+        ChatMessage chatMessage = entityManager.merge(convert(chatMessageDto));
         entityManager.flush();
         return chatMessage;
     }
 
     @Override
-    public ChatMessage createChatMessageFromProxy(ChatMessageDto chatMessageDto) throws UserNotFoundException {
-        ChatMessage chatMessage = new ChatMessage();
-        if (chatMessageDto.getId() != null) {
-            chatMessage = entityManager.find(ChatMessage.class, chatMessageDto.getId());
-        }
+    public ChatMessage convert(ChatMessageDto chatMessageDto) throws UserNotFoundException {
+        ChatMessage chatMessage = chatRepository.findById(chatMessageDto.getId()).orElse(new ChatMessage());
         chatMessage.setChatId(chatMessageDto.getChatId());
         chatMessage.setContent(chatMessageDto.getContent());
         chatMessage.setStatus(chatMessageDto.getStatus());
-        chatMessage.setSender(userService.getUserById(UUID.fromString(chatMessageDto.getSenderId())));
-        chatMessage.setRecipient(userService.getUserById(UUID.fromString(chatMessageDto.getRecipientId())));
+        chatMessage.setSender(userService.getById(UUID.fromString(chatMessageDto.getSenderId())));
+        chatMessage.setRecipient(userService.getById(UUID.fromString(chatMessageDto.getRecipientId())));
         return chatMessage;
     }
 
     @Override
-    public ChatMessageDto createProxyFromChatMessage(ChatMessage chatMessage) {
-        ChatMessageDto chatMessageDto = new ChatMessageDto();
-        chatMessageDto.setId(chatMessage.getId());
-        chatMessageDto.setContent(chatMessage.getContent());
-        chatMessageDto.setStatus(chatMessage.getStatus());
-        chatMessageDto.setChatId(chatMessage.getChatId());
-        chatMessageDto.setCreateDate(Date.from(chatMessage.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()));
-        chatMessageDto.setSenderId(chatMessage.getSender().getId().toString());
-        chatMessageDto.setSender(userService.createUserDtoFromUser(chatMessage.getSender()));
-        chatMessageDto.setRecipientId(chatMessage.getRecipient().getId().toString());
-        chatMessageDto.setRecipient(userService.createUserDtoFromUser(chatMessage.getRecipient()));
-        return chatMessageDto;
+    public ChatMessageDto convert(ChatMessage chatMessage) {
+        return ChatMessageDto.builder()
+                .id(chatMessage.getId())
+                .content(chatMessage.getContent())
+                .status(chatMessage.getStatus())
+                .chatId(chatMessage.getChatId())
+                .createDate(Date.from(chatMessage.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()))
+                .senderId(chatMessage.getSender().getId().toString())
+                .sender(userService.convert(chatMessage.getSender()))
+                .recipientId(chatMessage.getRecipient().getId().toString())
+                .recipient(userService.convert(chatMessage.getRecipient()))
+                .build();
     }
 
     @Override
@@ -91,7 +88,7 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
     public List<ChatMessageDto> getChatMessagesForUserWithStatus(UUID userId, int status) {
         return  chatRepository.findMessagesForUserByStatus(userId, status)
                 .stream()
-                .map(this::createProxyFromChatMessage)
+                .map(this::convert)
                 .collect(Collectors.toList());
     }
 
@@ -99,7 +96,7 @@ public class ChatMessageServiceImpl extends AbstractService implements ChatMessa
     public List<ChatMessageDto> getNewMessagesForUser(UUID userId) {
         return chatRepository.findNewMessagesForUser(userId, ChatMessage.READ)
                 .stream()
-                .map(this::createProxyFromChatMessage)
+                .map(this::convert)
                 .collect(Collectors.toList());
     }
 

@@ -32,7 +32,7 @@ public class JwtTokenProvider {
 
     public String generateToken(Authentication authentication) throws UserNotFoundException {
         User user = (User) authentication.getPrincipal();
-        user = userService.getUserById(user.getId());
+        user = userService.getById(user.getId());
         final String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));

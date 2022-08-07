@@ -12,26 +12,28 @@ public interface EmployeeService {
 
     String NAME = "wflow$EmployeeService";
 
-    List<Employee> getAllEmployees();
+    List<Employee> getAll();
 
-    Employee getEmployeeById(UUID id) throws EmployeeNotFoundException;
+    Employee getById(UUID id) throws EmployeeNotFoundException;
 
-    Employee addNewEmployee(EmployeeDto employeeDto) throws PositionNotFoundException, UserNotFoundException,
+    Employee add(EmployeeDto employeeDto) throws PositionNotFoundException, UserNotFoundException,
             EmployeeExistException, ValidationException, DepartmentNotFoundException;
 
-    Employee updateEmployee(EmployeeDto employeeDto) throws PositionNotFoundException, UserNotFoundException,
+    Employee update(EmployeeDto employeeDto) throws PositionNotFoundException, UserNotFoundException,
             DepartmentNotFoundException, ValidationException, EmployeeExistException;
+
+    void delete(UUID id);
+
+    List<Employee> getByDepartment(UUID departmentId);
 
     void updateAll(List<EmployeeDto> employeeDtos) throws PositionNotFoundException, UserNotFoundException,
             DepartmentNotFoundException;
 
-    Employee createEmployeeFromDto(EmployeeDto employeeDto) throws PositionNotFoundException, DepartmentNotFoundException,
+    Employee convert(EmployeeDto employeeDto) throws PositionNotFoundException, DepartmentNotFoundException,
             UserNotFoundException;
 
-    EmployeeDto createEmployeeDtoFromEmployee(Employee employee);
+    EmployeeDto convert(Employee employee);
 
-    List<Employee> getEmployeesByDepartment(UUID departmentId);
 
-    void deleteEmployee(UUID id);
 
 }

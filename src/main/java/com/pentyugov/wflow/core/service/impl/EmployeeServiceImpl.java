@@ -31,12 +31,12 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
     private final ModelMapper modelMapper;
     private final UserSessionService userSessionService;
 
-    public List<Employee> getAllEmployees() {
+    public List<Employee> getAll() {
         return employeeRepository.findAll();
     }
 
     @Override
-    public Employee getEmployeeById(UUID id) throws EmployeeNotFoundException {
+    public Employee getById(UUID id) throws EmployeeNotFoundException {
         return employeeRepository.findById(id).orElseThrow(() ->
                 new EmployeeNotFoundException(getMessage(
                         "exception.employee.not.found",
@@ -47,23 +47,28 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
     }
 
     @Override
-    public Employee addNewEmployee(EmployeeDto employeeDto)
+    public Employee add(EmployeeDto employeeDto)
             throws PositionNotFoundException, UserNotFoundException, EmployeeExistException,
             ValidationException, DepartmentNotFoundException {
 
-        Employee employee = createEmployeeFromDto(employeeDto);
+        Employee employee = convert(employeeDto);
         validateEmployee(employee, false, getLocale(userSessionService.getCurrentUser()));
         return employeeRepository.save(employee);
     }
 
     @Override
-    public Employee updateEmployee(EmployeeDto employeeDto)
+    public Employee update(EmployeeDto employeeDto)
             throws PositionNotFoundException, UserNotFoundException, DepartmentNotFoundException,
             ValidationException, EmployeeExistException {
 
-        Employee employee = createEmployeeFromDto(employeeDto);
+        Employee employee = convert(employeeDto);
         validateEmployee(employee, true, getLocale(userSessionService.getCurrentUser()));
         return employeeRepository.save(employee);
+    }
+
+    @Override
+    public void delete(UUID id) {
+        employeeRepository.delete(id);
     }
 
     @Override
@@ -71,27 +76,19 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
             throws PositionNotFoundException, UserNotFoundException, DepartmentNotFoundException {
 
         for (EmployeeDto employeeDto : employeeDtos) {
-            Employee employee = createEmployeeFromDto(employeeDto);
+            Employee employee = convert(employeeDto);
             if (!ObjectUtils.isEmpty(employeeDto.getDepartment())) {
-                employee.setDepartment(departmentService.getDepartmentById(employeeDto.getDepartment().getId()));
+                employee.setDepartment(departmentService.getById(employeeDto.getDepartment().getId()));
             }
             employeeRepository.save(employee);
         }
     }
 
     @Override
-    public Employee createEmployeeFromDto(EmployeeDto employeeDto)
+    public Employee convert(EmployeeDto employeeDto)
             throws PositionNotFoundException, DepartmentNotFoundException, UserNotFoundException {
 
-        Employee employee = null;
-        if (!ObjectUtils.isEmpty(employeeDto.getId())) {
-            employee = employeeRepository.getById(employeeDto.getId());
-        }
-
-        if (ObjectUtils.isEmpty(employee)) {
-            employee = new Employee();
-            employee.setId(employeeDto.getId());
-        }
+        Employee employee = employeeRepository.findById(employeeDto.getId()).orElse(new Employee());
         employee.setFirstName(employeeDto.getFirstName());
         employee.setLastName(employeeDto.getLastName());
         employee.setMiddleName(employeeDto.getMiddleName());
@@ -107,32 +104,32 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
             employee.setPosition(positionService.getById(employeeDto.getPosition().getId()));
         }
         if (!ObjectUtils.isEmpty(employeeDto.getDepartment())) {
-            employee.setDepartment(departmentService.getDepartmentById(employeeDto.getDepartment().getId()));
+            employee.setDepartment(departmentService.getById(employeeDto.getDepartment().getId()));
         } else {
             employee.setDepartment(null);
         }
         if (!ObjectUtils.isEmpty(employeeDto.getUser())) {
-            employee.setUser(userService.getUserById(employeeDto.getUser().getId()));
+            employee.setUser(userService.getById(employeeDto.getUser().getId()));
         }
 
         return employee;
     }
 
     @Override
-    public EmployeeDto createEmployeeDtoFromEmployee(Employee employee) {
+    public EmployeeDto convert(Employee employee) {
         EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
         if (!ObjectUtils.isEmpty(employee.getDepartment())) {
-            employeeDto.setDepartment(departmentService.createDepartmentDtoFromDepartment(employee.getDepartment()));
+            employeeDto.setDepartment(departmentService.convert(employee.getDepartment()));
         }
         if (!ObjectUtils.isEmpty(employee.getUser())) {
-            employeeDto.setUser(userService.createUserDtoFromUser(employee.getUser()));
+            employeeDto.setUser(userService.convert(employee.getUser()));
         }
 
         return employeeDto;
     }
 
     @Override
-    public List<Employee> getEmployeesByDepartment(UUID departmentId) {
+    public List<Employee> getByDepartment(UUID departmentId) {
         return employeeRepository.findByEmployeesDepartment(departmentId);
     }
 
@@ -242,9 +239,5 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
     private Locale getLocale(User user) {
         UserSettings userSettings = this.userSettingsService.getUserSettings(user);
         return new Locale(userSettings.getLocale());
-    }
-
-    public void deleteEmployee(UUID id) {
-        employeeRepository.delete(id);
     }
 }

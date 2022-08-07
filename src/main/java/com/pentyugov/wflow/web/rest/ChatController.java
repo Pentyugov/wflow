@@ -34,13 +34,13 @@ public class ChatController extends AbstractController {
 
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessageDto chatMessageDto) throws UserNotFoundException {
-        ChatMessage chatMessage = chatMessageService.createChatMessageFromProxy(chatMessageDto);
+        ChatMessage chatMessage = chatMessageService.convert(chatMessageDto);
 
         Optional<String> chatId = chatRoomService
                 .getChatId(chatMessage.getSender().getId(), chatMessage.getRecipient().getId(), true);
         chatMessage.setChatId(chatId.orElse(null));
         ChatMessage saved = chatMessageService.save(chatMessage);
-        ChatMessageDto proxy = chatMessageService.createProxyFromChatMessage(saved);
+        ChatMessageDto proxy = chatMessageService.convert(saved);
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipient().getId().toString(),
                 CHAT_MESSAGES_DESTINATION,
@@ -51,8 +51,8 @@ public class ChatController extends AbstractController {
     @MessageMapping("/chat/update-message")
     @Transactional
     public void updateMessage(@Payload ChatMessageDto chatMessageDto) throws UserNotFoundException {
-        ChatMessage chatMessage = chatMessageService.updateMessage(chatMessageDto);
-        chatMessageDto = chatMessageService.createProxyFromChatMessage(chatMessage);
+        ChatMessage chatMessage = chatMessageService.update(chatMessageDto);
+        chatMessageDto = chatMessageService.convert(chatMessage);
         updateNewMessagesCount(chatMessageDto);
     }
 

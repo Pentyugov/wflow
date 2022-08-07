@@ -1,0 +1,2 @@
+mvn liquibase:rollback "-Dliquibase.rollbackCount=1"
+mvn liquibase:rollback "-Dliquibase.rollbackTag=db.v.1.0"

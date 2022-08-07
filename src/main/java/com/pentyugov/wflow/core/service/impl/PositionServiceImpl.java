@@ -21,12 +21,18 @@ public class PositionServiceImpl extends AbstractService implements PositionServ
     private final ModelMapper modelMapper;
 
     @Override
-    public List<Position> getAllPositions() {
+    public List<Position> getAll() {
         return positionRepository.findAll();
     }
 
     @Override
-    public Position createNewPosition(PositionDto positionDto) throws PositionExistException {
+    public Position getById(UUID id) throws PositionNotFoundException {
+        return positionRepository.findById(id)
+                .orElseThrow(() -> new PositionNotFoundException(getMessage("exception.position.not.found", "id", id.toString())));
+    }
+
+    @Override
+    public Position add(PositionDto positionDto) throws PositionExistException {
         Position position = new Position();
         position.setName(positionDto.getName());
         position.setCode(positionDto.getCode());
@@ -37,7 +43,7 @@ public class PositionServiceImpl extends AbstractService implements PositionServ
     }
 
     @Override
-    public Position updatePosition(PositionDto positionDto) throws PositionExistException {
+    public Position update(PositionDto positionDto) throws PositionExistException {
         Position position = positionRepository.getById(positionDto.getId());
         position.setName(positionDto.getName());
         position.setCode(positionDto.getCode());
@@ -45,6 +51,11 @@ public class PositionServiceImpl extends AbstractService implements PositionServ
             return positionRepository.save(position);
         }
         throw new PositionExistException(getMessage("exception.position.exist", null));
+    }
+
+    @Override
+    public void delete(UUID id) {
+        positionRepository.delete(id);
     }
 
     @Override
@@ -56,18 +67,8 @@ public class PositionServiceImpl extends AbstractService implements PositionServ
     }
 
     @Override
-    public Position getById(UUID id) throws PositionNotFoundException {
-        return positionRepository.findById(id)
-                .orElseThrow(() -> new PositionNotFoundException(getMessage("exception.position.not.found", "id", id.toString())));
-    }
-
-    @Override
-    public PositionDto createPositionDtoFromPosition(Position position) {
+    public PositionDto convert(Position position) {
         return modelMapper.map(position, PositionDto.class);
     }
 
-    @Override
-    public void deletePosition(UUID id) {
-        positionRepository.delete(id);
-    }
 }

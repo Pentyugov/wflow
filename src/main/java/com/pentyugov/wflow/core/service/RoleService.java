@@ -12,21 +12,22 @@ public interface RoleService {
 
     String NAME = "wflow$RoleService";
 
-    List<Role> getAllRoles();
+    List<Role> getAll();
 
-    Role createNewRole(RoleDto roleDto);
+    Role getById(UUID id);
 
-    Role updateRole(RoleDto roleDto);
+    Role add(RoleDto roleDto);
 
-    Role createRoleFromProxy(RoleDto roleDto);
+    Role update(RoleDto roleDto);
 
-    RoleDto createProxyFromRole(Role role);
+    boolean delete(Role role);
 
-    PermissionDto createProxyFromPermission(Permission permission);
+    Role convert(RoleDto roleDto);
 
-    Role getRoleByName(String name);
+    RoleDto convert(Role role);
 
-    Role getRoleById(UUID id);
+    PermissionDto convertPermission(Permission permission);
 
-    boolean deleteRole(Role role);
+    Role getByName(String name);
+
 }

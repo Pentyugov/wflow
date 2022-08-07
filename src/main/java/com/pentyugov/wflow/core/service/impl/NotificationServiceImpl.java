@@ -56,35 +56,35 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
     }
 
     @Override
-    public Notification createNewNotification(NotificationDto notificationDto) throws UserNotFoundException {
-        Notification notification = createNotificationFromDto(notificationDto);
+    public Notification add(NotificationDto notificationDto) throws UserNotFoundException {
+        Notification notification = convert(notificationDto);
         return notificationRepository.save(notification);
     }
 
     @Override
-    public Notification createNotificationFromDto(NotificationDto notificationDto) throws UserNotFoundException {
+    public Notification convert(NotificationDto notificationDto) throws UserNotFoundException {
         Notification notification = new Notification();
         notification.setTitle(notificationDto.getTitle());
         notification.setMessage(notificationDto.getMessage());
         notification.setType(notificationDto.getType());
         notification.setRead(notificationDto.getRead());
-        notification.setReceiver(userService.getUserById(notificationDto.getReceiverId()));
+        notification.setReceiver(userService.getById(notificationDto.getReceiverId()));
         return notification;
     }
 
     @Override
-    public NotificationDto createNotificationDtoFromNotification(Notification notification) {
-        NotificationDto notificationDto = new NotificationDto();
-        notificationDto.setId(notification.getId());
-        notificationDto.setTitle(notification.getTitle());
-        notificationDto.setMessage(notification.getMessage());
-        notificationDto.setType(notification.getType());
-        notificationDto.setAccessoryType(notification.getAccessoryType());
-        notificationDto.setRead(notification.getRead());
-        notificationDto.setReceiverId(notification.getReceiver().getId());
-        notificationDto.setCardId(notification.getCard() != null ? notification.getCard().getId() : null);
-        notificationDto.setCreateDate(Date.from(notification.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()));
-        return notificationDto;
+    public NotificationDto convert(Notification notification) {
+        return NotificationDto.builder()
+                .id(notification.getId())
+                .title(notification.getTitle())
+                .message(notification.getMessage())
+                .type(notification.getType())
+                .accessoryType(notification.getAccessoryType())
+                .read(notification.getRead())
+                .receiverId(notification.getReceiver().getId())
+                .cardId(notification.getCard() != null ? notification.getCard().getId() : null)
+                .createDate(Date.from(notification.getCreateDate().atZone(ZoneId.systemDefault()).toInstant()))
+                .build();
     }
 
     @Override
@@ -134,7 +134,7 @@ public class NotificationServiceImpl extends AbstractService implements Notifica
     public void createAndSendNotification(User user, String title, String message, int type, int accessoryType, Card card) {
         Notification notification = createNotification(title, message, type, accessoryType, user, card);
         saveNotification(notification);
-        sendNotificationWithWs(createNotificationDtoFromNotification(notification), notification.getReceiver().getId());
+        sendNotificationWithWs(convert(notification), notification.getReceiver().getId());
     }
 
 }

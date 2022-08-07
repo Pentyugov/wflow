@@ -33,7 +33,7 @@ public class ProjectController  extends ExceptionHandling {
     @GetMapping
     public ResponseEntity<Object> getAllProjects() {
         List<ProjectDto> projects =
-            projectService.getAllProjects().stream().map(projectService::createProjectDto).collect(Collectors.toList());
+            projectService.getAll().stream().map(projectService::convert).collect(Collectors.toList());
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 
@@ -50,21 +50,21 @@ public class ProjectController  extends ExceptionHandling {
 
     @PostMapping
     public ResponseEntity<Object> addProject(@RequestBody ProjectDto projectDto) throws UserNotFoundException, ContractorNotFoundException {
-        Project project = projectService.createNewProject(projectDto);
-        return new ResponseEntity<>(projectService.createProjectDto(project), HttpStatus.OK);
+        Project project = projectService.add(projectDto);
+        return new ResponseEntity<>(projectService.convert(project), HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<Object> updateProject(@RequestBody ProjectDto projectDto)
             throws UserNotFoundException, ContractorNotFoundException, ProjectNotFoundException {
 
-        Project project = projectService.updateProject(projectDto);
-        return new ResponseEntity<>(projectService.createProjectDto(project), HttpStatus.OK);
+        Project project = projectService.update(projectDto);
+        return new ResponseEntity<>(projectService.convert(project), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> deleteProject(@PathVariable String id) {
-        projectService.deleteProject(UUID.fromString(id));
+        projectService.delete(UUID.fromString(id));
         String message = String.format("Project with id: %s was deleted", id);
         return response(message);
     }

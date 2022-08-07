@@ -1,16 +1,16 @@
 package com.pentyugov.wflow.core.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public class CalendarEventDto extends BaseDto {
 
     private int type;

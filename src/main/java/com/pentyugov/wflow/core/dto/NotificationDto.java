@@ -1,9 +1,8 @@
 package com.pentyugov.wflow.core.dto;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 import java.util.UUID;
@@ -11,6 +10,8 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
 public class NotificationDto extends BaseDto {
 

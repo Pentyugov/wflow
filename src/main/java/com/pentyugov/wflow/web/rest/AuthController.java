@@ -53,7 +53,7 @@ public class AuthController extends AbstractController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = Security.TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication);
-        UserDto userDto = userService.createUserDtoFromUser(userService.getUserByUsername(loginRequest.getUsername()));
+        UserDto userDto = userService.convert(userService.getByUsername(loginRequest.getUsername()));
         return new ResponseEntity<>(userDto, getJwtHeader(jwt), HttpStatus.OK);
     }
 
@@ -66,8 +66,8 @@ public class AuthController extends AbstractController {
             return errors;
         }
 
-        User user = userService.createUser(signUpRequest);
-        UserDto userDto = userService.createUserDtoFromUser(user);
+        User user = userService.add(signUpRequest);
+        UserDto userDto = userService.convert(user);
         return ResponseEntity.ok(userDto);
 
     }

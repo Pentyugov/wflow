@@ -27,29 +27,29 @@ public class RoleController extends AbstractController {
     @GetMapping
     public ResponseEntity<Object> getAllPositions() {
         List<RoleDto> roles = new ArrayList<>();
-        roleService.getAllRoles().forEach(role ->
-                roles.add(roleService.createProxyFromRole(role)));
+        roleService.getAll().forEach(role ->
+                roles.add(roleService.convert(role)));
         return new ResponseEntity<>(roles, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Object> addNewRole(@RequestBody RoleDto roleDto) {
-        Role role = roleService.createNewRole(roleDto);
-        return new ResponseEntity<>(roleService.createProxyFromRole(role), HttpStatus.OK);
+        Role role = roleService.add(roleDto);
+        return new ResponseEntity<>(roleService.convert(role), HttpStatus.OK);
     }
 
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> updateRole(@RequestBody RoleDto roleDto) {
-        Role role = roleService.updateRole(roleDto);
-        return new ResponseEntity<>(roleService.createProxyFromRole(role), HttpStatus.OK);
+        Role role = roleService.update(roleDto);
+        return new ResponseEntity<>(roleService.convert(role), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('DELETE')")
     public ResponseEntity<HttpResponse> deleteRole(@PathVariable String id) throws ValidationException {
-        Role role = roleService.getRoleById(UUID.fromString(id));
-        if (roleService.deleteRole(role)) {
+        Role role = roleService.getById(UUID.fromString(id));
+        if (roleService.delete(role)) {
             String message = "Role was deleted";
             return response(HttpStatus.OK, message);
         } else {

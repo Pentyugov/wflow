@@ -17,11 +17,11 @@ public interface ChatMessageService {
 
     ChatMessage save(ChatMessage chatMessage);
 
-    ChatMessage updateMessage(ChatMessageDto chatMessageDto) throws UserNotFoundException;
+    ChatMessage update(ChatMessageDto chatMessageDto) throws UserNotFoundException;
 
-    ChatMessage createChatMessageFromProxy(ChatMessageDto chatMessageDto) throws UserNotFoundException;
+    ChatMessage convert(ChatMessageDto chatMessageDto) throws UserNotFoundException;
 
-    ChatMessageDto createProxyFromChatMessage(ChatMessage chatMessage);
+    ChatMessageDto convert(ChatMessage chatMessage);
 
     List<ChatMessage> getChatMessagesByChatId(String chatId);
 

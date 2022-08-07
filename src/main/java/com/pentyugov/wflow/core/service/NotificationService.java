@@ -25,11 +25,11 @@ public interface NotificationService {
 
     List<Notification> getNotificationsByReceiverId(UUID receiverId);
 
-    Notification createNewNotification(NotificationDto notificationDto) throws UserNotFoundException;
+    Notification add(NotificationDto notificationDto) throws UserNotFoundException;
 
-    Notification createNotificationFromDto(NotificationDto notificationDto) throws UserNotFoundException;
+    Notification convert(NotificationDto notificationDto) throws UserNotFoundException;
 
-    NotificationDto createNotificationDtoFromNotification(Notification notification);
+    NotificationDto convert(Notification notification);
 
     void sendTelBotTaskNotification(User user, Task task);
 

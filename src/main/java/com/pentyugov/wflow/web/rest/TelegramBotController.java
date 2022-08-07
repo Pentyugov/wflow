@@ -90,7 +90,7 @@ public class TelegramBotController {
     @GetMapping("/tasks/{id}")
     @Operation(summary = "Get task by id", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<TelegramTaskDto> getTask(@PathVariable String id) throws TaskNotFoundException {
-        Task task = taskService.getTaskById(UUID.fromString(id));
+        Task task = taskService.getById(UUID.fromString(id));
         return new ResponseEntity<>(taskService.createTelegramDto(task), HttpStatus.OK);
     }
 

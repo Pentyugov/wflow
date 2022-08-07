@@ -26,26 +26,26 @@ public class PositionController extends AbstractController {
     @GetMapping
     public ResponseEntity<Object> getAll() {
         List<PositionDto> positions = new ArrayList<>();
-        positionService.getAllPositions().forEach(position ->
-                positions.add(positionService.createPositionDtoFromPosition(position)));
+        positionService.getAll().forEach(position ->
+                positions.add(positionService.convert(position)));
         return new ResponseEntity<>(positions, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<PositionDto> add(@RequestBody PositionDto positionDto) throws PositionExistException {
-        Position position = positionService.createNewPosition(positionDto);
-        return new ResponseEntity<>(positionService.createPositionDtoFromPosition(position), HttpStatus.OK);
+        Position position = positionService.add(positionDto);
+        return new ResponseEntity<>(positionService.convert(position), HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<PositionDto> update(@RequestBody PositionDto positionDto) throws PositionExistException {
-        Position position = positionService.updatePosition(positionDto);
-        return new ResponseEntity<>(positionService.createPositionDtoFromPosition(position), HttpStatus.OK);
+        Position position = positionService.update(positionDto);
+        return new ResponseEntity<>(positionService.convert(position), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
-        positionService.deletePosition(UUID.fromString(id));
+        positionService.delete(UUID.fromString(id));
         String message = String.format("Position with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
     }

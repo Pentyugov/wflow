@@ -13,19 +13,19 @@ public interface CalendarEventService {
 
     List<CalendarEventDto> getAllForCurrentUser();
 
-    CalendarEventDto getCalendarEventById(UUID id);
+    CalendarEventDto getById(UUID id);
 
-    CalendarEventDto addCalendarEvent(CalendarEventDto calendarEventDto);
+    CalendarEventDto add(CalendarEventDto calendarEventDto);
 
-    void addCalendarEventForCard(Card card);
+    void addForCard(Card card);
 
-    CalendarEventDto updateCalendarEvent(CalendarEventDto calendarEventDto);
+    CalendarEventDto update(CalendarEventDto calendarEventDto);
 
-    CalendarEvent createEventFromDto(CalendarEventDto calendarEventDto);
+    CalendarEvent convert(CalendarEventDto calendarEventDto);
 
-    CalendarEventDto createDtoFromEvent(CalendarEvent calendarEvent);
+    CalendarEventDto convert(CalendarEvent calendarEvent);
 
-    void deleteCalendarEventByCard(Card card);
+    void delete(UUID id);
 
-    void deleteCalendarEvent(UUID id);
+    void deleteByCard(Card card);
 }

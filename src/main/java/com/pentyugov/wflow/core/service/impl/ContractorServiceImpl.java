@@ -25,54 +25,44 @@ public class ContractorServiceImpl extends AbstractService implements Contractor
     private final ValidationService validationService;
 
     @Override
-    public List<Contractor> getAllContractors() {
+    public List<Contractor> getAll() {
         return contractorRepository.findAll();
     }
 
     @Override
-    public ContractorDto createContractorDto(Contractor contractor) {
-        return modelMapper.map(contractor, ContractorDto.class);
-    }
-
-    @Override
-    public ContractorDto addNewContractor(ContractorDto contractorDto) throws ValidationException {
-        Contractor contractor = modelMapper.map(contractorDto, Contractor.class);
-        validateContractor(contractor);
-        contractorRepository.save(contractor);
-        return createContractorDto(contractor);
-    }
-
-    @Override
-    public ContractorDto updateContractor(ContractorDto contractorDto) throws ValidationException {
-        Contractor contractor = createContractorFromDto(contractorDto);
-        validateContractor(contractor);
-        contractorRepository.save(contractor);
-        return createContractorDto(contractor);
-    }
-
-    @Override
-    public Contractor getContractorById(UUID id) throws ContractorNotFoundException {
+    public Contractor getById(UUID id) throws ContractorNotFoundException {
         return contractorRepository.findById(id).orElseThrow(
             () -> new ContractorNotFoundException(getMessage("exception.contractor.with.id.not.found", id)));
     }
 
     @Override
-    public void deleteContractor(UUID id) {
+    public ContractorDto add(ContractorDto contractorDto) throws ValidationException {
+        Contractor contractor = modelMapper.map(contractorDto, Contractor.class);
+        validateContractor(contractor);
+        contractorRepository.save(contractor);
+        return convert(contractor);
+    }
+
+    @Override
+    public ContractorDto update(ContractorDto contractorDto) throws ValidationException {
+        Contractor contractor = convert(contractorDto);
+        validateContractor(contractor);
+        contractorRepository.save(contractor);
+        return convert(contractor);
+    }
+
+    @Override
+    public void delete(UUID id) {
         contractorRepository.delete(id);
     }
 
-    private void validateContractor(Contractor contractor) throws ValidationException {
-        if (StringUtils.hasText(contractor.getPhone())) {
-            String parsed = validationService.parsePhoneNumber(contractor.getPhone());
-            if (ObjectUtils.isEmpty(parsed)) {
-                throw new ValidationException("Invalid phone number");
-            } else {
-                contractor.setPhone("+" + parsed);
-            }
-        }
+    @Override
+    public ContractorDto convert(Contractor contractor) {
+        return modelMapper.map(contractor, ContractorDto.class);
     }
 
-    private Contractor createContractorFromDto(ContractorDto contractorDto) {
+    @Override
+    public Contractor convert(ContractorDto contractorDto) {
         Contractor contractor = contractorRepository.findById(contractorDto.getId()).orElse(new Contractor());
 
         contractor.setName(contractorDto.getName());
@@ -95,5 +85,15 @@ public class ContractorServiceImpl extends AbstractService implements Contractor
         return contractor;
     }
 
+    private void validateContractor(Contractor contractor) throws ValidationException {
+        if (StringUtils.hasText(contractor.getPhone())) {
+            String parsed = validationService.parsePhoneNumber(contractor.getPhone());
+            if (ObjectUtils.isEmpty(parsed)) {
+                throw new ValidationException("Invalid phone number");
+            } else {
+                contractor.setPhone("+" + parsed);
+            }
+        }
+    }
 
 }

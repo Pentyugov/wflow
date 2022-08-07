@@ -18,7 +18,7 @@ public interface EmailService {
 
     void saveSysMail(SysMail sysMail);
 
-    void  resendEmails();
+    void resendEmails();
 
     void sendRegisterSuccessMail(User user, String rawPassword);
 

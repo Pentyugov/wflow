@@ -41,9 +41,9 @@ public class UserController extends AbstractController {
     @GetMapping
     @Operation(summary = "Get all users", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getAll() {
-        List<UserDto> userDtos = userService.getAllUsers()
+        List<UserDto> userDtos = userService.getAll()
                 .stream()
-                .map(userService::createUserDtoFromUser)
+                .map(userService::convert)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
@@ -51,7 +51,7 @@ public class UserController extends AbstractController {
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> getById(@PathVariable String id) throws UserNotFoundException {
-        UserDto userDto = userService.createUserDtoFromUser(userService.getUserById(UUID.fromString(id)));
+        UserDto userDto = userService.convert(userService.getById(UUID.fromString(id)));
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
@@ -60,7 +60,7 @@ public class UserController extends AbstractController {
     public ResponseEntity<Object> getAllWithRole(@PathVariable String roleName) {
         List<UserDto> userDtos = userService.getAllWithRole(roleName)
                 .stream()
-                .map(userService::createUserDtoFromUser)
+                .map(userService::convert)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
@@ -70,7 +70,7 @@ public class UserController extends AbstractController {
     public ResponseEntity<Object> getAllWithAnyRole(@RequestParam String roleNames) {
         List<UserDto> userDtos = userService.getAllWithAnyRole(roleNames)
                 .stream()
-                .map(userService::createUserDtoFromUser)
+                .map(userService::convert)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
@@ -80,7 +80,7 @@ public class UserController extends AbstractController {
     public ResponseEntity<Object> getUsersWithoutEmployee() {
         List<UserDto> userDtos = userService.getUsersWithoutEmployee()
                 .stream()
-                .map(userService::createUserDtoFromUser)
+                .map(userService::convert)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
@@ -100,8 +100,8 @@ public class UserController extends AbstractController {
 
         ObjectMapper mapper = new ObjectMapper();
         List<RoleDto> roleDtos = new ArrayList<>(Arrays.asList(mapper.readValue(roles, RoleDto[].class)));
-        UserDto userDto = userService.createUserDto(null, username, email, firstName, lastName, roleDtos, isActive, isNotLocked);
-        userService.addNewUser(userDto, profileImage);
+        UserDto userDto = userService.convert(null, username, email, firstName, lastName, roleDtos, isActive, isNotLocked);
+        userService.add(userDto, profileImage);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
@@ -112,14 +112,14 @@ public class UserController extends AbstractController {
             UserNotFoundException,
             UsernameIsEmptyException,
             EmailIsEmptyException {
-        return new ResponseEntity<>(userService.createUserDtoFromUser(userService.updateUser(userDto)), HttpStatus.OK);
+        return new ResponseEntity<>(userService.convert(userService.update(userDto)), HttpStatus.OK);
     }
 
     @PostMapping("/profile-image")
     @Operation(summary = "Update user profile image", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> updateUserProfileImage(@RequestParam String id,
                                                          @RequestParam String profileImageUrl) throws UserNotFoundException {
-        UserDto userDto = userService.createUserDtoFromUser(userService.updateProfileImage(UUID.fromString(id), profileImageUrl));
+        UserDto userDto = userService.convert(userService.updateProfileImage(UUID.fromString(id), profileImageUrl));
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
@@ -127,7 +127,7 @@ public class UserController extends AbstractController {
     @PreAuthorize("hasAuthority('DELETE')")
     @Operation(summary = "Delete user by ID", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
-        userService.deleteUser(UUID.fromString(id));
+        userService.delete(UUID.fromString(id));
         String message = String.format("User with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
     }
@@ -135,7 +135,7 @@ public class UserController extends AbstractController {
     @DeleteMapping("/profile-image/{id}")
     @Operation(summary = "Delete user profile image", security = @SecurityRequirement(name = BEARER))
     public ResponseEntity<Object> deleteProfileImage(@PathVariable String id) {
-        UserDto userDto = userService.createUserDtoFromUser(userService.deleteUserProfileImage(UUID.fromString(id)));
+        UserDto userDto = userService.convert(userService.deleteUserProfileImage(UUID.fromString(id)));
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 

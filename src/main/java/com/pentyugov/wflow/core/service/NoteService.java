@@ -13,15 +13,15 @@ public interface NoteService {
 
     String NAME = "wflow$NoteService";
 
-    List<NoteDto> getNotesByUser(UUID userId);
+    List<Note> getForUser(UUID userId);
 
-    Note createNewNote(NoteDto noteDto, User user);
+    Note add(NoteDto noteDto);
 
-    Note updateNote(NoteDto noteDto);
+    Note update(NoteDto noteDto);
 
-    void deleteNote(UUID id);
+    void delete(UUID id);
 
-    NoteDto createNoteDtoFromNote(Note note);
+    NoteDto convert(Note note);
 
-    Note createNoteFromNoteDto(NoteDto noteDto, User user);
+    Note convert(NoteDto noteDto);
 }

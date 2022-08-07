@@ -35,7 +35,7 @@ public class ChatMessagesController extends AbstractController {
         if (StringUtils.hasText(chatId)) {
             List<ChatMessageDto> result = new ArrayList<>();
             chatMessageService.getChatMessagesByChatId(chatId)
-                    .forEach(chatMessage -> result.add(chatMessageService.createProxyFromChatMessage(chatMessage)));
+                    .forEach(chatMessage -> result.add(chatMessageService.convert(chatMessage)));
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             return ResponseEntity.badRequest().build();
@@ -53,7 +53,7 @@ public class ChatMessagesController extends AbstractController {
             Page<ChatMessage> page = chatMessageService.getPageChatMessagesByChatId(chatRoom.getChatId(), Optional.of(0), Optional.empty());
             response.setTotalPages(page.getTotalPages());
             page.forEach(chatMessage ->
-                    messages.add(chatMessageService.createProxyFromChatMessage(chatMessage)));
+                    messages.add(chatMessageService.convert(chatMessage)));
             Collections.reverse(messages);
             response.setMessages(messages);
             result.put(chatRoom.getRecipient().getId().toString(), response);
@@ -69,7 +69,7 @@ public class ChatMessagesController extends AbstractController {
         List<ChatMessageDto> result = new ArrayList<>();
         Page<ChatMessage> chatPage = chatMessageService.getPageChatMessagesByChatId(chatId, page, sortBy);
         chatPage.getContent().forEach(message ->
-                result.add(chatMessageService.createProxyFromChatMessage(message)));
+                result.add(chatMessageService.convert(message)));
         Collections.reverse(result);
         return result;
     }
@@ -78,7 +78,7 @@ public class ChatMessagesController extends AbstractController {
     @GetMapping("/get-user-chat-status-map")
     public ResponseEntity<Object> getUserChatStatusMap() {
         Map<UUID, Integer> result = new HashMap<>();
-        userService.getAllUsers().forEach(user -> {
+        userService.getAll().forEach(user -> {
             if (userWsSessionService.isUserOnline(user.getId().toString())) {
                 result.put(user.getId(), 20);
             } else {

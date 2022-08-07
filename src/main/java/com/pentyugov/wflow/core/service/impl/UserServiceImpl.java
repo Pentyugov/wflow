@@ -46,7 +46,18 @@ public class UserServiceImpl extends AbstractService implements UserService {
     private final UserSessionService userSessionService;
 
     @Override
-    public User createUser(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User getById(UUID id) throws UserNotFoundException {
+        return userRepository.findById(id).orElseThrow(() ->
+                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.id.not.found", id.toString())));
+    }
+
+    @Override
+    public User add(SignUpRequest userIn) throws UsernameExistException, EmailExistException, UsernameIsEmptyException,
             EmailIsEmptyException {
 
         if (validateUsernameAndEmail(null, userIn.getUsername(), userIn.getEmail())) {
@@ -58,7 +69,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
             user.setLastName(userIn.getLastname());
             user.setActive(true);
             user.setNotLocked(true);
-            user.getRoles().add(roleService.getRoleByName(Role.USER));
+            user.getRoles().add(roleService.getByName(Role.USER));
             user.setProfileImageUrl(getTemporaryProfileImageUrl(user.getUsername()));
 
             LOG.info("Registering new USER {} : {}", user.getUsername(), user.getEmail());
@@ -72,11 +83,11 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public void addNewUser(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException,
+    public void add(UserDto userDto, String profileImage) throws UsernameExistException, EmailExistException,
             UsernameIsEmptyException, EmailIsEmptyException {
 
         validateUsernameAndEmail(null, userDto.getUsername(), userDto.getEmail());
-        User user = createUserFromDto(userDto);
+        User user = convert(userDto);
         String rawPassword = applicationService.generatePassword();
         user.setPassword(passwordEncoder.encode(rawPassword));
         LOG.info("Adding new USER {} : {}", user.getUsername(), user.getEmail());
@@ -101,12 +112,12 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public User updateUser(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException,
+    public User update(UserDto userDto) throws UsernameExistException, EmailExistException, UserNotFoundException,
             UsernameIsEmptyException, EmailIsEmptyException {
 
-        User currentUser = getUserById(userDto.getId());
+        User currentUser = getById(userDto.getId());
         validateUsernameAndEmail(currentUser, userDto.getUsername(), userDto.getEmail());
-        currentUser = updateUserFromDto(currentUser, userDto);
+        currentUser = update(currentUser, userDto);
 
         LOG.info("Updating USER {} : {}", currentUser.getUsername(), currentUser.getEmail());
 
@@ -139,18 +150,86 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public void updateUser(User user) {
+    public void update(User user) {
         userRepository.save(user);
     }
 
     @Override
-    public void deleteUser(UUID id) {
+    public User update(User currentUser, UserDto userDto) {
+        currentUser.setUsername(userDto.getUsername());
+        currentUser.setEmail(userDto.getEmail());
+        currentUser.setFirstName(userDto.getFirstName());
+        currentUser.setLastName(userDto.getLastName());
+        currentUser.setNotLocked(userDto.isNonLocked());
+        currentUser.setActive(userDto.isActive());
+
+        Set<Role> roles = new HashSet<>();
+        userDto.getRoles().forEach(roleDto -> roles.add(roleService.getById(roleDto.getId())));
+        if (CollectionUtils.isEmpty(roles)) {
+            roles.add(getStandardRole());
+        }
+        currentUser.setRoles(roles);
+
+        return currentUser;
+    }
+
+    @Override
+    public void delete(UUID id) {
         userRepository.delete(id);
     }
 
     @Override
+    public User getCurrentUser() {
+        return userSessionService.getCurrentUser();
+    }
+
+    @Override
+    public User getByEmail(String email) throws UserNotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.email.not.found", email)));
+    }
+
+    @Override
+    public User getByUsername(String username) throws UserNotFoundException {
+        return userRepository.findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.username.not.found", username)));
+    }
+
+    @Override
+    public List<User> getAllWithRole(String roleName) {
+        return userRepository.findAllByRole(roleName.toUpperCase());
+    }
+
+    @Override
+    public List<User> getAllWithAnyRole(String roleNames) {
+        List<String> names = new ArrayList<>();
+        for (String s : roleNames.split(";")) {
+            names.add("ROLE_" + s.toUpperCase());
+        }
+        return userRepository.findAllInAnyRole(names);
+    }
+
+    public List<User> getUsersWithEmployee() {
+        return userRepository.findWithEmployee().stream().collect(Collectors.toList());
+    }
+
+    public List<User> getUsersWithoutEmployee() {
+        List<UUID> ids = getUsersWithEmployee().stream().map(User::getId).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(ids)) {
+            return userRepository.findWithoutEmployee(ids);
+        }
+        return getAll();
+    }
+
+    @Override
+    public User getByTelUserId(Long telUserId) throws UserNotFoundException {
+        return userRepository.findUserByTelUserId(telUserId).orElseThrow(() ->
+                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.id.not.found", telUserId)));
+    }
+
+    @Override
     public void resetPassword(String email) throws UserNotFoundException {
-        User user = getUserByEmail(email);
+        User user = getByEmail(email);
         String rawPassword = applicationService.generatePassword();
         user.setPassword(passwordEncoder.encode(rawPassword));
         userRepository.save(user);
@@ -180,7 +259,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     @Override
     public User updateProfileImage(UUID id, String profileImageUrl) throws UserNotFoundException {
-        User user = getUserById(id);
+        User user = getById(id);
         if (StringUtils.hasText(profileImageUrl)) {
             if (StringUtils.hasText(user.getProfileImageUrl())
                     && user.getProfileImageUrl().startsWith(PROFILE_IMAGE_RESOURCE_HOST)) {
@@ -200,61 +279,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public User getCurrentUser() {
-        return userSessionService.getCurrentUser();
-    }
-
-    @Override
-    public User getUserById(UUID id) throws UserNotFoundException {
-        return userRepository.findById(id).orElseThrow(() ->
-                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.id.not.found", id.toString())));
-    }
-
-    @Override
-    public User getUserByEmail(String email) throws UserNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.email.not.found", email)));
-    }
-
-    @Override
-    public User getUserByUsername(String username) throws UserNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.username.not.found", username)));
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public List<User> getAllWithRole(String roleName) {
-        return userRepository.findAllByRole(roleName.toUpperCase());
-    }
-
-    @Override
-    public List<User> getAllWithAnyRole(String roleNames) {
-        List<String> names = new ArrayList<>();
-        for (String s : roleNames.split(";")) {
-            names.add("ROLE_" + s.toUpperCase());
-        }
-        return userRepository.findAllInAnyRole(names);
-    }
-
-    public List<User> getUsersWithEmployee() {
-        return userRepository.findWithEmployee().stream().collect(Collectors.toList());
-    }
-
-    public List<User> getUsersWithoutEmployee() {
-        List<UUID> ids = getUsersWithEmployee().stream().map(User::getId).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(ids)) {
-            return userRepository.findWithoutEmployee(ids);
-        }
-        return getAllUsers();
-    }
-
-    @Override
-    public User createUserFromDto(UserDto userDto) {
+    public User convert(UserDto userDto) {
         User user = new User();
         if (userDto.getId() != null) {
             user.setId(userDto.getId());
@@ -269,7 +294,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
         Set<Role> roles = new HashSet<>();
         userDto.getRoles().forEach(roleDto ->
-                roles.add(roleService.getRoleById(roleDto.getId())));
+                roles.add(roleService.getById(roleDto.getId())));
         if (CollectionUtils.isEmpty(roles)) {
             user.getRoles().add(getStandardRole());
         } else {
@@ -280,14 +305,14 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public UserDto createUserDto(UUID id,
-                                 String username,
-                                 String email,
-                                 String firstName,
-                                 String lastName,
-                                 List<RoleDto> roles,
-                                 String isActive,
-                                 String isNonLocked) {
+    public UserDto convert(UUID id,
+                           String username,
+                           String email,
+                           String firstName,
+                           String lastName,
+                           List<RoleDto> roles,
+                           String isActive,
+                           String isNonLocked) {
         UserDto userDto = new UserDto();
         userDto.setId(id);
         userDto.setUsername(username);
@@ -301,7 +326,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public UserDto createUserDtoFromUser(User user) {
+    public UserDto convert(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setUsername(user.getUsername());
@@ -316,33 +341,35 @@ public class UserServiceImpl extends AbstractService implements UserService {
         userDto.setProfileImage(user.getProfileImageUrl());
 
         List<RoleDto> roles = new ArrayList<>();
-        user.getRoles().forEach(role -> roles.add(roleService.createProxyFromRole(role)));
+        user.getRoles().forEach(role -> roles.add(roleService.convert(role)));
         userDto.setRoles(roles);
 
         return userDto;
     }
 
     @Override
-    public User updateUserFromDto(User currentUser, UserDto userDto) {
-        currentUser.setUsername(userDto.getUsername());
-        currentUser.setEmail(userDto.getEmail());
-        currentUser.setFirstName(userDto.getFirstName());
-        currentUser.setLastName(userDto.getLastName());
-        currentUser.setNotLocked(userDto.isNonLocked());
-        currentUser.setActive(userDto.isActive());
-
-        Set<Role> roles = new HashSet<>();
-        userDto.getRoles().forEach(roleDto -> roles.add(roleService.getRoleById(roleDto.getId())));
-        if (CollectionUtils.isEmpty(roles)) {
-            roles.add(getStandardRole());
+    public User deleteUserProfileImage(UUID id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (!ObjectUtils.isEmpty(user) && user.getProfileImageUrl().startsWith(PROFILE_IMAGE_RESOURCE_HOST)) {
+            String oldImage = user.getProfileImageUrl().split(PROFILE_IMAGE_RESOURCE_HOST)[1].replace("/", "");
+            try {
+                UUID oldImageId = UUID.fromString(oldImage);
+                imageService.deleteUserProfileImage(oldImageId);
+            } catch (IllegalArgumentException e) {
+                LOG.error(e.getMessage());
+            }
+            user.setProfileImageUrl(TEMP_PROFILE_IMAGE_BASE_URL + user.getUsername());
         }
-        currentUser.setRoles(roles);
+        return userRepository.save(user);
+    }
 
-        return currentUser;
+    @Override
+    public List<User> findAllLoggedInTelegram() {
+        return userRepository.findAllLoggedInTelegram();
     }
 
     private Role getStandardRole() {
-        return roleService.getRoleByName(Role.USER);
+        return roleService.getByName(Role.USER);
     }
 
     private boolean validateUsernameAndEmail(User currentUser, String username, String email) throws UsernameExistException,
@@ -388,32 +415,5 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     private String getTemporaryProfileImageUrl(String username) {
         return TEMP_PROFILE_IMAGE_BASE_URL + username;
-    }
-
-    @Override
-    public User deleteUserProfileImage(UUID id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (!ObjectUtils.isEmpty(user) && user.getProfileImageUrl().startsWith(PROFILE_IMAGE_RESOURCE_HOST)) {
-            String oldImage = user.getProfileImageUrl().split(PROFILE_IMAGE_RESOURCE_HOST)[1].replace("/", "");
-            try {
-                UUID oldImageId = UUID.fromString(oldImage);
-                imageService.deleteUserProfileImage(oldImageId);
-            } catch (IllegalArgumentException e) {
-                LOG.error(e.getMessage());
-            }
-            user.setProfileImageUrl(TEMP_PROFILE_IMAGE_BASE_URL + user.getUsername());
-        }
-        return userRepository.save(user);
-    }
-
-    @Override
-    public List<User> findAllLoggedInTelegram() {
-        return userRepository.findAllLoggedInTelegram();
-    }
-
-    @Override
-    public User getUserByTelUserId(Long telUserId) throws UserNotFoundException {
-        return userRepository.findUserByTelUserId(telUserId).orElseThrow(() ->
-                new UserNotFoundException(getMessage(sourcePath, "exception.user.with.id.not.found", telUserId)));
     }
 }

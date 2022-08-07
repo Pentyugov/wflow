@@ -29,22 +29,22 @@ public class EmployeeController extends AbstractController {
     @GetMapping
     public ResponseEntity<Object> getAll() {
         List<EmployeeDto> employees = new ArrayList<>();
-        employeeService.getAllEmployees().forEach(employee ->
-                employees.add(employeeService.createEmployeeDtoFromEmployee(employee)));
+        employeeService.getAll().forEach(employee ->
+                employees.add(employeeService.convert(employee)));
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable String id) throws EmployeeNotFoundException {
-        Employee employee = employeeService.getEmployeeById(UUID.fromString(id));
-        return new ResponseEntity<>(employeeService.createEmployeeDtoFromEmployee(employee), HttpStatus.OK);
+        Employee employee = employeeService.getById(UUID.fromString(id));
+        return new ResponseEntity<>(employeeService.convert(employee), HttpStatus.OK);
     }
 
     @GetMapping("/department/{id}")
     public ResponseEntity<Object> getByDepartments(@PathVariable String id) {
         List<EmployeeDto> employees = new ArrayList<>();
-        employeeService.getEmployeesByDepartment(UUID.fromString(id)).forEach(employee ->
-                employees.add(employeeService.createEmployeeDtoFromEmployee(employee)));
+        employeeService.getByDepartment(UUID.fromString(id)).forEach(employee ->
+                employees.add(employeeService.convert(employee)));
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
@@ -53,8 +53,8 @@ public class EmployeeController extends AbstractController {
             throws UserNotFoundException, EmployeeExistException, PositionNotFoundException, ValidationException,
             DepartmentNotFoundException {
 
-        Employee employee = employeeService.addNewEmployee(employeeDto);
-        return new ResponseEntity<>(employeeService.createEmployeeDtoFromEmployee(employee), HttpStatus.OK);
+        Employee employee = employeeService.add(employeeDto);
+        return new ResponseEntity<>(employeeService.convert(employee), HttpStatus.OK);
     }
 
     @PutMapping
@@ -62,8 +62,8 @@ public class EmployeeController extends AbstractController {
             throws UserNotFoundException, EmployeeExistException, DepartmentNotFoundException,
             PositionNotFoundException, ValidationException {
 
-        Employee employee = employeeService.updateEmployee(employeeDto);
-        return new ResponseEntity<>(employeeService.createEmployeeDtoFromEmployee(employee), HttpStatus.OK);
+        Employee employee = employeeService.update(employeeDto);
+        return new ResponseEntity<>(employeeService.convert(employee), HttpStatus.OK);
     }
 
     @PutMapping("/all")
@@ -77,7 +77,7 @@ public class EmployeeController extends AbstractController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> delete(@PathVariable String id) {
-        employeeService.deleteEmployee(UUID.fromString(id));
+        employeeService.delete(UUID.fromString(id));
         String message = String.format("Employee with id: %s was deleted", id);
         return response(HttpStatus.OK, message);
     }
