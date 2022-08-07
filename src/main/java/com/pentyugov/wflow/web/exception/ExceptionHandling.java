@@ -13,6 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import javax.persistence.NoResultException;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.Set;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -103,7 +104,11 @@ public class ExceptionHandling implements ErrorController {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
-        HttpMethod supportedMethod = Objects.requireNonNull(exception.getSupportedHttpMethods()).iterator().next();
+        Set<HttpMethod> methods = exception.getSupportedHttpMethods();
+        HttpMethod supportedMethod = null;
+        if (!CollectionUtils.isEmpty(methods)) {
+            supportedMethod = methods.iterator().next();
+        }
         return createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod));
     }
 

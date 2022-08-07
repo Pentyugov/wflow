@@ -7,12 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
-import java.util.Objects;
+import java.util.List;
 import java.util.UUID;
 
 @Service(SessionService.NAME)
@@ -42,11 +43,15 @@ public class SessionServiceImpl implements SessionService {
                     Collections.emptyMap()
             );
 
-            if (response.getStatusCode().equals(HttpStatus.OK)
-                    && sessionId.toString().equals(Objects.requireNonNull(httpHeaders.get("session-id")).get(0))) {
-                telbotSessionId = sessionId.toString();
-                connected = Boolean.TRUE;
-                LOGGER.info("Successfully connected to Telbot...");
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+
+                List<String> headers = httpHeaders.get("session-id");
+                if (!CollectionUtils.isEmpty(headers) && sessionId.toString().equals(headers.get(0))) {
+                    telbotSessionId = sessionId.toString();
+                    connected = Boolean.TRUE;
+                    LOGGER.info("Successfully connected to Telbot...");
+                }
+
             }
             response.getHeaders().get("sessionId");
         } catch (HttpStatusCodeException | ResourceAccessException e) {

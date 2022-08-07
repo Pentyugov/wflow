@@ -12,7 +12,7 @@ public class ApplicationConstants {
         String AUTHORITIES = "authorities";
         String FORBIDDEN_MESSAGE = "You need to login to access this page";
         String ACCESS_DENIED_MESSAGE = "You do not have permission to access this page";
-        String[] PUBLIC_URLS = {
+        final String[] PUBLIC_URLS = {
             "/user/login",
             "/api/user/register",
             "/api/user/reset-password/**",

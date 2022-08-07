@@ -26,7 +26,7 @@ import java.util.UUID;
 import static com.pentyugov.wflow.application.configuration.constant.ApplicationConstants.*;
 
 
-@Component
+//@Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JwtAuthorizationFilter.class);

@@ -10,6 +10,7 @@ import java.util.Random;
 public class ApplicationUtils {
 
     private final BCryptPasswordEncoder passwordEncoder;
+    private static final Random RANDOM = new Random();
 
     @Autowired
     public ApplicationUtils(BCryptPasswordEncoder passwordEncoder) {
@@ -17,8 +18,7 @@ public class ApplicationUtils {
     }
 
     public String getVerificationCode() {
-        Random rnd = new Random();
-        int number = rnd.nextInt(999999);
+        int number = RANDOM.nextInt(999999);
         return String.format("%06d", number);
     }
 

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
@@ -27,7 +28,7 @@ public class CalendarEventDto extends BaseDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Color {
+    public static class Color implements Serializable {
         private String primary;
         private String secondary;
     }
@@ -36,7 +37,7 @@ public class CalendarEventDto extends BaseDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Resizable {
+    public static class Resizable implements Serializable {
         private Boolean beforeStart = Boolean.FALSE;
         private Boolean afterEnd = Boolean.FALSE;
     }

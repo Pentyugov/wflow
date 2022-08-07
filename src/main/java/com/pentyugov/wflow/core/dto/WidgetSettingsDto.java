@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WidgetSettingsDto {
+public class WidgetSettingsDto implements Serializable {
 
     public static final Integer WIDGET_CALENDAR_TYPE = 10;
     public static final Integer WIDGET_ACTIVE_TASKS_TYPE = 20;

@@ -41,18 +41,18 @@ public class ScreenServiceImpl implements ScreenService {
 
                     case SCREEN_ACTION_BROWSE: return screenPermissions
                             .stream()
-                            .anyMatch(screenPermissionDto -> screenPermissionDto.getRead()   == Boolean.TRUE);
+                            .anyMatch(screenPermissionDto -> Boolean.TRUE.equals(screenPermissionDto.getRead()));
 
                     case SCREEN_ACTION_CREATE: return screenPermissions
                             .stream()
-                            .anyMatch(screenPermissionDto -> screenPermissionDto.getCreate() == Boolean.TRUE);
+                            .anyMatch(screenPermissionDto ->  Boolean.TRUE.equals(screenPermissionDto.getCreate()));
 
                     case SCREEN_ACTION_EDIT:   return screenPermissions
                             .stream()
-                            .anyMatch(screenPermissionDto -> screenPermissionDto.getUpdate() == Boolean.TRUE);
+                            .anyMatch(screenPermissionDto ->  Boolean.TRUE.equals(screenPermissionDto.getUpdate()));
                     case SCREEN_ACTION_DELETE: return screenPermissions
                             .stream()
-                            .anyMatch(screenPermissionDto -> screenPermissionDto.getDelete() == Boolean.TRUE);
+                            .anyMatch(screenPermissionDto ->  Boolean.TRUE.equals(screenPermissionDto.getDelete()));
 
                     default: return false;
                 }
