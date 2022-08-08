@@ -3,6 +3,7 @@ package com.pentyugov.wflow.core.domain.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.util.Date;
 
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @Entity(name = "workflow$CalendarEvent")
 @Table(name = "WORKFLOW_CALENDAR_EVENT")

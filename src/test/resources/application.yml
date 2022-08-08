@@ -1,0 +1,76 @@
+jwt:
+  secret: ${WFLOW_JWT_SECRET:}
+
+server:
+  port: ${PORT:8081}
+
+telbot:
+  api:
+    url: ${WFLOW_TELBOT_API_URL:}
+
+spring:
+  datasource:
+    url:      ${WFLOW_DATASOURCE_URL:}
+    password: ${WFLOW_DATASOURCE_PASSWORD:}
+    username: ${WFLOW_DATASOURCE_USERNAME:}
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    enabled: true
+  change-log: classpath:db/changelog/db.changelog-master.xml
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mvc:
+    throw-exception-if-no-handler-found: true
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  web:
+    locale: ru
+    resources:
+      add-mappings: false
+
+  mail:
+    port: 587
+    host:     ${WFLOW_MAIL_HOST:}
+    username: ${WFLOW_MAIL_USERNAME:}
+    password: ${WFLOW_MAIL_PASSWORD:}
+
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
+    send-greeting: true
+
+springdoc:
+  swagger-ui:
+    path: /test/swagger-ui-custom.html
+    operationsSorter: method
+
+source:
+  service:
+    email: "messages.service.email.messages"
+    auth: "messages.auth.messages"
+    notification: "messages.notification.messages"
+  main: "main"
+
+job:
+  cron:
+    resendEmail: "0 0/5 * ? * *"
+    checkOverdue: "0 0/1 * ? * *"
+
+uploadcare:
+  scheme: "Uploadcare.Simple"
+  public-key: "0023b247fac8f6e0fb7e"
+  secret-key: ${WFLOW_UPLOADCARE_SECRET:}
+
+app:
+  saveImageInDb: true
+  enable-redis: false

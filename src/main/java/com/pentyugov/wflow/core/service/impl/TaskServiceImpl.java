@@ -1,9 +1,6 @@
 package com.pentyugov.wflow.core.service.impl;
 
-import com.pentyugov.wflow.core.domain.entity.Issue;
-import com.pentyugov.wflow.core.domain.entity.Notification;
-import com.pentyugov.wflow.core.domain.entity.Task;
-import com.pentyugov.wflow.core.domain.entity.User;
+import com.pentyugov.wflow.core.domain.entity.*;
 import com.pentyugov.wflow.core.dto.CardHistoryDto;
 import com.pentyugov.wflow.core.dto.TaskDto;
 import com.pentyugov.wflow.core.dto.TelegramTaskDto;
@@ -183,7 +180,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         task.setKanbanState(Task.KANBAN_STATE_NEW);
         task = workflowService.startTaskProcess(task, currentUser);
         taskRepository.save(task);
-        calendarEventService.addForCard(task);
+        calendarEventService.add(calendarEventService.createEventForCard(task));
         User executor = task.getExecutor();
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.assigned.to.executor", task.getNumber());
@@ -252,7 +249,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         task = workflowService.reworkTask(task, currentUser, comment);
         task.setKanbanState(Task.KANBAN_STATE_NEW);
         taskRepository.save(task);
-        calendarEventService.addForCard(task);
+        calendarEventService.add(calendarEventService.createEventForCard(task));
         String title = getMessage(sourcePath, "notification.task.title", task.getNumber());
         String message = getMessage(sourcePath, "notification.task.rework.to.executor", task.getNumber(), currentUser.getUsername());
         Notification notification = notificationService.createNotification(

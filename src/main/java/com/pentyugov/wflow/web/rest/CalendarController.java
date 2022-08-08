@@ -1,5 +1,6 @@
 package com.pentyugov.wflow.web.rest;
 
+import com.pentyugov.wflow.core.domain.entity.CalendarEvent;
 import com.pentyugov.wflow.core.dto.CalendarEventDto;
 import com.pentyugov.wflow.core.service.CalendarEventService;
 import com.pentyugov.wflow.web.http.HttpResponse;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/calendar-events")
@@ -22,24 +24,32 @@ public class CalendarController extends AbstractController {
 
     @GetMapping
     public ResponseEntity<Object> getAllForCurrentUser() {
-        return new ResponseEntity<>(calendarEventService.getAllForCurrentUser(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                calendarEventService.getAllForCurrentUser()
+                .stream()
+                .map(calendarEventService::convert)
+                .collect(Collectors.toList()),
+                HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable String id) {
-        return new ResponseEntity<>(calendarEventService.getById(UUID.fromString(id)), HttpStatus.OK);
+        CalendarEvent calendarEvent = calendarEventService.getById(UUID.fromString(id));
+        return new ResponseEntity<>(calendarEventService.convert(calendarEvent), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody CalendarEventDto calendarEventDto) {
-        CalendarEventDto result = calendarEventService.add(calendarEventDto);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        CalendarEvent calendarEvent = calendarEventService.convert(calendarEventDto);
+        calendarEvent = calendarEventService.add(calendarEvent);
+        return new ResponseEntity<>(calendarEventService.convert(calendarEvent), HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<Object> update(@RequestBody CalendarEventDto calendarEventDto) {
-        CalendarEventDto result = calendarEventService.update(calendarEventDto);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        CalendarEvent calendarEvent = calendarEventService.convert(calendarEventDto);
+        calendarEvent = calendarEventService.update(calendarEvent);
+        return new ResponseEntity<>(calendarEventService.convert(calendarEvent), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

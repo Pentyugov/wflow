@@ -1,6 +1,9 @@
 package com.pentyugov.wflow.core.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.annotation.PreDestroy;
 import javax.persistence.*;
@@ -9,6 +12,9 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @MappedSuperclass
 public class BaseEntity implements Serializable {
 

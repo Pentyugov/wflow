@@ -368,6 +368,10 @@ public class UserServiceImpl extends AbstractService implements UserService {
         return userRepository.findAllLoggedInTelegram();
     }
 
+    public void removeUserByUsername(String username) {
+        userRepository.removeUserByUsername(username);
+    }
+
     private Role getStandardRole() {
         return roleService.getByName(Role.USER);
     }

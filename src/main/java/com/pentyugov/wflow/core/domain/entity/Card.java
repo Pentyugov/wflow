@@ -1,14 +1,18 @@
 package com.pentyugov.wflow.core.domain.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "workflow$Card")
 @Table(name = "WORKFLOW_CARD")

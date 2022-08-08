@@ -11,15 +11,15 @@ public interface CalendarEventService {
 
     String NAME = "wflow$CalendarEventService";
 
-    List<CalendarEventDto> getAllForCurrentUser();
+    List<CalendarEvent> getAllForCurrentUser();
 
-    CalendarEventDto getById(UUID id);
+    CalendarEvent getById(UUID id);
 
-    CalendarEventDto add(CalendarEventDto calendarEventDto);
+    CalendarEvent add(CalendarEvent calendarEvent);
 
-    void addForCard(Card card);
+    CalendarEvent createEventForCard(Card card);
 
-    CalendarEventDto update(CalendarEventDto calendarEventDto);
+    CalendarEvent update(CalendarEvent calendarEventDto);
 
     CalendarEvent convert(CalendarEventDto calendarEventDto);
 

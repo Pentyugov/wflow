@@ -15,7 +15,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service(CalendarEventService.NAME)
 @RequiredArgsConstructor
@@ -28,26 +27,23 @@ public class CalendarEventServiceImpl extends AbstractService implements Calenda
     private final UserSessionService userSessionService;
 
     @Override
-    public List<CalendarEventDto> getAllForCurrentUser() {
-        return calendarEventRepository.getAllByUserId(userSessionService.getCurrentUser().getId())
-                .stream().map(this::convert).collect(Collectors.toList());
+    public List<CalendarEvent> getAllForCurrentUser() {
+        return calendarEventRepository.getAllByUserId(userSessionService.getCurrentUser().getId());
     }
 
     @Override
-    public CalendarEventDto getById(UUID id) {
-        return convert(calendarEventRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException(getMessage(sourcePath, "exception.entity.with.id.not.found", id.toString()))));
+    public CalendarEvent getById(UUID id) {
+        return calendarEventRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(getMessage(sourcePath, "exception.entity.with.id.not.found", id.toString())));
     }
 
     @Override
-    public CalendarEventDto add(CalendarEventDto calendarEventDto) {
-        CalendarEvent calendarEvent = convert(calendarEventDto);
-        calendarEvent = calendarEventRepository.save(calendarEvent);
-        return convert(calendarEvent);
+    public CalendarEvent add(CalendarEvent calendarEvent) {
+        return calendarEventRepository.save(calendarEvent);
     }
 
     @Override
-    public void addForCard(Card card) {
+    public CalendarEvent createEventForCard(Card card) {
         CalendarEvent calendarEvent = createCalendarEventTemplateForCard();
         calendarEvent.setTitle(card.getNumber());
         calendarEvent.setDescription(card.getDescription());
@@ -60,15 +56,12 @@ public class CalendarEventServiceImpl extends AbstractService implements Calenda
             calendarEvent.setEndDate(task.getExecutionDatePlan());
         }
 
-        calendarEvent = calendarEventRepository.save(calendarEvent);
-        convert(calendarEvent);
+        return calendarEvent;
     }
 
     @Override
-    public CalendarEventDto update(CalendarEventDto calendarEventDto) {
-        CalendarEvent calendarEvent = convert(calendarEventDto);
-        calendarEvent = calendarEventRepository.save(calendarEvent);
-        return convert(calendarEvent);
+    public CalendarEvent update(CalendarEvent calendarEvent) {
+        return calendarEventRepository.save(calendarEvent);
     }
 
     @Override

@@ -67,5 +67,5 @@ public interface UserService {
 
     List<User> findAllLoggedInTelegram();
 
-
+    void removeUserByUsername(String username);
 }
