@@ -167,6 +167,12 @@
 			<version>1.6.8</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-jsr223</artifactId>
+			<version>2.4.6</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -200,7 +206,6 @@
 				<version>3.2.1</version>
 			</plugin>
 
-
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
@@ -211,7 +216,7 @@
 				<executions>
 					<execution>
 						<id>find-bugs</id>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
