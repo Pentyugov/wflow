@@ -14,8 +14,8 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 
 @Configuration
-public class WebConfig  extends SpringBootServletInitializer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WflowApplication.class);
+public class WebConfig extends SpringBootServletInitializer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebConfig.class);
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
