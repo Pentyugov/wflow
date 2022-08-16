@@ -71,7 +71,7 @@ job:
 
 uploadcare:
   scheme: "Uploadcare.Simple"
-  public-key: "0023b247fac8f6e0fb7e"
+  public-key: ${WFLOW_UPLOADCARE_PUBLIC:0023b247fac8f6e0fb7e}
   secret-key: ${WFLOW_UPLOADCARE_SECRET:}
 
 app:

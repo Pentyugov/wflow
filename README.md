@@ -7,6 +7,12 @@ _____
 ### Introduction
 Данное приложение является серверной частью приложения Wflow-app, предназначенного для управления проектами и задачами.
 
+Демо приложение доступно по адресу:
+`wflow-app.ru`
+
+ - Имя пользователя: testuser
+ - Пароль: testuser
+
 Клиентская часть:
 
       https://github.com/Pentyugov/zolloz-client-mat
@@ -21,6 +27,24 @@ Eureka server для регистрации Eureka клиентов:
 ____
 
 ### Запуск
+Требования:
+ - JAVA 11
+ - PostgreSQL
+ - Maven
+
+Перед запуском приложения необходимо прописать следующие переменные среды
+ - `PORT` - 
+ - `WFLOW_JWT_SECRET` - Секретный ключ для генерации JWT токена
+ - `WFLOW_DATASOURCE_URL` - Ссылка на базу данных
+ - `WFLOW_DATASOURCE_USERNAME` - Имя пользователя базы данных
+ - `WFLOW_DATASOURCE_PASSWORD` - Пароль пользовател базы данных
+ - `WFLOW_MAIL_HOST` - Email сервер для отправки почты
+ - `WFLOW_MAIL_USERNAME` - Имя почты
+ - `WFLOW_MAIL_PASSWORD` - Пароль почты
+ - `WFLOW_UPLOADCARE_PUBLIC` - Публичный ключ сервиса UploadCare для сохрание пользовательских аватаров
+ - `WFLOW_UPLOADCARE_SECRET`- Секретный ключ сервиса UploadCare
+
+После установки переменных среды выполнить команды:
 
     mvn clean package
 
