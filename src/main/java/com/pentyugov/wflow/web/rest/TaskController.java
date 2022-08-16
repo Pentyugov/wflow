@@ -7,12 +7,15 @@ import com.pentyugov.wflow.web.exception.ExceptionHandling;
 import com.pentyugov.wflow.web.exception.ProjectNotFoundException;
 import com.pentyugov.wflow.web.exception.TaskNotFoundException;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
+import com.pentyugov.wflow.web.feign.service.TaskFeignService;
 import com.pentyugov.wflow.web.http.HttpResponse;
 import com.pentyugov.wflow.web.payload.request.FiltersRequest;
 import com.pentyugov.wflow.web.payload.request.KanbanRequest;
 import com.pentyugov.wflow.web.payload.request.TaskSignalProcRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +29,11 @@ import static com.pentyugov.wflow.application.configuration.SwaggerConfig.BEARER
 
 @RestController
 @RequestMapping("/api/tasks")
+@RequiredArgsConstructor
 public class TaskController extends ExceptionHandling {
 
     private final TaskService taskService;
-
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
+    private final TaskFeignService taskFeignService;
 
     @GetMapping
     @Operation(summary = "Get all tasks", security = @SecurityRequirement(name = BEARER))
@@ -42,9 +43,10 @@ public class TaskController extends ExceptionHandling {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get task by ID", security = @SecurityRequirement(name = BEARER))
-    public ResponseEntity<Object> getById(@PathVariable String id) throws TaskNotFoundException {
-        Task task = taskService.getById(UUID.fromString(id));
-        return new ResponseEntity<>(taskService.createDto(task), HttpStatus.OK);
+    public ResponseEntity<Object> getById(@RequestHeader HttpHeaders headers, @PathVariable String id) throws TaskNotFoundException {
+//        Task task = taskService.getById(UUID.fromString(id));
+//        return new ResponseEntity<>(taskService.createDto(task), HttpStatus.OK);
+        return taskFeignService.getById(headers, id);
     }
 
     @GetMapping("/active")

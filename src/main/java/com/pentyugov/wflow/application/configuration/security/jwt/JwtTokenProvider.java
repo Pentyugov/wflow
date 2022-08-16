@@ -1,5 +1,6 @@
 package com.pentyugov.wflow.application.configuration.security.jwt;
 
+import com.pentyugov.wflow.core.domain.entity.Role;
 import com.pentyugov.wflow.core.domain.entity.User;
 import com.pentyugov.wflow.core.service.UserService;
 import com.pentyugov.wflow.web.exception.UserNotFoundException;
@@ -37,6 +38,8 @@ public class JwtTokenProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        final String roles = user.getRoles().stream().map(Role::getName).collect(Collectors.joining(","));
+
         Date now = new Date(System.currentTimeMillis());
         Date expiryDate = new Date(now.getTime() + Security.EXPIRATION_TIME);
 
@@ -45,6 +48,7 @@ public class JwtTokenProvider {
         Map<String, Object> claimsMap = new HashMap<>();
         claimsMap.put("id", userId);
         claimsMap.put("username", user.getUsername());
+        claimsMap.put("roles", roles);
         claimsMap.put(Security.AUTHORITIES, authorities);
 
         userService.updateLastLoginDate(user);
