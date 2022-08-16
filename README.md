@@ -37,7 +37,7 @@ ____
  - `WFLOW_JWT_SECRET` - Секретный ключ для генерации JWT токена
  - `WFLOW_DATASOURCE_URL` - Ссылка на базу данных
  - `WFLOW_DATASOURCE_USERNAME` - Имя пользователя базы данных
- - `WFLOW_DATASOURCE_PASSWORD` - Пароль пользовател базы данных
+ - `WFLOW_DATASOURCE_PASSWORD` - Пароль пользователя базы данных
  - `WFLOW_MAIL_HOST` - Email сервер для отправки почты
  - `WFLOW_MAIL_USERNAME` - Имя почты
  - `WFLOW_MAIL_PASSWORD` - Пароль почты
